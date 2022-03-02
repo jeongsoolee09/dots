@@ -24,8 +24,6 @@ Plug 'jdsimcoe/abstract.vim'
 
 Plug 'vim-airline/vim-airline'
 
-Plug 'airblade/vim-gitgutter'
-
 Plug 'tpope/vim-fugitive'
 
 Plug 'jremmen/vim-ripgrep'
@@ -298,11 +296,12 @@ set nobackup
 set nowritebackup
 set noundofile
 
-" ocaml setup
-autocmd Filetype ocaml setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType ocaml setlocal shiftwidth=2 tabstop=2
+autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
+autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
+
 
 " Transparent!
-
 hi NonText ctermbg=none
 hi Normal guibg=NONE ctermbg=NONE
 highlight SignColumn guibg=NONE

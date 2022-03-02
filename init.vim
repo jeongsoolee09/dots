@@ -12,12 +12,6 @@ Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-Plug 'lukas-reineke/indent-blankline.nvim'
-
-Plug 'jceb/vim-orgmode'
-
-Plug 'tpope/vim-speeddating'
-
 Plug 'tpope/vim-commentary'
 
 Plug 'scalameta/coc-metals', {'do': 'yarn install --frozen-lockfile'}
@@ -34,11 +28,7 @@ Plug 'kyazdani42/nvim-web-devicons'
 
 Plug 'kyazdani42/nvim-tree.lua'
 
-Plug 'airblade/vim-gitgutter'
-
 Plug 'tpope/vim-fugitive'
-
-Plug 'preservim/tagbar'
 
 Plug 'jremmen/vim-ripgrep'
 
@@ -67,6 +57,9 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'sbdchd/neoformat'
 
 Plug 'rescript-lang/vim-rescript'
+
+Plug 'nvim-orgmode/orgmode'
+
 call plug#end()
 
 " force encoding as UTF-8
@@ -97,11 +90,8 @@ function! s:show_documentation()
   endif
 endfunction
 
-" map <Space> <Leader>
-"
-"
-
 let mapleader = "\<Space>"
+map <leader>! :!
 map <leader>[ :tabprev<cr>
 map <leader>] :tabnext<cr>
 map <leader>nt :tabnew<Space>
@@ -136,7 +126,7 @@ map <leader>wr <C-w>r
 map <leader>bp :bp<cr>
 map <leader>bn :bn<cr>
 map <leader>bd :bw<cr>
-map <leader>bb :buffers<cr>
+map <leader>bb :Telescope buffers<cr>
 map <leader>b= :Format<cr>
 map <leader>cdc :lcd %:p:h<cr>
 map <leader>cdt :lcd
@@ -159,9 +149,8 @@ inoremap <C-f> <right>
 inoremap <C-b> <left>
 inoremap <C-l> <esc>zza
 nnoremap <C-l> zz
-
-" indentLine config
-let g:indentLine_enabled = 1
+nnoremap <C-g> <esc>
+inoremap <C-g> <esc>
 
 " NERDTree Config
 let NERDTreeShowHidden=1
@@ -244,6 +233,7 @@ set laststatus=2
 set ruler
 set wildmenu
 set cindent
+set ignorecase
 set smartcase
 
 " <tab> inserts four <space>s
@@ -327,6 +317,15 @@ hi NonText ctermbg=none
 hi Normal guibg=NONE ctermbg=NONE
 highlight SignColumn guibg=NONE
 
+function SetupOCaml()
+    setlocal shiftwidth=2 tabstop=2
+    map <leader>cC :!dune build<cr>
+endfunction
+
+
+autocmd FileType ocaml call SetupOCaml()
+autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
+autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
 
 " if argc() == 0
 "   :exe 'normal <C-o>'
