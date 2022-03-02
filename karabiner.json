@@ -735,7 +735,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open /Applications/Discord.app"
+                                        "shell_command": "open /System/Applications/Mail.app"
                                     }
                                 ],
                                 "type": "basic"
@@ -810,7 +810,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open /Applications/KakaoTalk.app"
+                                        "shell_command": "open /Applications/AlDente.app"
                                     }
                                 ],
                                 "type": "basic"
