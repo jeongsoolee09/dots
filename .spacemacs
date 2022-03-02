@@ -79,7 +79,6 @@ values."
      (scala :variables scala-backend 'lsp)
      (ruby :variables ruby-backend 'lsp)
      xclipboard
-     tabs
      (perl5 :variables perl5-backend 'lsp))
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -159,8 +158,7 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '((tron-legacy :location local)
-                         (eink :location local))
+   dotspacemacs-themes '((tron-legacy :location local))
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -345,8 +343,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "http://elpa.gnu.org/packages/")))
 
-  (setq explicit-shell-file-name "/bin/zsh")
-  (setq shell-file-name "/bin/zsh")
+  (setq explicit-shell-file-name "/bin/zsh"
+        shell-file-name "/bin/zsh")
 
   ;; Fix for dired in TRAMP environment
   (add-hook 'dired-mode-hook
@@ -356,9 +354,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (setq dotspacemacs-scroll-bar-while-scrolling nil)
 
-  (setq warning-minimum-level :emergency)
-  (setq warning-minimum-log-level :emergency)
-  (setq native-comp-async-report-warnings-errors nil)
+  (setq warning-minimum-level :emergency
+        warning-minimum-log-level :emergency
+        native-comp-async-report-warnings-errors nil)
 
   ) ;; user-init end
 
@@ -423,8 +421,8 @@ you should place your code here."
     (setq prolog-system 'swi))
 
   ;; fix for opening large files in TRAMP environment
-  (setq tramp-copy-size-limit 10000000)
-  (setq tramp-inline-compress-start-size 10000000)
+  (setq tramp-copy-size-limit 10000000
+        tramp-inline-compress-start-size 10000000)
 
   (with-eval-after-load 'tramp
     (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
@@ -438,50 +436,30 @@ you should place your code here."
   (use-package lsp-mode
     :hook ((tuareg-mode . lsp) (python-mode . lsp) (scala-mode . lsp))
     :config
-    (setq lsp-java-java-path "/Library/Java/JavaVirtualMachines/jdk-11.0.8.jdk/Contents/Home/bin/java")
     (when window-system
-      (setq lsp-headerline-breadcrumb-enable t)
-      (setq lsp-headerline-breadcrumb-icons-enable t))
+      (setq lsp-headerline-breadcrumb-enable t
+            lsp-headerline-breadcrumb-icons-enable t))
     (unless window-system
-      (setq lsp-headerline-breadcrumb-enable nil)
-      (setq lsp-headerline-breadcrumb-icons-enable nil))
-    (setq lsp-prefer-capf t)
-    (setq company-idle-delay 0)
-    (setq lsp-ui-sideline-enable nil)
-    (setq lsp-enable-symbol-highlighting nil)
-    (setq lsp-ui-doc-enable nil)
-    (setq lsp-ui-doc-show-with-cursor nil)
-    (setq lsp-lens-enable nil)
-    (setq lsp-signature-auto-activate nil)
-    (setq lsp-eldoc-hook nil)
-    (setq lsp-eldoc-enable-hover nil)
-    (setq lsp-ui-doc-max-height 10)
-    (setq lsp-enable-symbol-highlighting nil)
-    (setq lsp-file-watch-threshold 5000)
-    (setq lsp-metals-show-inferred-type nil)
-    (setq lsp-metals-show-implicit-arguments nil)
-    (setq lsp-metals-show-implicit-conversions-and-classes nil)
-    (setq lsp-headerline-breadcrumb-segments '(file symbols)))
-
-  ;; centaur tabs config
-  (when window-system
-    (progn
-      (centaur-tabs-mode t)
-      (setq centaur-tabs-style "bar")
-      (setq centaur-tabs-height 32)
-      (setq centaur-tabs-set-icons t)
-      (setq centaur-tabs-set-bar 'over)
-      (global-set-key (kbd "M-[") 'centaur-tabs-backward)
-      (global-set-key (kbd "M-]") 'centaur-tabs-forward)
-      (centaur-tabs-headline-match)
-      (setq centaur-tabs-gray-out-icons 'buffer)
-      (setq centaur-tabs-set-modified-marker t)
-      (setq centaur-tabs-modified-marker "●")
-      (setq centaur-tabs-cycle-scope 'tabs)
-      (centaur-tabs-change-fonts "Helvetica" 180)
-      (add-hook 'spacemacs-buffer-mode-hook 'centaur-tabs-local-mode)
-      (add-hook 'dired-mode-hook 'centaur-tabs-local-mode)
-      (add-hook 'pdf-view-mode-hook 'centaur-tabs-local-mode)))
+      (setq lsp-headerline-breadcrumb-enable nil
+            lsp-headerline-breadcrumb-icons-enable nil))
+    (setq lsp-prefer-capf t
+          company-idle-delay 0
+          lsp-ui-sideline-enable nil
+          lsp-enable-symbol-highlighting nil
+          lsp-ui-doc-enable nil
+          lsp-ui-doc-show-with-cursor nil
+          lsp-lens-enable nil
+          lsp-signature-auto-activate nil
+          lsp-eldoc-hook nil
+          lsp-modeline-code-actions-enable nil
+          lsp-eldoc-enable-hover nil
+          lsp-ui-doc-max-height 10
+          lsp-enable-symbol-highlighting nil
+          lsp-file-watch-threshold 5000
+          lsp-metals-show-inferred-type nil
+          lsp-metals-show-implicit-arguments nil
+          lsp-metals-show-implicit-conversions-and-classes nil
+          lsp-headerline-breadcrumb-segments '(file symbols)))
 
   ;; elfeed and elfeed-org config
   (with-eval-after-load 'elfeed
@@ -512,8 +490,8 @@ you should place your code here."
     (spacemacs/set-leader-keys "aRp" 'eradio-play)
     (spacemacs/set-leader-keys "aRs" 'eradio-stop)
     (spacemacs/set-leader-keys "aRR" 'eradio-toggle)
-    (setq eradio-player '("mpv" "--no-video" "--no-terminal"))
-    (setq eradio-channels '(("MBC FM4U" . "http://korradio.stream/mbc_fm4u.pls")
+    (setq eradio-player '("mpv" "--no-video" "--no-terminal")
+          eradio-channels '(("MBC FM4U" . "http://korradio.stream/mbc_fm4u.pls")
                             ("KBS CoolFM" . "http://korradio.stream/kbs_coolfm.pls")
                             ("SBS 파워FM" . "https://korradio.stream/sbs_powerfm.pls")
                             ("CBS 음악방송" . "https://korradio.stream/cbs.pls"))))
@@ -531,8 +509,8 @@ you should place your code here."
   ;; to have the buffer refresh after compilation
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer)
-  (setq pdf-sync-backward-display-action t)
-  (setq pdf-sync-forward-display-action t)
+  (setq pdf-sync-backward-display-action t
+        pdf-sync-forward-display-action t)
 
   ;; gpg config
   (setq epg-gpg-program "gpg2")
@@ -546,9 +524,9 @@ you should place your code here."
   (setq all-the-icons-scale-factor 1.0)
 
   ;; Projectile Config
-  (setq projectile-mode-line "Projectile")
-  (setq projectile-enable-caching t)
-  (setq anaconda-mode-localhost-address "localhost")
+  (setq projectile-mode-line "Projectile"
+        projectile-enable-caching t
+        anaconda-mode-localhost-address "localhost")
 
   ;; I really hate these keybindings
   (global-unset-key (kbd "H-n"))
@@ -556,10 +534,10 @@ you should place your code here."
   (global-unset-key (kbd "C-x C-l"))
 
   ;; evil-mode config
-  (setq evil-motion-state-cursor 'box)
-  (setq evil-visual-state-cursor 'box)
-  (setq evil-normal-state-cursor 'box)
-  (setq evil-insert-state-cursor 'bar)
+  (setq evil-motion-state-cursor 'box
+        evil-visual-state-cursor 'box
+        evil-normal-state-cursor 'box
+        evil-insert-state-cursor 'bar)
 
 
   ;; recentf config
@@ -655,8 +633,8 @@ you should place your code here."
   (unless window-system
     (global-set-key (kbd "<mouse-4>") 'mwheel-scroll)
     (global-set-key (kbd "<mouse-5>") 'mwheel-scroll)
-    (setq mouse-wheel-up-event 'mouse-5)
-    (setq mouse-wheel-down-event 'mouse-4))
+    (setq mouse-wheel-up-event 'mouse-5
+          mouse-wheel-down-event 'mouse-4))
 
   ;; SPC-command-shortcuts
   (spacemacs/set-leader-keys "H-r" 'revert-buffer)
@@ -685,6 +663,11 @@ you should place your code here."
 
   ;; SPC-C-shortcuts
   (spacemacs/set-leader-keys "C-r" 'revert-buffer)
+  (spacemacs/set-leader-keys "C-f" (lambda ()
+                                     (interactive)
+                                     (progn
+                                       (lsp-format-buffer)
+                                       (save-buffer))))
 
   ;; C-shortcuts
   (evil-define-key 'insert 'prog-mode-map (kbd "C-;") #'hippie-expand)
@@ -717,15 +700,8 @@ you should place your code here."
   (with-eval-after-load 'tuareg
     (eldoc-mode nil)
     (require 'tuareg-supplementary)
-    (setq ocamlformat-show-errors nil)
     (require 'ocamlformat)
-    (defun format-and-save ()
-      (interactive)
-      (ocamlformat)
-      (save-buffer))
-    (evil-ex-define-cmd "Format" #'format-and-save)
-    (spacemacs/set-leader-keys "C-f" #'format-and-save))
-
+    (setq ocamlformat-show-errors nil))
 
   ;; haskell-mode config
   (with-eval-after-load 'haskell-mode
@@ -809,6 +785,7 @@ you should place your code here."
             ("UNSURE"  . "#cc9393")
             ("XXX+"   . "#cc9393"))))
 
+
   ;; scala-mode config
   (with-eval-after-load 'scala-mode
     (require 'sbt-console)
@@ -842,8 +819,8 @@ you should place your code here."
 
   ;; w3m config
   (with-eval-after-load 'w3m
-    (setq w3m-default-display-inline-images t)
-    (setq w3m-session-load-crashed-sessions 'never)
+    (setq w3m-default-display-inline-images t
+          w3m-session-load-crashed-sessions 'never)
     (defun xwidget-webkit-open-w3m-current-url ()
       (require 'xwidget)
       (interactive)
@@ -853,8 +830,8 @@ you should place your code here."
       (eww-browse-url w3m-current-url))
     (spacemacs/set-leader-keys "awx" 'xwidget-webkit-open-w3m-current-url)
     (spacemacs/set-leader-keys "awW" 'eww-open-w3m-current-url)
-    (setq w3m-search-word-at-point nil)
-    (setq browse-url-browser-function (lambda (url session)
+    (setq w3m-search-word-at-point nil
+          browse-url-browser-function (lambda (url session)
                                         (if (string-match ".*youtube.com.*" url)
                                             (xwidget-webkit-browse-url url session)
                                             (w3m-browse-url url session))))
@@ -897,9 +874,9 @@ you should place your code here."
     (require 'emms-setup)
     (emms-all)
     (emms-default-players)
-    (setq emms-source-file-default-directory "~/Music/")
-    (setq emms-playlist-buffer-name "*Music*")
-    (setq emms-info-asynchronously t)
+    (setq emms-source-file-default-directory "~/Music/"
+          emms-playlist-buffer-name "*Music*"
+          emms-info-asynchronously t)
     (require 'emms-info-libtag)
     (setq emms-info-functions '(emms-info-libtag))
     (require 'emms-mode-line)
@@ -912,9 +889,9 @@ you should place your code here."
   ;; fix for run-python
   (setq python-shell-interpreter (if (string-match "aarch64.*" system-configuration)
                                      "/opt/homebrew/opt/python@3.9/libexec/bin/python"
-                                     "/usr/local/opt/python@3.8/libexec/bin/python"))
-  (setq python-shell-interpreter-args "-m IPython --simple-prompt -i")
-  (setq python-shell-completion-native-enable nil)
+                                     "/usr/local/opt/python@3.8/libexec/bin/python")
+        python-shell-interpreter-args "-m IPython --simple-prompt -i"
+        python-shell-completion-native-enable nil)
 
   (defun display-current-time ()
     "display the current time in the buffer."
@@ -977,8 +954,8 @@ you should place your code here."
   (spacemacs/set-leader-keys "p/" 'projectile-ripgrep)
 
   ;; fix for dired on OSX
-  (setq delete-by-moving-to-trash t)
-  (setq trash-directory "~/.Trash")
+  (setq delete-by-moving-to-trash t
+        trash-directory "~/.Trash")
 
   ;;; org-mode config
   (with-eval-after-load 'org
@@ -987,13 +964,13 @@ you should place your code here."
       (interactive)
       (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
 
-    (setq org-startup-with-inline-images t)
-    (setq org-startup-folded 'show-all)
-    (setq org-startup-latex-with-latex-preview t)
-    (setq org-src-fontify-natively t)
-    (setq org-hide-emphasis-markers t)
-    (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-    (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+    (setq org-startup-with-inline-images t
+          org-startup-folded 'show-all
+          org-startup-latex-with-latex-preview t
+          org-src-fontify-natively t
+          org-hide-emphasis-markers t
+          org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
+          org-bullets-bullet-list '("■" "◆" "▲" "▶"))
 
     ;; org-babel config
     (require 'ob-lisp)
@@ -1019,8 +996,8 @@ you should place your code here."
     )
 
   ;; split on right & below.
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
+  (setq evil-vsplit-window-right t
+        evil-split-window-below t)
 
   (delete-selection-mode 1)
 
