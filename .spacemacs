@@ -711,50 +711,39 @@ you should place your code here."
           haskell-interactive-popup-errors nil
           haskell-process-path-ghci "stack"))
 
+
   ;; imenu config
   (setq imenu-list-position 'left)
 
-  (defun xwidget-new-window ()
-    (interactive)
-    (let ((url (read-from-minibuffer "URL: " "https://")))
-      (require 's)
-      (require 'xwidget)
-      (if (or (s-starts-with-p "https://https://" url)
-              (s-starts-with-p "https://http://" url)
-              (s-starts-with-p "http://http://" url)
-              (s-starts-with-p "http://https://" url))
-          (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
-            (message (concat "opening " trimmed))
-            (xwidget-webkit-new-session trimmed))
-          (xwidget-webkit-new-session url))))
-
 
   (with-eval-after-load 'xwidget
+    (defun xwidget-new-window ()
+      (interactive)
+      (let ((url (read-from-minibuffer "URL: " "https://")))
+        (require 's)
+        (require 'xwidget)
+        (if (or (s-starts-with-p "https://https://" url)
+                (s-starts-with-p "https://http://" url)
+                (s-starts-with-p "http://http://" url)
+                (s-starts-with-p "http://https://" url))
+            (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
+              (message (concat "opening " trimmed))
+              (xwidget-webkit-new-session trimmed))
+            (xwidget-webkit-new-session url))))
     (setq xwidget-webkit-enable-plugins t)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "f") 'xwwp-follow-link)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "l") 'xwidget-webkit-browse-url)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "j") 'xwidget-webkit-scroll-up)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "k") 'xwidget-webkit-scroll-down)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "G") 'xwidget-webkit-scroll-bottom)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "gg") 'xwidget-webkit-scroll-top)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "u") 'xwidget-webkit-browse-url)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "H") 'xwidget-webkit-back)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "B") 'xwidget-webkit-back)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "L") 'xwidget-webkit-forward)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "H-c") 'xwidget-webkit-copy-selection-as-kill)
-    (evil-define-key 'normal xwidget-webkit-mode-map
-      (kbd "q") 'kill-this-buffer)
+    (spacemacs/set-leader-keys-for-major-mode 'xwidget-webkit-mode
+      "f" 'xwwp-follow-link
+      "l" 'xwidget-webkit-browse-url
+      "j" 'xwidget-webkit-scroll-up
+      "k" 'xwidget-webkit-scroll-down
+      "G" 'xwidget-webkit-scroll-bottom
+      "gg" 'xwidget-webkit-scroll-top
+      "u" 'xwidget-webkit-browse-url
+      "h" 'xwidget-webkit-back
+      "b" 'xwidget-webkit-back
+      "l" 'xwidget-webkit-forward
+      "H-c" 'xwidget-webkit-copy-selection-as-kill
+      "q" 'kill-this-buffer)
     (add-hook 'xwidget-webkit-mode-hook
               (lambda ()
                 (local-unset-key (kbd "<backspace>"))))
