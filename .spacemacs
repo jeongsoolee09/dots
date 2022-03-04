@@ -436,12 +436,11 @@ you should place your code here."
   (use-package lsp-mode
     :hook ((tuareg-mode . lsp) (python-mode . lsp) (scala-mode . lsp))
     :config
-    (when window-system
-      (setq lsp-headerline-breadcrumb-enable t
-            lsp-headerline-breadcrumb-icons-enable t))
-    (unless window-system
-      (setq lsp-headerline-breadcrumb-enable nil
-            lsp-headerline-breadcrumb-icons-enable nil))
+    (if window-system
+        (setq lsp-headerline-breadcrumb-enable t
+              lsp-headerline-breadcrumb-icons-enable t)
+        (setq lsp-headerline-breadcrumb-enable nil
+              lsp-headerline-breadcrumb-icons-enable nil))
     (setq lsp-prefer-capf t
           company-idle-delay 0
           lsp-ui-sideline-enable nil
@@ -579,7 +578,7 @@ you should place your code here."
   (global-set-key (kbd "H-g") 'magit)
   (global-set-key (kbd "H-r") 'winner-redo)
   (global-set-key (kbd "H-i") 'comment-dwim)
-  (global-set-key (kbd "H-t") 'transpose-frame)
+  (global-set-key (kbd "H-t") 'eyebrowse-create-window-config)
   (global-set-key (kbd "H-a") 'org-agenda)
   (global-set-key (kbd "H-/") 'next-error)
   (global-set-key (kbd "H-\\") 'previous-error)
@@ -601,23 +600,23 @@ you should place your code here."
   (global-set-key (kbd "C-H-g") 'helm-do-ag)
   (global-set-key (kbd "C-H-v") 'multi-vterm)
   (global-set-key (kbd "C-H-u") 'emms-pause)
-  (global-set-key (kbd "C-H-[") 'emms-seek-backward)
-  (global-set-key (kbd "C-H-]") 'emms-seek-forward)
+  (global-set-key (kbd "H-<escape>") 'eyebrowse-prev-window-config)
+  (global-set-key (kbd "C-H-]") 'eyebrowse-next-window-config)
   (global-set-key (kbd "C-H-p") 'previous-buffer)
   (global-set-key (kbd "C-H-n") 'next-buffer)
   (global-set-key (kbd "C-H-b") 'ibuffer)
-  (global-set-key (kbd "C-H-/") 'next-error)
-  (global-set-key (kbd "C-H-\\") 'previous-error)
+  (global-set-key (kbd "C-H-/") 'eyebrowse-create-window-config)
+  (global-set-key (kbd "C-H-\\") 'eyebrowse-close-window-config)
   (global-set-key (kbd "C-H-c") 'soundklaus-tracks)
   (global-set-key (kbd "C-H-0") 'emms-volume-raise)
   (global-set-key (kbd "C-H-9") 'emms-volume-lower)
   (global-set-key (kbd "C-H-=") 'balance-windows)
   (global-set-key (kbd "C-H-w") 'markdown-preview)
   (global-set-key (kbd "C-H-4") 'play-fm4u)
-  (global-set-key (kbd "C-H-i") 'imenu-list)
+  (global-set-key (kbd "C-H-i") 'imenu-list-smart-toggle)
   (global-set-key (kbd "C-H-x") 'xwidget-new-window)
-  (global-set-key (kbd "C-H-,") 'eyebrowse-close-window-config)
-  (global-set-key (kbd "C-H-.") 'eyebrowse-create-window-config)
+  (global-set-key (kbd "C-H-,") 'previous-error)
+  (global-set-key (kbd "C-H-.") 'next-error)
   (global-set-key (kbd "C-H-y") 'youtube-viewer-start)
   (global-set-key (kbd "C-H-;") 'flycheck-previous-error)
   (global-set-key (kbd "C-H-'") 'flycheck-next-error)
