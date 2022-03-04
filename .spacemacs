@@ -490,11 +490,11 @@ you should place your code here."
     (spacemacs/set-leader-keys "aRp" 'eradio-play)
     (spacemacs/set-leader-keys "aRs" 'eradio-stop)
     (spacemacs/set-leader-keys "aRR" 'eradio-toggle)
-    (setq eradio-player '("mpv" "--no-video" "--no-terminal")
-          eradio-channels '(("MBC FM4U" . "http://korradio.stream/mbc_fm4u.pls")
-                            ("KBS CoolFM" . "http://korradio.stream/kbs_coolfm.pls")
-                            ("SBS 파워FM" . "https://korradio.stream/sbs_powerfm.pls")
-                            ("CBS 음악방송" . "https://korradio.stream/cbs.pls"))))
+    (setq eradio-player '("mpv" "--no-video" "--no-terminal" "--really-quiet")
+          eradio-channels '(("MBC FM4U" . "http://serpent0.duckdns.org:8088/mbcfm.pls")
+                            ("KBS CoolFM" . "http://serpent0.duckdns.org:8088/kbs2fm.pls")
+                            ("SBS 파워FM" . "http://serpent0.duckdns.org:8088/sbsfm.pls")
+                            ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
 
   ;; LaTeX config
   (with-eval-after-load 'tex
