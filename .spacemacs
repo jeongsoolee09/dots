@@ -441,20 +441,22 @@ you should place your code here."
               lsp-headerline-breadcrumb-icons-enable t)
         (setq lsp-headerline-breadcrumb-enable nil
               lsp-headerline-breadcrumb-icons-enable nil))
-    (setq lsp-prefer-capf t
+    (setq lsp-java-java-path "/Library/Java/JavaVirtualMachines/jdk-11.0.8.jdk/Contents/Home/bin/java"
+          lsp-prefer-capf t
           company-idle-delay 0
           lsp-ui-sideline-enable nil
           lsp-enable-symbol-highlighting nil
           lsp-ui-doc-enable nil
           lsp-ui-doc-show-with-cursor nil
-          lsp-lens-enable nil
+          lsp-lens-enable t
           lsp-signature-auto-activate nil
           lsp-eldoc-hook nil
           lsp-modeline-code-actions-enable nil
           lsp-eldoc-enable-hover nil
           lsp-ui-doc-max-height 10
           lsp-enable-symbol-highlighting nil
-          lsp-file-watch-threshold 5000
+          lsp-enable-file-watchers nil
+          ;; lsp-file-watch-threshold 500
           lsp-metals-show-inferred-type nil
           lsp-metals-show-implicit-arguments nil
           lsp-metals-show-implicit-conversions-and-classes nil
@@ -547,8 +549,8 @@ you should place your code here."
 
 
   ;; eyebrowse config
-  (with-eval-after-load 'eyebrowse
-    (add-hook 'eyebrowse-post-window-switch-hook 'balance-windows))
+  ;; (with-eval-after-load 'eyebrowse
+  ;;   (add-hook 'eyebrowse-post-window-switch-hook 'balance-windows))
 
 
   ;; flycheck config
