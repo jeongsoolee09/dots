@@ -10,8 +10,6 @@ Plug 'tpope/vim-speeddating'
 
 Plug 'tpope/vim-commentary'
 
-Plug 'scalameta/coc-metals', {'do': 'yarn install --frozen-lockfile'}
-
 Plug 'jceb/vim-orgmode'
 
 Plug 'jpalardy/vim-slime'
@@ -25,10 +23,6 @@ Plug 'jdsimcoe/abstract.vim'
 Plug 'vim-airline/vim-airline'
 
 Plug 'tpope/vim-fugitive'
-
-Plug 'jremmen/vim-ripgrep'
-
-Plug 'easymotion/vim-easymotion'
 
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -52,7 +46,11 @@ Plug 'vim-airline/vim-airline-themes'
 
 Plug 'rescript-lang/vim-rescript'
 
+Plug 'guns/vim-sexp'
+
 Plug 'sbdchd/neoformat'
+
+Plug 'farmergreg/vim-lastplace'
 
 call plug#end()
 
@@ -72,6 +70,9 @@ colorscheme jellybeans
 let g:airline_theme='jellybeans'
 set fillchars+=vert:\│
 
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+
 " coc.nvim config
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 nnoremap <silent> gd :call CocAction('jumpDefinition')<CR>
@@ -86,6 +87,7 @@ endfunction
 
 " map <Space> <Leader>
 let mapleader = "\<Space>"
+let maplocalleader = ","
 map <leader>[ :tabprev<cr>
 map <leader>] :tabnext<cr>
 map <leader>nt :tabnew<Space>
@@ -132,9 +134,12 @@ map <leader>cC :make<cr>
 map <leader>ga :Git add .<cr>
 map <leader>gc :Git commit<cr>
 map <leader>gpu :Git push<cr>
+map <localleader>sl :SlimeSendCurrentLine<cr>
+map <localleader>se :SlimeSend<cr>
 map <leader><leader> :
 map <leader><TAB> <C-^>
 map <leader><C-f> :Neoformat<cr>:w<cr>
+map <leader><C-r> :e<cr>
 
 nnoremap ZA :wqa!<cr>
 nnoremap <C-x><C-c> :wqa!<cr>
@@ -144,12 +149,8 @@ inoremap <C-b> <left>
 inoremap <C-l> <esc>zza
 nnoremap <C-l> zz
 
-" tagbar config
-let g:airline#extensions#tagbar#flags = 'f'  " show full tag hierarchy
-let g:airline#extensions#branch#enabled = 0
-
-" vim-ripgrep config
-let g:rg_command = 'rg --vimgrep -S'
+" Neoformat config
+let g:neoformat_enabled_python = ['black']
 
 " Spacemacs style window switching
 let i = 1
@@ -172,6 +173,17 @@ if has('syntax') && !exists('g:syntax_on')
 endif
 
 " Use :help 'option' to see the documentation for the given option.
+
+" vim-sexp config
+let g:sexp_filetypes = "clojure,scheme,lisp,timl,hy"
+map <leader>kw <Plug>(sexp_round_tail_wrap_element)
+map <leader>kW <Plug>(sexp_round_tail_wrap_list)
+map <leader>ks <Plug>(sexp_capture_next_element)
+map <leader>kS <Plug>(sexp_capture_prev_element)
+map <leader>kb <Plug>(sexp_capture_tail_element)
+map <leader>kB <Plug>(sexp_capture_head_element)
+map <leader>k[ <Plug>(sexp_square_tail_wrap_list)
+map <leader>k{ <Plug>(sexp_curly_tail_wrap_list)
 
 set autoindent
 set backspace=indent,eol,start
@@ -196,6 +208,7 @@ set tm=500
 set belloff=all
 
 " vim-slime config
+let g:slime_python_ipython = 1
 if has("gui_running")
     let g:slime_target="vimterminal"
 else
@@ -290,18 +303,22 @@ endif
 inoremap <C-U> <C-G>u<C-U>
 
 set noswapfile
-"set viminfo+=n~/.vim/.viminfo
-"source $VIMRUNTIME/vimrc_example.vim
 set nobackup
 set nowritebackup
 set noundofile
-
-autocmd FileType ocaml setlocal shiftwidth=2 tabstop=2
-autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
-autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
-
 
 " Transparent!
 hi NonText ctermbg=none
 hi Normal guibg=NONE ctermbg=NONE
 highlight SignColumn guibg=NONE
+
+function SetupOCaml()
+    setlocal shiftwidth=2 tabstop=2
+    map <leader>cC :!dune build<cr>
+endfunction
+
+autocmd FileType ocaml call SetupOCaml()
+autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
+autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
+
+

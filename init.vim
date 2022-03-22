@@ -4,21 +4,27 @@
 
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'nvim-treesitter/nvim-treesitter'
+
 Plug 'whatyouhide/gotham'
 
 Plug 'jiangmiao/auto-pairs'
 
 Plug 'nvim-telescope/telescope.nvim'
 
+Plug 'nvim-telescope/telescope-file-browser.nvim'
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'tpope/vim-commentary'
 
-Plug 'scalameta/coc-metals', {'do': 'yarn install --frozen-lockfile'}
+Plug 'tpope/vim-repeat'
 
 Plug 'jpalardy/vim-slime'
 
 Plug 'tpope/vim-surround'
+
+Plug 'tpope/vim-sexp-mappings-for-regular-people'
 
 Plug 'jdsimcoe/abstract.vim'
 
@@ -29,10 +35,6 @@ Plug 'kyazdani42/nvim-web-devicons'
 Plug 'kyazdani42/nvim-tree.lua'
 
 Plug 'tpope/vim-fugitive'
-
-Plug 'jremmen/vim-ripgrep'
-
-Plug 'easymotion/vim-easymotion'
 
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -59,6 +61,12 @@ Plug 'sbdchd/neoformat'
 Plug 'rescript-lang/vim-rescript'
 
 Plug 'nvim-orgmode/orgmode'
+
+Plug 'guns/vim-sexp'
+
+Plug 'brglng/vim-im-select'
+
+Plug 'farmergreg/vim-lastplace'
 
 call plug#end()
 
@@ -91,6 +99,7 @@ function! s:show_documentation()
 endfunction
 
 let mapleader = "\<Space>"
+let maplocalleader = ","
 map <leader>! :!
 map <leader>[ :tabprev<cr>
 map <leader>] :tabnext<cr>
@@ -105,6 +114,7 @@ map <leader>ef :FloatermNew<cr>
 map <leader>wv :vs<cr>
 map <leader>ws :sp<cr>
 map <leader>sc :noh<cr>
+map <leader>saf :Telescope grep_string<cr>
 map <leader>st :CocOutline<cr>
 map <leader>si :CocList outline<cr>
 map <leader>fed :e ~/.config/nvim/init.vim<cr>
@@ -138,9 +148,12 @@ map <leader>cC :make<cr>
 map <leader>ga :Git add .<cr>
 map <leader>gc :Git commit<cr>
 map <leader>gpu :Git push<cr>
+map <localleader>sl :SlimeSendCurrentLine<cr>
+map <localleader>se :SlimeSend<cr>
 map <leader><leader> :
 map <leader><TAB> <C-^>
 map <leader><C-f> :Neoformat<cr>:w<cr>
+map <leader><C-r> :e<cr>
 
 nnoremap ZA :wqa!<cr>
 nnoremap <C-x><C-c> :wqa!<cr>
@@ -152,15 +165,8 @@ nnoremap <C-l> zz
 nnoremap <C-g> <esc>
 inoremap <C-g> <esc>
 
-" NERDTree Config
-let NERDTreeShowHidden=1
-
-" tagbar config
-let g:airline#extensions#tagbar#flags = 'f'  " show full tag hierarchy
-let g:airline#extensions#branch#enabled = 0
-
-" vim-ripgrep config
-let g:rg_command = 'rg --vimgrep -S'
+" Neoformat config
+let g:neoformat_enabled_python = ['black']
 
 " Spacemacs style window switching
 let i = 1
@@ -190,6 +196,18 @@ endif
 
 " Use :help 'option' to see the documentation for the given option.
 
+" vim-sexp config
+let g:sexp_filetypes = "clojure,scheme,lisp,timl,hy"
+map <leader>kw <Plug>(sexp_round_tail_wrap_element)
+map <leader>kW <Plug>(sexp_round_tail_wrap_list)
+map <leader>ks <Plug>(sexp_capture_next_element)
+map <leader>kS <Plug>(sexp_capture_prev_element)
+map <leader>kb <Plug>(sexp_capture_tail_element)
+map <leader>kB <Plug>(sexp_capture_head_element)
+map <leader>k[ <Plug>(sexp_square_tail_wrap_list)
+map <leader>k{ <Plug>(sexp_curly_tail_wrap_list)
+
+
 set autoindent
 set backspace=indent,eol,start
 set complete-=i
@@ -214,6 +232,7 @@ set tm=500
 set belloff=all
 
 " vim-slime config
+let g:slime_python_ipython = 1
 if has("gui_running")
     let g:slime_target="vimterminal"
 else
@@ -297,9 +316,6 @@ endif
 if &tabpagemax < 50
   set tabpagemax=50
 endif
-" if !empty(&viminfo)
-"   set viminfo^=!
-" endif
 set sessionoptions-=options
 
 " Allow color schemes to do bright colors without forcing bold.
@@ -310,7 +326,6 @@ endif
 inoremap <C-U> <C-G>u<C-U>
 
 set viminfo+=n~/.local/share/nvim/shada/main.shada
-" source $VIMRUNTIME/vimrc_example.vim
 
 " Transparent!
 hi NonText ctermbg=none
@@ -322,11 +337,6 @@ function SetupOCaml()
     map <leader>cC :!dune build<cr>
 endfunction
 
-
 autocmd FileType ocaml call SetupOCaml()
 autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
 autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
-
-" if argc() == 0
-"   :exe 'normal <C-o>'
-" end
