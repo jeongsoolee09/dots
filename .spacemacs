@@ -84,7 +84,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio xwwp ag emamux)
+   dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio xwwp ag emamux format-all)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -158,7 +158,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '((tron-legacy :location local))
+   dotspacemacs-themes '((tron-legacy :location local)
+                         default)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -167,7 +168,8 @@ values."
                                :size 18.0
                                :weight normal
                                :width normal
-                               :powerline-scale 1.0)
+                               ;; :powerline-scale 1.0
+                               )
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -274,13 +276,13 @@ values."
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
    dotspacemacs-mode-line-unicode-symbols t
    ;; I don't know, maybe spacemacs uses this in develop
-   dotspacemacs-mode-line-theme '(spacemacs :separator slant :separator-scale 1.3)
-   ;; dotspacemacs-mode-line-theme '(all-the-icons :separator slant :separator-scale 1.8)
-   ;; dotspacemacs-mode-line-theme '(doom :separator-scale 1.0)
+   ;; dotspacemacs-mode-line-theme '(spacemacs :separator slant :separator-scale 1.3)
+   ;; dotspacemacs-mode-line-theme '(all-the-icons :separator contour)
+   dotspacemacs-mode-line-theme '(doom)
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling nil
+   dotspacemacs-smooth-scrolling t
    ;; Control line numbers activation.
    ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
    ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
@@ -373,6 +375,8 @@ you should place your code here."
   (add-to-list 'load-path "~/.emacs.d/lisp/")
   (add-to-list 'load-path "~/.emacs.d/private/local/custom-lisp/")
 
+  (spacemacs/force-init-spacemacs-env)
+  (spacemacs/load-spacemacs-env)
 
   ;; ligatures
   (use-package ligature
@@ -466,16 +470,102 @@ you should place your code here."
 
 
   ;; I don't need these
-  (spaceline-toggle-minor-modes-off)
-  (spacemacs/toggle-display-time-off)
-  (spacemacs/toggle-mode-line-version-control-off)
+  ;; (spaceline-toggle-minor-modes-off)
+  ;; (spacemacs/toggle-display-time-off)
+  ;; (spacemacs/toggle-mode-line-version-control-off)
 
+
+  ;; format-all config
+  (progn
+    (require 'format-all)
+    (define-format-all-formatter ocamlformat
+      (:executable "ocamlformat")
+      (:install "opam install ocamlformat")
+      (:languages "OCaml")
+      (:features)
+      (:format (format-all--buffer-easy executable "-" (concat "--name=" (buffer-file-name)))))
+    (setq format-all-default-formatters
+          '(("Assembly" asmfmt)
+            ("ATS" atsfmt)
+            ("Bazel" buildifier)
+            ("BibTeX" emacs-bibtex)
+            ("C" clang-format)
+            ("C#" clang-format)
+            ("C++" clang-format)
+            ("Cabal Config" cabal-fmt)
+            ("Clojure" zprint)
+            ("CMake" cmake-format)
+            ("Crystal" crystal)
+            ("CSS" prettier)
+            ("Cuda" clang-format)
+            ("D" dfmt)
+            ("Dart" dart-format)
+            ("Dhall" dhall)
+            ("Dockerfile" dockfmt)
+            ("Elixir" mix-format)
+            ("Elm" elm-format)
+            ("Emacs Lisp" emacs-lisp)
+            ("F#" fantomas)
+            ("Fish" fish-indent)
+            ("Fortran Free Form" fprettify)
+            ("GLSL" clang-format)
+            ("Go" gofmt)
+            ("GraphQL" prettier)
+            ("Haskell" brittany)
+            ("HTML" html-tidy)
+            ("Java" clang-format)
+            ("JavaScript" prettier)
+            ("JSON" prettier)
+            ("JSON5" prettier)
+            ("Jsonnet" jsonnetfmt)
+            ("JSX" prettier)
+            ("Kotlin" ktlint)
+            ("LaTeX" auctex)
+            ("Less" prettier)
+            ("Literate Haskell" brittany)
+            ("Lua" lua-fmt)
+            ("Markdown" prettier)
+            ("Nix" nixpkgs-fmt)
+            ("Objective-C" clang-format)
+            ("OCaml" ocamlformat)
+            ("Perl" perltidy)
+            ("PHP" prettier)
+            ("Protocol Buffer" clang-format)
+            ("PureScript" purty)
+            ("Python" black)
+            ("R" styler)
+            ("Reason" bsrefmt)
+            ("ReScript" rescript)
+            ("Ruby" rufo)
+            ("Rust" rustfmt)
+            ("Scala" scalafmt)
+            ("SCSS" prettier)
+            ("Shell" shfmt)
+            ("Solidity" prettier)
+            ("SQL" sqlformat)
+            ("Svelte" prettier)
+            ("Swift" swiftformat)
+            ("Terraform" terraform-fmt)
+            ("TOML" prettier)
+            ("TSX" prettier)
+            ("TypeScript" prettier)
+            ("V" v-fmt)
+            ("Verilog" istyle-verilog)
+            ("Vue" prettier)
+            ("XML" html-tidy)
+            ("YAML" prettier)
+            ("_Angular" prettier)
+            ("_Flow" prettier)
+            ("_Gleam" gleam)
+            ("_Ledger" ledger-mode)
+            ("_Nginx" nginxfmt)
+            ("_Snakemake" snakefmt))))
 
   ;; lsp config
   (use-package lsp-mode
     :hook ((tuareg-mode . lsp) (python-mode . lsp) (scala-mode . lsp))
     :config
-    (if window-system
+    (if (or (window-system) (daemonp))
         (setq lsp-headerline-breadcrumb-enable t
               lsp-headerline-breadcrumb-icons-enable t)
         (setq lsp-headerline-breadcrumb-enable nil
@@ -604,6 +694,7 @@ you should place your code here."
 
   ;; Keybinding FLEX
   ;; command-shortcuts
+  (global-set-key (kbd "H-q") 'delete-frame)
   (global-set-key (kbd "H-p") 'lazy-helm/helm-recentf)
   (global-set-key (kbd "H-o") 'spacemacs/helm-find-files)
   (global-set-key (kbd "H-f") 'evil-search-forward)
@@ -639,7 +730,6 @@ you should place your code here."
   (global-set-key (kbd "C-H-a") (lambda ()
                                   (interactive)
                                   (insert-char ?&)))
-  (global-set-key (kbd "C-H-e") 'eshell)
   (global-set-key (kbd "C-H-t") 'transpose-frame)
   (global-set-key (kbd "C-H-r") 'eradio-toggle)
   (global-set-key (kbd "C-H-f") 'spacemacs/toggle-frame-fullscreen-non-native)
@@ -675,7 +765,7 @@ you should place your code here."
   (global-set-key (kbd "C-;") 'hippie-expand)
 
   ;; enable mouse scroll in terminal
-  (unless window-system
+  (if (and (not (window-system)) (not (daemonp)))
     (global-set-key (kbd "<mouse-4>") 'mwheel-scroll)
     (global-set-key (kbd "<mouse-5>") 'mwheel-scroll)
     (setq mouse-wheel-up-event 'mouse-5
@@ -683,6 +773,8 @@ you should place your code here."
 
   ;; SPC-command-shortcuts
   (spacemacs/set-leader-keys "H-r" 'revert-buffer)
+  (spacemacs/set-leader-keys "H-e" 'eshell)
+  (spacemacs/set-leader-keys "H-t" 'tetris)
   (spacemacs/set-leader-keys "C-H-f" 'spacemacs/toggle-maximize-frame-on)
   (spacemacs/set-leader-keys "H-o" 'reveal-in-osx-finder)
   (spacemacs/set-leader-keys "H-c" 'compile)
@@ -705,13 +797,19 @@ you should place your code here."
   (spacemacs/set-leader-keys "o" 'spacemacs/helm-find-files)
   (spacemacs/set-leader-keys "/" 'flycheck-next-error)
   (spacemacs/set-leader-keys "\\" 'flycheck-previous-error)
+  (spacemacs/set-leader-keys "M-e" (lambda ()
+                                     (interactive)
+                                     (spacemacs/force-init-spacemacs-env)
+                                     (spacemacs/load-spacemacs-env)
+                                     (message ".spacemacs.env loaded.")))
+
 
   ;; SPC-C-shortcuts
   (spacemacs/set-leader-keys "C-r" 'revert-buffer)
   (spacemacs/set-leader-keys "C-f" (lambda ()
                                      (interactive)
                                      (progn
-                                       (lsp-format-buffer)
+                                       (funcall-interactively #'format-all-buffer)
                                        (save-buffer))))
 
   ;; C-shortcuts
@@ -729,11 +827,10 @@ you should place your code here."
   (spacemacs/set-leader-keys "w=" 'balance-windows)
 
   ;; magit related
-  (with-eval-after-load 'magit
-    (spacemacs/set-leader-keys "ga" 'magit-stage-file)
-    (spacemacs/set-leader-keys "gc" 'magit-commit-create)
-    (spacemacs/set-leader-keys "gp" 'magit-push)
-    (spacemacs/set-leader-keys "gu" 'magit-pull))
+  (spacemacs/set-leader-keys "ga" 'magit-stage-file)
+  (spacemacs/set-leader-keys "gc" 'magit-commit-create)
+  (spacemacs/set-leader-keys "gp" 'magit-push)
+  (spacemacs/set-leader-keys "gu" 'magit-pull)
 
   ;; perl config
   (with-eval-after-load 'perl-mode
@@ -747,7 +844,17 @@ you should place your code here."
     (require 'tuareg-supplementary)
     (require 'ocamlformat)
     (setq ocamlformat-show-errors nil)
-    (setq utop-command "opam config exec -- dune utop . -- -emacs"))
+    (setq utop-command "opam config exec -- dune utop . -- -emacs")
+    (defun ocamlformat-newline-and-indent-new ()
+      (interactive)
+      (if (buffer-file-name)
+          (ocamlformat-newline-and-indent)
+          (insert-char 10)))
+    (define-key tuareg-mode-map (kbd "RET") #'ocamlformat-newline-and-indent-new)
+    (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode "C-f" (lambda ()
+                                                                   (interactive)
+                                                                   (ocamlformat)
+                                                                   (save-buffer))))
 
   ;; haskell-mode config
   (with-eval-after-load 'haskell-mode
@@ -762,6 +869,8 @@ you should place your code here."
   (setq imenu-list-position 'left)
 
 
+  ;; xwidget config
+  (require 'xwidget)
   (with-eval-after-load 'xwidget
     (defun xwidget-new-window ()
       (interactive)
@@ -1001,6 +1110,30 @@ you should place your code here."
   (setq delete-by-moving-to-trash t
         trash-directory "~/.Trash")
 
+  ;; emamux config
+  (with-eval-after-load 'emamux
+    (evil-define-key 'normal 'prog-mode-map (kbd "C-t C-c") (lambda ()
+                                                              (interactive)
+                                                              (emamux:set-parameters)))
+    (evil-define-key 'insert 'prog-mode-map (kbd "C-t C-c") (lambda ()
+                                                              (interactive)
+                                                              (emamux:set-parameters)))
+    (evil-define-key 'normal 'prog-mode-map (kbd "C-t c") (lambda ()
+                                                            (interactive)
+                                                            (emamux:send-command)))
+    (evil-define-key 'insert 'prog-mode-map (kbd "C-t c") (lambda ()
+                                                              (interactive)
+                                                              (emamux:send-command))))
+
+  ;; variable-pitch-mode in these modes
+  (add-hook 'w3m-mode-hook #'variable-pitch-mode)
+  (add-hook 'org-mode-hook #'variable-pitch-mode)
+  (add-hook 'markdown-mode-hook #'variable-pitch-mode)
+  (add-hook 'elfeed-search-mode-hook #'variable-pitch-mode)
+  ; the below two are not working...!!
+  (add-hook 'latex-mode-hook #'variable-pitch-mode)
+  (add-hook 'tex-mode-hook #'variable-pitch-mode)
+
   ;;; org-mode config
   (with-eval-after-load 'org
     (defun org-insert-current-time ()
@@ -1070,9 +1203,13 @@ you should place your code here."
             (evil-normal-state)))
     (toggle-input-method))
 
+  (unbind-key (kbd "C-d"))
+  (unbind-key (kbd "C-d C-d"))
+  (global-set-key (kbd "C-d C-d") 'evil-toggle-input-method)
   (unbind-key (kbd "C-d C-l"))
   (global-set-key (kbd "C-d C-l") 'evil-toggle-input-method)
   (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
+  (global-set-key (kbd "C-d C-d") 'evil-toggle-input-method)
 
   ;; graphviz config
   (with-eval-after-load 'graphviz
@@ -1107,6 +1244,7 @@ you should place your code here."
       (comint-run "youtube-viewer" '("-n")))
     (spacemacs/declare-prefix "ay" "YouTube")
     (spacemacs/set-leader-keys "ays" 'youtube-viewer-start))
+
   ) ;; user-config end
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -1177,7 +1315,7 @@ This function is called at the very end of Spacemacs initialization."
  '(fci-rule-color "#dedede" t)
  '(grep-use-null-device nil)
  '(helm-always-two-windows t)
- '(helm-bookmark-show-location t)
+ '(helm-bookmark-show-location t t)
  '(helm-descbinds-mode t)
  '(helm-descbinds-window-style 'split)
  '(helm-display-function 'spacemacs//display-helm-window)
@@ -1192,7 +1330,7 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-split-window-inside-p t)
  '(line-spacing 1)
  '(package-selected-packages
-   '(emamux xcscope vimrc-mode slime-company slime geiser fsharp-mode eglot xref flymake jsonrpc eldoc project anaphora dactyl-mode company-jedi jedi-core python-environment epc ctable concurrent common-lisp-snippets centaur-tabs ac-ispell \(tron-legacy\ :location\ local\)-theme ein polymode csv-mode minibuffer-line engine-mode graphviz-dot-mode transpose-frame pretty-mode tron-legacy-theme underwater-theme parseclj lua-mode company-emacs-eclim eclim w3m tidal writeroom-mode visual-fill-column poet-theme web-beautify livid-mode skewer-mode js2-refactor js2-mode js-doc company-tern tern coffee-mode clojure-snippets clj-refactor cider-eval-sexp-fu cider clojure-mode queue inflections edn multiple-cursors peg sesman parseedn a web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter evil-magit magit transient git-commit with-editor diff-hl elfeed-protocol elfeed-web elfeed-org elfeed-goodies elfeed nyan-mode ecb tronesque-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme doom-themes racket-mode faceup ensime sbt-mode scala-mode disaster company-c-headers cmake-mode clang-format company-auctex auctex-lua auctex auctex-latexmk white-sand-theme zen-and-art-theme zenburn-theme color-identifiers-mode rainbow-identifiers rainbow-mode terraform-mode hcl-mode ranger pandoc-mode ox-pandoc docker json-mode magit-popup json-snatcher json-reformat docker-tramp dockerfile-mode flycheck-ycmd ycmd request-deferred deferred esh-help eshell-prompt-extras eshell-z multi-term shell-pop xterm-color vagrant vagrant-tramp systemd spray ansible ansible-doc company-ansible jinja2-mode salt-mode mmm-jinja2 yaml-mode imenu-list nginx-mode command-log-mode rebox2 edit-server gmail-message-mode ham-mode html-to-markdown flymd osx-location rase sunshine theme-changer dash-at-point helm-dash counsel-dash dash-docs prodigy flycheck-ledger ledger-mode company-restclient know-your-http-well ob-http ob-restclient restclient-helm restclient puppet-mode fasd deft pyim pyim-basedict chinese-wbim fcitx find-by-pinyin-dired ace-pinyin pinyinlib pangu-spacing youdao-dictionary names chinese-word-at-point company-nixos-options helm-nixos-options nix-mode nixos-options selectric-mode 2048-game pacmacs sudoku typit mmt rcirc-color rcirc-notify jabber srv fsm emojify circe oauth2 websocket ht erc-terminal-notifier erc-gitter erc-hl-nicks erc-image erc-social-graph erc-view-log erc-yt nlinum-relative nlinum counsel-projectile counsel ivy-hydra smex swiper wgrep auto-dictionary flyspell-correct-ivy ivy flyspell-correct-helm flyspell-correct-popup flyspell-correct flyspell-popup floobits mwim unfill ox-twbs ox-gfm ox-reveal ibuffer-projectile bracketed-paste origami hl-anything evil-snipe evil-commentary evil-cleverparens paredit pdf-tools emms yapfify pyvenv pytest pyenv-mode py-isort pip-requirements tablist live-py-mode hy-mode dash-functional helm-pydoc emoji-cheat-sheet-plus cython-mode company-emoji company-anaconda anaconda-mode pythonic simple-httpd ace-jump-mode noflet tron-theme tron-theme-theme company-coq company-math math-symbol-lists reveal-in-osx-finder pbcopy osx-trash osx-dictionary org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download launchctl htmlize gnuplot utop tuareg caml ocp-indent merlin intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode mmm-mode markdown-toc markdown-mode helm-company helm-c-yasnippet gh-md fuzzy flycheck-pos-tip pos-tip flycheck company-statistics company auto-yasnippet yasnippet auto-complete org-plus-contrib ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))
+   '(doom-modeline shrink-path xcscope vimrc-mode slime-company slime geiser fsharp-mode eglot xref flymake jsonrpc eldoc project anaphora dactyl-mode company-jedi jedi-core python-environment epc ctable concurrent common-lisp-snippets centaur-tabs ac-ispell \(tron-legacy\ :location\ local\)-theme ein polymode csv-mode minibuffer-line engine-mode graphviz-dot-mode transpose-frame pretty-mode tron-legacy-theme underwater-theme parseclj lua-mode company-emacs-eclim eclim w3m tidal writeroom-mode visual-fill-column poet-theme web-beautify livid-mode skewer-mode js2-refactor js2-mode js-doc company-tern tern coffee-mode clojure-snippets clj-refactor cider-eval-sexp-fu cider clojure-mode queue inflections edn multiple-cursors peg sesman parseedn a web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter evil-magit magit transient git-commit with-editor diff-hl elfeed-protocol elfeed-web elfeed-org elfeed-goodies elfeed nyan-mode ecb tronesque-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme doom-themes racket-mode faceup ensime sbt-mode scala-mode disaster company-c-headers cmake-mode clang-format company-auctex auctex-lua auctex auctex-latexmk white-sand-theme zen-and-art-theme zenburn-theme color-identifiers-mode rainbow-identifiers rainbow-mode terraform-mode hcl-mode ranger pandoc-mode ox-pandoc docker json-mode magit-popup json-snatcher json-reformat docker-tramp dockerfile-mode flycheck-ycmd ycmd request-deferred deferred esh-help eshell-prompt-extras eshell-z multi-term shell-pop xterm-color vagrant vagrant-tramp systemd spray ansible ansible-doc company-ansible jinja2-mode salt-mode mmm-jinja2 yaml-mode imenu-list nginx-mode command-log-mode rebox2 edit-server gmail-message-mode ham-mode html-to-markdown flymd osx-location rase sunshine theme-changer dash-at-point helm-dash counsel-dash dash-docs prodigy flycheck-ledger ledger-mode company-restclient know-your-http-well ob-http ob-restclient restclient-helm restclient puppet-mode fasd deft pyim pyim-basedict chinese-wbim fcitx find-by-pinyin-dired ace-pinyin pinyinlib pangu-spacing youdao-dictionary names chinese-word-at-point company-nixos-options helm-nixos-options nix-mode nixos-options selectric-mode 2048-game pacmacs sudoku typit mmt rcirc-color rcirc-notify jabber srv fsm emojify circe oauth2 websocket ht erc-terminal-notifier erc-gitter erc-hl-nicks erc-image erc-social-graph erc-view-log erc-yt nlinum-relative nlinum counsel-projectile counsel ivy-hydra smex swiper wgrep auto-dictionary flyspell-correct-ivy ivy flyspell-correct-helm flyspell-correct-popup flyspell-correct flyspell-popup floobits mwim unfill ox-twbs ox-gfm ox-reveal ibuffer-projectile bracketed-paste origami hl-anything evil-snipe evil-commentary evil-cleverparens paredit pdf-tools emms yapfify pyvenv pytest pyenv-mode py-isort pip-requirements tablist live-py-mode hy-mode dash-functional helm-pydoc emoji-cheat-sheet-plus cython-mode company-emoji company-anaconda anaconda-mode pythonic simple-httpd ace-jump-mode noflet tron-theme tron-theme-theme company-coq company-math math-symbol-lists reveal-in-osx-finder pbcopy osx-trash osx-dictionary org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download launchctl htmlize gnuplot utop tuareg caml ocp-indent merlin intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode mmm-mode markdown-toc markdown-mode helm-company helm-c-yasnippet gh-md fuzzy flycheck-pos-tip pos-tip flycheck company-statistics company auto-yasnippet yasnippet auto-complete org-plus-contrib ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))
  '(spaceline-helm-mode t)
  '(tab-stop-list
    '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120)))

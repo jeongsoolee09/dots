@@ -91,7 +91,7 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "f7" 
+                                        "key_code": "f7"
                                     }
                                 ],
                                 "type": "basic"
@@ -709,7 +709,47 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "export PATH='/opt/homebrew/bin:/usr/local/bin'; emacs"
+                                        "shell_command": "export PATH='/opt/homebrew/bin:/usr/local/bin'; emacsclient -c"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "e",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control",
+                                            "left_command"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "export PATH='/opt/homebrew/bin:/usr/local/bin'; emacsclient -c"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "d",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control",
+                                            "left_command"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "export PATH='/opt/homebrew/bin:/usr/local/bin'; emacs --daemon"
                                     }
                                 ],
                                 "type": "basic"
@@ -830,6 +870,31 @@
                                 "to": [
                                     {
                                         "shell_command": "open /Applications/Amphetamine.app"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Run KakaoTalk",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "7",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control",
+                                            "left_command"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "open /Applications/KakaoTalk.app"
                                     }
                                 ],
                                 "type": "basic"

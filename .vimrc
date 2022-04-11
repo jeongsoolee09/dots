@@ -38,7 +38,7 @@ Plug 'jiangmiao/auto-pairs'
 
 Plug 'hylang/vim-hy'
 
-Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!'  }
+Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
 
 Plug 'liuchengxu/vista.vim'
 
