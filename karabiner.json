@@ -845,6 +845,9 @@
                                 },
                                 "to": [
                                     {
+                                        "key_code": "escape"
+                                    },
+                                    {
                                         "key_code": "spacebar"
                                     },
                                     {
