@@ -259,7 +259,7 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(tron-legacy default)
+   dotspacemacs-themes '(tron-legacy)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -467,7 +467,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (org-code :font "Courier")
            (erc-input-face :foreground "#C0FFEE")
            (mode-line :background "#000000")
-           (mode-line-inactive :background "#000000"))))
+           (mode-line-inactive :background "#000000")
+           (tool-bar :background "#000000"))))
 
   ) ;; user-init end
 
@@ -479,12 +480,19 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; directories for custom lisp files
+  ;; NOTE PUT THESE LINES ON TOP
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+  (add-to-list 'load-path "~/.emacs.d/private/local/custom-lisp/")
+
+
   ;; dired config
   (spacemacs/set-leader-keys "fF" 'find-name-dired)
   (setq dired-kill-when-opening-new-dired-buffer t)
   (setq delete-by-moving-to-trash t
         trash-directory "~/.Trash")
   ;; (evil-define-key 'normal 'dired-mode-map (kbd "K") #'dired-k)
+
 
   ;; doom-modeline config
   (setq-default doom-modeline-height 15)
@@ -497,12 +505,6 @@ you should place your code here."
      (spacemacs/toggle-tool-bar-on))
    (spacemacs/load-spacemacs-env)
    (setq dotspacemacs-scroll-bar-while-scrolling nil))
-
-
-  ;; directories for custom lisp files
-  ;; NOTE PUT THESE LINES ON TOP
-  (add-to-list 'load-path "~/.emacs.d/lisp/")
-  (add-to-list 'load-path "~/.emacs.d/private/local/custom-lisp/")
 
 
   ;; transparent emacs in terminal
