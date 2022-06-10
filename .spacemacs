@@ -1284,10 +1284,6 @@ you should place your code here."
 
     (add-hook 'org-mode-hook #'mixed-pitch-mode)
 
-    (defun org-babel-edit-prep:kotlin (babel-info)
-      (setq-local buffer-file-name (->> babel-info caddr (alist-get :tangle)))
-      (lsp))
-
     ;; org-babel config
     (require 'ob-lisp)
     (require 'ob-clojure)
@@ -1296,6 +1292,7 @@ you should place your code here."
     (require 'ob-dot)
     (require 'ob-rust)
     (require 'ob-kotlin)
+    (require 'org-babel-no-tangle)
     (org-babel-do-load-languages
      'org-babel-load-languages '((lisp . t) (clojure . t)
                                  (python . t) (hy . t)
@@ -1307,6 +1304,10 @@ you should place your code here."
     (setq org-src-window-setup 'split-window-right)
     (setq org-todo-keywords
           '((sequence "TODO" "WORKING" "|" "DONE" "ABORTED")))
+
+    (defun org-babel-edit-prep:kotlin (babel-info)
+      (setq-local buffer-file-name (->> babel-info caddr (alist-get :tangle)))
+      (lsp))
 
     ;; Retina Org LaTeX Preview
     (setq org-latex-create-formula-image-program 'dvisvgm)
