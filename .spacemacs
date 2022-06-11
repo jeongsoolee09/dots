@@ -237,8 +237,8 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   ;; dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/skull.png")
-   dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/resistance_logo.png")
+   dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/skull.png")
+   ;; dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/resistance_logo.png")
    ;; dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/eve-transparent.png")
    ;; dotspacemacs-startup-banner 'official
    ;; List of items to show in startup buffer or an association list of
@@ -606,8 +606,7 @@ you should place your code here."
     ;; (setq lsp-metals-show-inferred-type nil)
     ;; (setq lsp-metals-show-implicit-arguments t)
     ;; (setq lsp-metals-show-implicit-conversions-and-classes t)
-    (setq lsp-headerline-breadcrumb-segments '(file symbols))
-    )
+    (setq lsp-headerline-breadcrumb-segments '(file symbols)))
 
 
   ;; rescript-mode config
@@ -627,17 +626,20 @@ you should place your code here."
     (require 'elfeed-org)
     (elfeed-org)
     ;; play the podcast at elfeed podcast entry
-    (defun elfeed-podcast-player ()
+    (defun elfeed-player ()
       (interactive)
-      (let ((possible-link (elfeed-entry-enclosures (elfeed-search-selected :single))))
-        (emms-play-url (caar possible-link))
+      (let ((enclosure-link (elfeed-entry-enclosures (elfeed-search-selected :single)))
+            (entry-link (elfeed-entry-link (elfeed-search-selected :single))))
+        (if enclosure-link
+            (emms-play-url (caar enclosure-link))
+            (emms-play-url entry-link))
         (elfeed-search-untag-all-unread)))
     (defun elfeed-youtube-player ()
       (interactive)
-      (let ((possible-link (elfeed-entry-link (elfeed-search-selected :single))))
-        (emms-play-url possible-link)
+      (let ((entry-link (elfeed-entry-link (elfeed-search-selected :single))))
+        (async-shell-command (concat "mpv " "'" entry-link "'"))
         (elfeed-search-untag-all-unread)))
-    (define-key elfeed-search-mode-map (kbd "P") #'elfeed-podcast-player)
+    (define-key elfeed-search-mode-map (kbd "P") #'elfeed-player)
     (define-key elfeed-search-mode-map (kbd "Y") #'elfeed-youtube-player))
 
 
@@ -1422,7 +1424,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(erc-input-face ((t (:foreground "#C0FFEE"))))
  '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
  '(org-code ((t (:font "Courier")))))
 )
