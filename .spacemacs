@@ -1287,7 +1287,8 @@ you should place your code here."
           org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
           org-superstar-bullet-list '("■" "◆" "▲" "▶")
           org-directory "~/Dropbox/Org")
-
+    org-todo-keywords
+    '((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))
     (add-hook 'org-mode-hook #'mixed-pitch-mode)
 
     ;; org-babel config
@@ -1300,17 +1301,27 @@ you should place your code here."
     (require 'ob-kotlin)
     (require 'org-babel-no-tangle)
     (require 'org-babel-handle-imports)
+    (require 'org-auto-tangle)
+    (add-hook 'org-mode-hook 'org-auto-tangle-mode)
     (org-babel-do-load-languages
      'org-babel-load-languages '((lisp . t) (clojure . t)
                                  (python . t) (hy . t)
                                  (scheme . t) (dot . t)
                                  (mermaid . t) (plantuml . t)))
-
+    (require 'org-element)
+    (defun org-babel-switch-to-file ()
+      (interactive)
+      (let ((tangle-file-name (->> (org-babel-get-src-block-info 'light)
+                                   (nth 2)
+                                   (alist-get :tangle))))
+        (find-file (concat (file-name-directory buffer-file-name)
+                           tangle-file-name))))
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode
+      "b TAB" 'org-babel-switch-to-file)
     (spacemacs/set-leader-keys-for-major-mode 'org-mode
       "bR" 'org-babel-remove-result)
     (setq org-src-window-setup 'current-window)
-    (setq org-todo-keywords
-          '((sequence "TODO" "WORKING" "|" "DONE" "ABORTED")))
+    (setq org-src-tab-acts-natively nil)
 
     (defun org-babel-edit-prep:kotlin (babel-info)
       (setq-local buffer-file-name (->> babel-info caddr (alist-get :tangle)))
