@@ -701,8 +701,6 @@ you should place your code here."
   (global-unset-key (kbd "H-n"))
   (global-unset-key (kbd "H-q"))
   (global-unset-key (kbd "C-x C-l"))
-  (with-eval-after-load 'evil-cleverparens
-    (define-key evil-cleverparens-mode-map (kbd "M-[") nil))
 
 
   ;; evil-mode config
@@ -799,12 +797,6 @@ you should place your code here."
   (global-set-key (kbd "C-M-;") 'completion-at-point)
   (global-set-key (kbd "C-=") 'lsp-format-buffer)
 
-  ;; enable mouse scroll in terminal
-  (if (and (not (window-system)) (not (daemonp)))
-      (global-set-key (kbd "<mouse-4>") 'mwheel-scroll)
-      (global-set-key (kbd "<mouse-5>") 'mwheel-scroll)
-      (setq mouse-wheel-up-event 'mouse-5
-            mouse-wheel-down-event 'mouse-4))
 
   ;; SPC-command-shortcuts
   (spacemacs/set-leader-keys "H-r" 'revert-buffer)
