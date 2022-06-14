@@ -470,6 +470,12 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (mode-line-inactive :background "#000000")
            (tool-bar :background "#000000"))))
 
+  ;; disable spacemacs buffer
+  (defun spacemacs-buffer/goto-buffer (&optional refresh))
+  (defun spacemacs-buffer/display-startup-note ())
+  (defun spacemacs-buffer//startup-hook ())
+  (setq initial-buffer-choice t)
+
   ) ;; user-init end
 
 (defun dotspacemacs/user-config ()
@@ -484,7 +490,6 @@ you should place your code here."
   ;; NOTE PUT THESE LINES ON TOP
   (add-to-list 'load-path "~/.emacs.d/lisp/")
   (add-to-list 'load-path "~/.emacs.d/private/local/custom-lisp/")
-
 
   ;; dired config
   (spacemacs/set-leader-keys "fF" 'find-name-dired)
@@ -1217,13 +1222,12 @@ you should place your code here."
 
 
   ;; emamux config
-  (with-eval-after-load 'emamux
-    (defun emamux:set-parameters- ()
-      (interactive)
-      (emamux:set-parameters))
-    (spacemacs/declare-prefix "att" "tmux")
-    (spacemacs/set-leader-keys "attt" #'emamux:send-command)
-    (spacemacs/set-leader-keys "attp" #'emamux:set-parameters-))
+  (defun emamux:set-parameters- ()
+    (interactive)
+    (emamux:set-parameters))
+  (spacemacs/declare-prefix "att" "tmux")
+  (spacemacs/set-leader-keys "attt" #'emamux:send-command)
+  (spacemacs/set-leader-keys "attp" #'emamux:set-parameters-)
 
 
   ;; variable-pitch-mode in these modes

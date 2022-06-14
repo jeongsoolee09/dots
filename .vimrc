@@ -62,6 +62,7 @@ set clipboard^=unnamed,unnamedplus
 set t_Co=256
 set background=dark
 colorscheme jellybeans
+set shm+=I  " disables startup message
 
 let g:airline_theme='jellybeans'
 set fillchars+=vert:\│

@@ -80,7 +80,7 @@ set background=dark
 colorscheme gotham
 set termguicolors
 let g:airline_theme='gotham'
-
+set shm+=I  " disables startup message
 
 " coc.nvim config
 nnoremap <silent> K :call <SID>show_documentation()<CR>
