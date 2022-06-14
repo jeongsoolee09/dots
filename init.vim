@@ -26,8 +26,6 @@ Plug 'tpope/vim-surround'
 
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 
-Plug 'jdsimcoe/abstract.vim'
-
 Plug 'vim-airline/vim-airline'
 
 Plug 'kyazdani42/nvim-web-devicons'
@@ -63,8 +61,6 @@ Plug 'rescript-lang/vim-rescript'
 Plug 'nvim-orgmode/orgmode'
 
 Plug 'guns/vim-sexp'
-
-Plug 'brglng/vim-im-select'
 
 Plug 'farmergreg/vim-lastplace'
 

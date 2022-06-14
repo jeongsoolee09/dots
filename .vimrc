@@ -6,19 +6,17 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-Plug 'tpope/vim-speeddating'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
+
+Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-commentary'
-
-Plug 'jceb/vim-orgmode'
 
 Plug 'jpalardy/vim-slime'
 
 Plug 'tpope/vim-surround'
 
 Plug 'nanotech/jellybeans.vim'
-
-Plug 'jdsimcoe/abstract.vim'
 
 Plug 'vim-airline/vim-airline'
 
@@ -37,8 +35,6 @@ Plug 'chrisbra/NrrwRgn'
 Plug 'jiangmiao/auto-pairs'
 
 Plug 'hylang/vim-hy'
-
-Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
 
 Plug 'liuchengxu/vista.vim'
 
@@ -94,8 +90,8 @@ map <leader>nt :tabnew<Space>
 map <leader>nn :next<cr>
 map <leader>pp :prev<cr>
 map <leader>fs :w<cr>
-map <leader>ff :Clap files<cr>
-map <leader>fr :Clap history<cr>
+map <leader>ff :FZF<cr>
+map <leader>fr :History<cr>
 map <leader>ee :vert term<cr>
 map <leader>ef :FloatermNew<cr>
 map <leader>wv :vs<cr>
@@ -129,7 +125,7 @@ map <leader>cdt :lcd
 map <leader>w= <C-w>=
 map <leader>. :tabnew<cr>
 map <leader>, :tabclose<cr>
-map <leader>o :Clap files<cr>
+map <leader>o :Files .<cr>
 map <leader>cC :make<cr>
 map <leader>ga :Git add .<cr>
 map <leader>gc :Git commit<cr>
@@ -148,6 +144,9 @@ inoremap <C-f> <right>
 inoremap <C-b> <left>
 inoremap <C-l> <esc>zza
 nnoremap <C-l> zz
+
+" FZF config
+let g:fzf_history_dir = 1
 
 " Neoformat config
 let g:neoformat_enabled_python = ['black']
