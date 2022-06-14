@@ -1226,18 +1226,12 @@ you should place your code here."
 
   ;; emamux config
   (with-eval-after-load 'emamux
-    (evil-define-key 'normal 'prog-mode-map (kbd "C-t C-c") (lambda ()
-                                                              (interactive)
-                                                              (emamux:set-parameters)))
-    (evil-define-key 'insert 'prog-mode-map (kbd "C-t C-c") (lambda ()
-                                                              (interactive)
-                                                              (emamux:set-parameters)))
-    (evil-define-key 'normal 'prog-mode-map (kbd "C-t c") (lambda ()
-                                                            (interactive)
-                                                            (emamux:send-command)))
-    (evil-define-key 'insert 'prog-mode-map (kbd "C-t c") (lambda ()
-                                                            (interactive)
-                                                            (emamux:send-command))))
+    (defun emamux:set-parameters- ()
+      (interactive)
+      (emamux:set-parameters))
+    (spacemacs/declare-prefix "att" "tmux")
+    (spacemacs/set-leader-keys "attt" #'emamux:send-command)
+    (spacemacs/set-leader-keys "attp" #'emamux:set-parameters-))
 
 
   ;; variable-pitch-mode in these modes
