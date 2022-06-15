@@ -498,6 +498,7 @@ you should place your code here."
         trash-directory "~/.Trash")
   ;; (evil-define-key 'normal 'dired-mode-map (kbd "K") #'dired-k)
 
+  (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
 
   ;; doom-modeline config
   (setq-default doom-modeline-height 15)
@@ -627,7 +628,9 @@ you should place your code here."
     (defun elfeed-youtube-player ()
       (interactive)
       (let ((entry-link (elfeed-entry-link (elfeed-search-selected :single))))
-        (async-shell-command (concat "mpv " "'" entry-link "'"))
+        (if window-system
+            (xwidget-webkit-browse-url entry-link)
+            (async-shell-command (concat "mpv " "'" entry-link "'") nil nil))
         (elfeed-search-untag-all-unread)))
     (define-key elfeed-search-mode-map (kbd "P") #'elfeed-player)
     (define-key elfeed-search-mode-map (kbd "Y") #'elfeed-youtube-player))
@@ -638,6 +641,11 @@ you should place your code here."
     (interactive)
     (comint-run "bb" '()))
   (spacemacs/set-leader-keys "atsb" 'run-bb)
+
+
+  ;; scheme config
+  (setq scheme-implementations '(chez chicken gambit guile kawa racket))
+  (setq scheme-program-name "csi")
 
 
   ;; kotlin config
