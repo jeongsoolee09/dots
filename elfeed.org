@@ -1,0 +1,106 @@
+* Feeds                                                              :elfeed:
+
+** Podcasts :podcast:
+
+*** https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand :ericnormand:
+*** https://clojuredesign.club/index.xml :clojuredesign:
+*** https://feeds.pacific-content.com/commandlineheroes :commandlineheroes:
+*** https://link.chtbl.com/corecursive?platform=rss :corecursive:
+*** https://cppcast.com/episode/index.xml :cppcast:
+*** https://www.functionalgeekery.com/feed/mp3/ :functionalgeekery:
+*** https://www.pythonpodcast.com/feed/mp3/                 :podcast__init__:
+*** https://talkpython.fm/episodes/rss :talkpythontome:
+*** https://pythonbytes.fm/episodes/rss :pythonbytes:
+*** https://feeds.megaphone.fm/STU4418364045 :waveform:
+*** https://anchor.fm/s/3cbbb3b8/podcast/rss :thewanshow:
+*** https://softwareengineeringdaily.com/category/podcast/feed :sedaily:
+*** https://seradio.libsyn.com/rss :seradio:
+*** http://feeds.feedburner.com/ProgrammingThrowdown :ptpodcast:
+*** https://feeds.megaphone.fm/MLN2155636147 :twimlai:
+*** https://jsparty.fm/rss :jsparty:
+*** https://changelog.fm/rss :changelog:
+*** https://gotime.fm/rss :gotime:
+*** https://brainscience.fm/rss :brainscience:
+*** https://practicalai.fm/rss :practicalai:
+*** https://feeds.therepl.net/therepl :therepl:
+*** http://feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss :clojurestream:
+*** https://www.compositional.fm/rss :compositional:
+*** https://feeds.simplecast.com/dLRotFGk :developertea:
+*** https://lexfridman.com/feed/podcast/ :lexfridman:
+*** https://www.cognitect.com/feed.xml :cognicast:
+*** https://rss.art19.com/MUSICCAMP :musiccamp:
+*** https://rss.art19.com/the-legend-story :cultwo:
+*** https://anchor.fm/s/3f50bd80/podcast/rss :songnyang:
+*** https://news.hada.io/rss/podcast :geeknews:
+*** https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss :defn:
+*** https://feeds.therepl.net/therepl :therepl:
+
+** Soundcloud                                                   :soundcloud:
+
+*** https://feeds.soundcloud.com/users/soundcloud:users:113281772/sounds.rss :offing:
+*** https://feeds.soundcloud.com/users/soundcloud:users:7927549/sounds.rss :narae:
+*** https://feeds.soundcloud.com/users/soundcloud:users:208441091/sounds.rss :zunhozoon:
+
+
+** Youtube :youtube:
+
+*** https://www.youtube.com/feeds/videos.xml?channel_id=UC2fvhDgem6GHbeUgSog-LZg :origogi:
+*** https://www.youtube.com/feeds/videos.xml?channel_id=UCHCupXUPbT6jEFqkq821D9Q :narae:
+*** https://www.youtube.com/feeds/videos.xml?channel_id=UC6f1vQfdmAv-wW21SYEHQFg :guriri:
+*** https://www.youtube.com/feeds/videos.xml?channel_id=UC44QE3DVUuDrhUC5yp4zRYQ :radiyu:
+*** https://www.youtube.com/feeds/videos.xml?channel_id=UCptwuAv0XQHo1OQUSaO6NHw :maxtech:
+
+** Tech :tech:
+
+*** https://www.techradar.com/rss :techradar:
+*** https://www.engadget.com/rss.xml :engadget:
+*** https://omgubuntu.co.uk/feed :omgubuntu:
+*** https://usesthis.com/feed.atom :usesthis:
+*** https://www.cnet.com/rss/reviews/                          :cnet_reviews:
+*** https://www.cnet.com/rss/news/ :cnet_news:
+*** https://www.cnet.com/rss/deals/ :cnet_deals:
+*** https://www.cnet.com/rss/smart-home/ :cnet_smarthome:
+
+** Hacker News :hnews:
+
+*** https://hnrss.org/newest?q=lisp :hn_lisp:
+*** https://hnrss.org/newest?q=emacs :hn_emacs:
+*** https://hnrss.org/newest?q=vim :hn_vim:
+*** https://hnrss.org/newest?q=clojure :hn_clojure:
+*** https://hnrss.org/newest?q=haskell                           :hn_haskell:
+
+*** https://hnrss.org/newcomments?q=lisp :hn_lisp:
+*** https://hnrss.org/newcomments?q=emacs :hn_emacs:
+*** https://hnrss.org/newcomments?q=vim :hn_vim:
+*** https://hnrss.org/newcomments?q=clojure :hn_clojure:
+*** https://hnrss.org/newcomments?q=haskell                      :hn_haskell:
+
+*** https://hnrss.org/best                                          :hn_best:
+
+** Programming                                                 :programming:
+
+*** https://feeds.feedblitz.com/baeldung                                                               :baeldung:
+
+** Twitter :twitter:
+
+*** https://nitter.net/elonmusk/rss :twitter_elonmusk:
+*** https://nitter.net/ID_AA_Carmack/rss :twitter_johncarmack:
+
+** Newsletter :newsletter:
+
+*** https://haskellweekly.news/newsletter.atom :haskellweekly:
+*** https://alan.petitepomme.net/cwn/cwn.rss :ocamlweekly:
+
+** Blogs :blog:
+
+*** https://emacsredux.com/atom.xml :emacs_redux:
+*** https://lucidmanager.org/index.xml :lucid_manager:
+*** https://protesilaos.com/feeds/                              :protesilaos:
+*** https://blog.michielborkent.nl/atom.xml :borkdude:
+*** https://irreal.org/blog/?feed=rss2 :irreal:
+*** https://ag91.github.io/rss.xml :whereparallelscross:
+*** https://corfield.org/atom.xml :seancorfield:
+*** http://cachestocaches.com/feed :cachestocaches:
+*** https://twobithistory.org/feed.xml :twobithistory:
+*** http://www.aaronsw.com/2002/feeds/pgessays.rss :paulgraham:
+*** https://www.dotkam.com/feed/ :tolitius:
