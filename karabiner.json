@@ -328,9 +328,9 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
-                                            "com.apple.Safari"
+                                            "com.electron.vampiresurvivors"
                                         ],
-                                        "type": "frontmost_application_unless"
+                                        "type": "frontmost_application_if"
                                     }
                                 ],
                                 "from": {
