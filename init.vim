@@ -4,6 +4,12 @@
 
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'Olical/aniseed'
+
+Plug 'Olical/conjure'
+
+Plug 'Olical/fennel.vim'
+
 Plug 'nvim-treesitter/nvim-treesitter'
 
 Plug 'whatyouhide/gotham'
@@ -16,11 +22,13 @@ Plug 'nvim-telescope/telescope-file-browser.nvim'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+Plug 'jpalardy/vim-slime'
+
 Plug 'tpope/vim-commentary'
 
 Plug 'tpope/vim-repeat'
 
-Plug 'jpalardy/vim-slime'
+Plug 'tpope/vim-vinegar'
 
 Plug 'tpope/vim-surround'
 
@@ -63,6 +71,8 @@ Plug 'nvim-orgmode/orgmode'
 Plug 'guns/vim-sexp'
 
 Plug 'farmergreg/vim-lastplace'
+
+Plug 'rafcamlet/nvim-luapad'
 
 call plug#end()
 
@@ -203,7 +213,6 @@ map <leader>kB <Plug>(sexp_capture_head_element)
 map <leader>k[ <Plug>(sexp_square_tail_wrap_list)
 map <leader>k{ <Plug>(sexp_curly_tail_wrap_list)
 
-
 set autoindent
 set backspace=indent,eol,start
 set complete-=i
@@ -263,6 +272,7 @@ set rulerformat=%55(%{strftime('%a\ %b\ %e\ %I:%M\ %p')}\ %5l,%-6(%c%V%)\ %P%)
 command! -bar -nargs=* -complete=file -range=% -bang W         <line1>,<line2>write<bang> <args>
 command! -bar -nargs=* -complete=file -range=% -bang Write     <line1>,<line2>write<bang> <args>
 command! -bar -nargs=* -complete=file -range=% -bang Wq        <line1>,<line2>wq<bang> <args>
+command! -bar -nargs=* -complete=file -range=% -bang WQ        <line1>,<line2>wq<bang> <args>
 command! -bar                                  -bang Wqall     wqa<bang>
 command! -bar -nargs=* -complete=file -range=% -bang We        <line1>,<line2>w<bang> | e <args>
 command! -bar -nargs=* -complete=file -count   -bang Wnext     <count>wnext<bang> <args>
@@ -336,3 +346,5 @@ endfunction
 autocmd FileType ocaml call SetupOCaml()
 autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
 autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
+
+let g:aniseed#env = v:true
