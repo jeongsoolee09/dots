@@ -104,3 +104,4 @@
 *** https://twobithistory.org/feed.xml :twobithistory:
 *** http://www.aaronsw.com/2002/feeds/pgessays.rss :paulgraham:
 *** https://www.dotkam.com/feed/ :tolitius:
+*** https://johngrib.github.io/feed.xml :johngrib:

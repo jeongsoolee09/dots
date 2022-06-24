@@ -259,7 +259,7 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(modus-operandi tao-yang tron-legacy wheatgrass)
+   dotspacemacs-themes '(tron-legacy modus-operandi)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -442,6 +442,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "http://elpa.gnu.org/packages/")))
 
+
   (setq explicit-shell-file-name "/bin/zsh"
         shell-file-name "/bin/zsh")
 
@@ -452,17 +453,20 @@ before packages are loaded. If you are unsure, you should try in setting them in
               (when (file-remote-p dired-directory)
                 (setq-local dired-actual-switches "-alhB"))))
 
+
   ;; only for emacs-mac
   (mac-auto-operator-composition-mode)
 
+
   (setq dotspacemacs-scroll-bar-while-scrolling nil)
+
 
   (setq warning-minimum-level :emergency
         warning-minimum-log-level :emergency
         native-comp-async-report-warnings-errors nil)
 
-  (setq org-roam-directory "~/Dropbox/Roam")
 
+  (setq org-roam-directory "~/Dropbox/Roam")
   (setq theming-modifications
         '((tron-legacy
            (org-code :font "Courier")
@@ -477,6 +481,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (font-lock-keyword-face :foreground "#5317ac" :weight bold))
           (wheatgrass
            (cursor :background "wheat"))))
+
+
+  (unless (display-graphic-p)
+    ;; activate mouse-based scrolling
+    (xterm-mouse-mode 1)
+    (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+    (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
+
 
   ;; disable spacemacs buffer
   (defun spacemacs-buffer/goto-buffer (&optional refresh))
@@ -768,6 +780,7 @@ you should place your code here."
   (global-set-key (kbd "H-o") 'spacemacs/helm-find-files)
   (global-set-key (kbd "H-f") 'evil-search-forward)
   (global-set-key (kbd "H-b") 'helm-buffers-list)
+  (global-set-key (kbd "H-e") 'eshell)
   (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
   (global-set-key (kbd "H-]") 'eyebrowse-next-window-config)
   (global-set-key (kbd "H-.") 'eyebrowse-prev-window-config)
@@ -835,7 +848,6 @@ you should place your code here."
 
   ;; SPC-command-shortcuts
   (spacemacs/set-leader-keys "H-r" 'revert-buffer)
-  (spacemacs/set-leader-keys "H-e" 'eshell)
   (spacemacs/set-leader-keys "H-t" 'tetris)
   (spacemacs/set-leader-keys "C-H-f" 'spacemacs/toggle-maximize-frame-on)
   (spacemacs/set-leader-keys "H-o" 'reveal-in-osx-finder)
