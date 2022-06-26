@@ -1,7 +1,3 @@
-" sensible.vim - Defaults everyone can agree on
-" Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.2
-
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'Olical/aniseed'
@@ -48,8 +44,6 @@ Plug 'ryanoasis/vim-devicons'
 
 Plug 'yangmillstheory/vim-snipe'
 
-Plug 'voldikss/vim-floaterm'
-
 Plug 'nvim-lua/popup.nvim'
 
 Plug 'nvim-lua/plenary.nvim'
@@ -76,26 +70,25 @@ Plug 'rafcamlet/nvim-luapad'
 
 call plug#end()
 
-" force encoding as UTF-8
-scriptencoding utf-8
-set encoding=utf-8
-set fileencoding=utf-8
-set nocompatible
-set hidden
-set clipboard=unnamed
+lua << EOF
+vim.opt.encoding = "utf-8"
+vim.opt.fileencoding = "utf-8"
+vim.opt.hidden = true
+vim.opt.clipboard = unnamed
+EOF
 
 " Visuals!
-set t_Co=256
-set background=dark
-colorscheme gotham
-set termguicolors
-let g:airline_theme='gotham'
-set shm+=I  " disables startup message
+lua << EOF
+vim.opt.termguicolors = true
+vim.opt.background = "dark"
+vim.cmd([[colorscheme gotham]])
+vim.g.airline_theme = "gotham"
+vim.cmd([[set shm+=I]]) -- disables startup message
+EOF
 
-" coc.nvim config
+" coc.nvim config DEPRECATED
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 nnoremap <silent> gd :call CocAction('jumpDefinition')<CR>
-
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
@@ -104,75 +97,78 @@ function! s:show_documentation()
   endif
 endfunction
 
-let mapleader = "\<Space>"
-let maplocalleader = ","
-map <leader>! :!
-map <leader>[ :tabprev<cr>
-map <leader>] :tabnext<cr>
-map <leader>nt :tabnew<Space>
-map <leader>nn :next<cr>
-map <leader>pp :prev<cr>
-map <leader>fs :w<cr>
-map <leader>ff :Telescope fd<cr>
-map <leader>fr :Telescope oldfiles<cr>
-map <leader>ee :vert term<cr>
-map <leader>ef :FloatermNew<cr>
-map <leader>wv :vs<cr>
-map <leader>ws :sp<cr>
-map <leader>sc :noh<cr>
-map <leader>saf :Telescope grep_string<cr>
-map <leader>st :CocOutline<cr>
-map <leader>si :CocList outline<cr>
-map <leader>fed :e ~/.config/nvim/init.vim<cr>
-map <leader>feD :e ~/.gvimrc<cr>
-map <leader>feR :so ~/.config/nvim/init.vim<cr>:PlugInstall<cr>
-map <leader>gs :Git<cr>
-map <leader>/ :call CocAction('diagnosticNext')<cr>
-map <leader>\ :call CocAction('diagnosticPrevious')<cr>
-map <leader>qq :qa!<cr>
-map <leader>p/ :Rg
-map <leader>; :vs<cr>
-map <leader>' :sp<cr>
-map <leader>wd :q<cr>
-map <leader>wh <C-w>h
-map <leader>wj <C-w>j
-map <leader>wk <C-w>k
-map <leader>wl <C-w>l
-map <leader>wr <C-w>r
-map <leader>bp :bp<cr>
-map <leader>bn :bn<cr>
-map <leader>bd :bw<cr>
-map <leader>bb :Telescope buffers<cr>
-map <leader>b= :Format<cr>
-map <leader>cdc :lcd %:p:h<cr>
-map <leader>cdt :lcd
-map <leader>w= <C-w>=
-map <leader>. :tabnew<cr>
-map <leader>, :tabclose<cr>
-map <leader>o :Telescope fd<cr>
-map <leader>cC :make<cr>
-map <leader>ga :Git add .<cr>
-map <leader>gc :Git commit<cr>
-map <leader>gpu :Git push<cr>
-map <localleader>sl :SlimeSendCurrentLine<cr>
-map <localleader>se :SlimeSend<cr>
-map <leader><leader> :
-map <leader><TAB> <C-^>
-map <leader><C-f> :Neoformat<cr>:w<cr>
-map <leader><C-r> :e<cr>
+" Keybindings FLEX
+lua << EOF
+local opts = { noremap = true }
+vim.g.mapleader = " "
+vim.g.maplocalleader = ","
 
-nnoremap ZA :wqa!<cr>
-nnoremap <C-x><C-c> :wqa!<cr>
-
-inoremap <C-f> <right>
-inoremap <C-b> <left>
-inoremap <C-l> <esc>zza
-nnoremap <C-l> zz
-nnoremap <C-g> <esc>
-inoremap <C-g> <esc>
+vim.keymap.set("n", "<leader>!", ":!", opts)
+vim.keymap.set("n", "<leader>[", ":tabprev<cr>", opts)
+vim.keymap.set("n", "<leader>]", ":tabnext<cr>", opts)
+vim.keymap.set("n", "<leader>nt", ":tabnew ", opts)
+vim.keymap.set("n", "<leader>fn", ":next<cr>", opts)
+vim.keymap.set("n", "<leader>fp", ":prev<cr>", opts)
+vim.keymap.set("n", "<leader>fs", ":w<cr>", opts)
+vim.keymap.set("n", "<leader>ff", ":Telescope fd<cr>", opts)
+vim.keymap.set("n", "<leader>fr", ":Telescope oldfiles<cr>", opts)
+vim.keymap.set("n", "<leader>wv", ":vs<cr>", opts)
+vim.keymap.set("n", "<leader>ws", ":sp<cr>", opts)
+vim.keymap.set("n", "<leader>sc", ":noh<cr>", opts)
+vim.keymap.set("n", "<leader>saf", ":Telescope grep_string<cr>", opts)
+vim.keymap.set("n", "<leader>st", ":CocOutline<cr>", opts)
+vim.keymap.set("n", "<leader>si", ":CocList outline<cr>", opts)
+vim.keymap.set("n", "<leader>fed", ":e ~/.config/nvim/init.vim<cr>", opts)
+vim.keymap.set("n", "<leader>feD", ":e ~/.gvimrc<cr>", opts)
+vim.keymap.set("n", "<leader>feR", ":so ~/.config/nvim/init.vim<cr>:PlugInstall<cr>", opts)
+vim.keymap.set("n", "<leader>gs", ":Git<cr>", opts)
+vim.keymap.set("n", "<leader>/", ":call CocAction('diagnosticNext')<cr>", opts)
+vim.keymap.set("n", "<leader>\\", ":call CocAction('diagnosticPrevious')<cr>", opts)
+vim.keymap.set("n", "<leader>qq", ":qa!<cr>", opts)
+vim.keymap.set("n", "<leader>p/", ":Rg", opts)
+vim.keymap.set("n", "<leader>;", ":vs<cr>", opts)
+vim.keymap.set("n", "<leader>'", ":sp<cr>", opts)
+vim.keymap.set("n", "<leader>wd", ":q<cr>", opts)
+vim.keymap.set("n", "<leader>wh", "<C-w>h", opts)
+vim.keymap.set("n", "<leader>wj", "<C-w>j", opts)
+vim.keymap.set("n", "<leader>wk", "<C-w>k", opts)
+vim.keymap.set("n", "<leader>wl", "<C-w>l", opts)
+vim.keymap.set("n", "<leader>wr", "<C-w>r", opts)
+vim.keymap.set("n", "<leader>bp", ":bp<cr>", opts)
+vim.keymap.set("n", "<leader>bn", ":bn<cr>", opts)
+vim.keymap.set("n", "<leader>bd", ":bw<cr>", opts)
+vim.keymap.set("n", "<leader>bb", ":Telescope buffers<cr>", opts)
+vim.keymap.set("n", "<leader>b=", ":Format<cr>", opts)
+vim.keymap.set("n", "<leader>cdc", ":lcd %:p:h<cr>", opts)
+vim.keymap.set("n", "<leader>cdt", ":lcd", opts)
+vim.keymap.set("n", "<leader>w=", "<C-w>=", opts)
+vim.keymap.set("n", "<leader>.", ":tabnew<cr>", opts)
+vim.keymap.set("n", "<leader>,","  :tabclose<cr>", opts)
+vim.keymap.set("n", "<leader>o", ":Telescope fd<cr>", opts)
+vim.keymap.set("n", "<leader>cC", ":make<cr>", opts)
+vim.keymap.set("n", "<leader>ga", ":Git add .<cr>", opts)
+vim.keymap.set("n", "<leader>gc", ":Git commit<cr>", opts)
+vim.keymap.set("n", "<leader>gpu", ":Git push<cr>", opts)
+vim.keymap.set("n", "<localleader>sl", ":SlimeSendCurrentLine<cr>", opts)
+vim.keymap.set("n", "<localleader>se", ":SlimeSend<cr>", opts)
+vim.keymap.set("n", "<leader><leader>", ":", opts)
+vim.keymap.set("n", "<leader><TAB>", "<C-^>", opts)
+vim.keymap.set("n", "<leader><C-f>", ":Neoformat<cr>:w<cr>", opts)
+vim.keymap.set("n", "<leader><C-r>", ":e<cr>", opts)
+vim.keymap.set("n", "ZA", ":wqa!<cr>", opts)
+vim.keymap.set("n", "<C-x><C-c>", ":wqa!<cr>", opts)
+vim.keymap.set("i", "<C-f>", "<right>", opts)
+vim.keymap.set("i", "<C-b>", "<left>", opts)
+vim.keymap.set("i", "<C-l>", "<esc>zza", opts)
+vim.keymap.set("n", "<C-l>", "zz", opts)
+vim.keymap.set("n", "<C-g>", "<esc>", opts)
+vim.keymap.set("i", "<C-g>", "<esc>", opts)
+EOF
 
 " Neoformat config
-let g:neoformat_enabled_python = ['black']
+lua << EOF
+vim.g.neoformat_enabled_python = {"black"}
+EOF
 
 " Spacemacs style window switching
 let i = 1
@@ -266,8 +262,6 @@ set tabstop=4
 set expandtab
 set shiftwidth=4
 
-set rulerformat=%55(%{strftime('%a\ %b\ %e\ %I:%M\ %p')}\ %5l,%-6(%c%V%)\ %P%)
-
 " "Aliases" for commonly used commands+lazy shift finger:
 command! -bar -nargs=* -complete=file -range=% -bang W         <line1>,<line2>write<bang> <args>
 command! -bar -nargs=* -complete=file -range=% -bang Write     <line1>,<line2>write<bang> <args>
@@ -347,4 +341,4 @@ autocmd FileType ocaml call SetupOCaml()
 autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
 autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
 
-let g:aniseed#env = v:true
+" let g:aniseed#env = v:true

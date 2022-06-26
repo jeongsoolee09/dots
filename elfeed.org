@@ -34,6 +34,7 @@
 *** https://news.hada.io/rss/podcast :geeknews:
 *** https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss :defn:
 *** https://feeds.therepl.net/therepl :therepl:
+*** https://fossandcrafts.org/rss-feed.rss :fossandcrafts:
 
 ** Soundcloud                                                   :soundcloud:
 
@@ -105,3 +106,4 @@
 *** http://www.aaronsw.com/2002/feeds/pgessays.rss :paulgraham:
 *** https://www.dotkam.com/feed/ :tolitius:
 *** https://johngrib.github.io/feed.xml :johngrib:
+*** https://jdhao.github.io/index.xml :jdhao:

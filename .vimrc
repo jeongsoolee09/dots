@@ -4,23 +4,23 @@
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
 
 Plug 'junegunn/fzf.vim'
 
-Plug 'tpope/vim-commentary'
-
 Plug 'jpalardy/vim-slime'
-
-Plug 'tpope/vim-surround'
 
 Plug 'nanotech/jellybeans.vim'
 
 Plug 'vim-airline/vim-airline'
 
+Plug 'tpope/vim-commentary'
+
 Plug 'tpope/vim-fugitive'
+
+Plug 'tpope/vim-surround'
+
+Plug 'tpope/vim-sexp-mappings-for-regular-people'
 
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -70,18 +70,6 @@ set fillchars+=vert:\│
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
-" coc.nvim config
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-nnoremap <silent> gd :call CocAction('jumpDefinition')<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
 " map <Space> <Leader>
 let mapleader = "\<Space>"
 let maplocalleader = ","
@@ -98,14 +86,10 @@ map <leader>ef :FloatermNew<cr>
 map <leader>wv :vs<cr>
 map <leader>ws :sp<cr>
 map <leader>sc :noh<cr>
-map <leader>st :CocOutline<cr>
-map <leader>si :CocList outline<cr>
 map <leader>fed :e ~/.vimrc<cr>
 map <leader>feD :e ~/.gvimrc<cr>
 map <leader>feR :so ~/.vimrc<cr>:PlugInstall<cr>
 map <leader>gs :Git<cr>
-map <leader>/ :call CocAction('diagnosticNext')<cr>
-map <leader>\ :call CocAction('diagnosticPrevious')<cr>
 map <leader>qq :qa!<cr>
 map <leader>p/ :Rg
 map <leader>; :vs<cr>
@@ -160,16 +144,16 @@ while i <= 9
 endwhile
 
 if exists('g:loaded_sensible') || &compatible
-  finish
+    finish
 else
-  let g:loaded_sensible = 'yes'
+    let g:loaded_sensible = 'yes'
 endif
 
 if has('autocmd')
-  filetype plugin indent on
+    filetype plugin indent on
 endif
 if has('syntax') && !exists('g:syntax_on')
-  syntax enable
+    syntax enable
 endif
 
 " Use :help 'option' to see the documentation for the given option.
@@ -218,8 +202,8 @@ else
 endif
 
 if !has('nvim') && &ttimeoutlen == -1
-  set ttimeout
-  set ttimeoutlen=100
+    set ttimeout
+    set ttimeoutlen=100
 endif
 
 set incsearch
@@ -264,23 +248,23 @@ command! -bar                                        Messages  messages
 command! -bar -nargs=+ -complete=file          -bang Source    source<bang> <args>
 
 if !&scrolloff
-  set scrolloff=1
+    set scrolloff=1
 endif
 if !&sidescrolloff
-  set sidescrolloff=5
+    set sidescrolloff=5
 endif
 set display+=lastline
 
 if &listchars ==# 'eol:$'
-  set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+    set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
 endif
 
 if v:version > 703 || v:version == 703 && has("patch541")
-  set formatoptions+=j " Delete comment character when joining commented lines
+    set formatoptions+=j " Delete comment character when joining commented lines
 endif
 
 if has('path_extra')
-  setglobal tags-=./tags tags-=./tags; tags^=./tags;
+    setglobal tags-=./tags tags-=./tags; tags^=./tags;
 endif
 
 set fileformats+=mac
@@ -288,17 +272,17 @@ set fileformats+=mac
 set autoread
 
 if &history < 1000
-  set history=1000
+    set history=1000
 endif
 if &tabpagemax < 50
-  set tabpagemax=50
+    set tabpagemax=50
 endif
 
 set sessionoptions-=options
 
 " Allow color schemes to do bright colors without forcing bold.
 if &t_Co == 8 && $TERM !~# '^linux\|^Eterm'
-  set t_Co=16
+    set t_Co=16
 endif
 
 inoremap <C-U> <C-G>u<C-U>
