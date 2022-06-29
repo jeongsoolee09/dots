@@ -181,7 +181,18 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio xwwp ag emamux format-all mermaid-mode rg python-pytest lsp-docker lsp-rescript web-server org-journal org-kanban org-link-beautify org-listcruncher org-noter org-roam-bibtex citar grip-mode fennel-mode fstar-mode direx dired-k eshell-did-you-mean eshell-git-prompt eshell-info-banner eshell-syntax-highlighting deadgrep tron-legacy-theme trie clomacs clj-decompiler clj-deps-new clj-refactor inf-clojure inf-elixir parseclj helm-cider-history janet-mode ob-rust ob-kotlin helm-twitch mixed-pitch a org-auto-tangle ob-async 4clojure modus-themes tao-theme)
+   dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio
+                                                      xwwp ag emamux format-all mermaid-mode
+                                                      rg python-pytest lsp-docker lsp-rescript
+                                                      web-server org-journal org-kanban org-link-beautify
+                                                      org-listcruncher org-noter org-roam-bibtex citar
+                                                      grip-mode fennel-mode fstar-mode eshell-did-you-mean
+                                                      eshell-git-prompt eshell-info-banner eshell-syntax-highlighting
+                                                      deadgrep tron-legacy-theme trie
+                                                      clomacs clj-decompiler clj-deps-new clj-refactor inf-clojure
+                                                      inf-elixir parseclj helm-cider-history janet-mode ob-rust
+                                                      ob-kotlin helm-twitch mixed-pitch a org-auto-tangle ob-async
+                                                      tao-theme)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -247,11 +258,7 @@ values."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'."
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((agenda . 6)
-                                (todos . 6)
-                                (recents . 3)
-                                (projects . 3)
-                                (bookmarks . 6))
+   dotspacemacs-startup-lists '()
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
@@ -259,7 +266,7 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(tron-legacy modus-operandi)
+   dotspacemacs-themes '(modus-vivendi modus-operandi)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -516,19 +523,16 @@ you should place your code here."
   (setq dired-kill-when-opening-new-dired-buffer t)
   (setq delete-by-moving-to-trash t
         trash-directory "~/.Trash")
-  ;; (evil-define-key 'normal 'dired-mode-map (kbd "K") #'dired-k)
 
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
 
   ;; doom-modeline config
-  (setq-default doom-modeline-height 15)
+  (setq-default doom-modeline-height 10)
   (setq doom-modeline-buffer-file-name-style 'buffer-name)
 
 
   (spacemacs|do-after-display-system-init
    ;; For emacs-mac, avoid the notch
-   (when (string= (system-name) "JSLs-MacBookPro14.local")
-     (spacemacs/toggle-tool-bar-on))
    (spacemacs/load-spacemacs-env)
    (setq dotspacemacs-scroll-bar-while-scrolling nil))
 
@@ -1435,11 +1439,6 @@ you should place your code here."
       (comint-run "youtube-viewer" '("-n")))
     (spacemacs/declare-prefix "ay" "YouTube")
     (spacemacs/set-leader-keys "ays" 'youtube-viewer-start))
-
-
-  ;; For emacs-mac, avoid the notch
-  (when (string= (system-name) "JSLs-MacBookPro14.local")
-    (spacemacs/toggle-tool-bar-on))
 
 
   ;; mu4e config
