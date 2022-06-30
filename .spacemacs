@@ -266,7 +266,7 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(modus-vivendi modus-operandi)
+   dotspacemacs-themes '(modus-vivendi)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -823,8 +823,8 @@ you should place your code here."
   (global-set-key (kbd "C-H-u") 'emms-pause)
   (global-set-key (kbd "H-<escape>") 'emms-seek-backward)
   (global-set-key (kbd "C-H-]") 'emms-seek-forward)
-  (global-set-key (kbd "C-H-p") 'spacemacs/theme-transient-state/spacemacs/cycle-spacemacs-theme-backward)
-  (global-set-key (kbd "C-H-n") 'spacemacs/theme-transient-state/spacemacs/cycle-spacemacs-theme)
+  (global-set-key (kbd "C-H-p") 'previous-buffer)
+  (global-set-key (kbd "C-H-n") 'next-buffer)
   (global-set-key (kbd "C-H-b") 'ibuffer)
   (global-set-key (kbd "C-H-c") 'org-capture)
   (global-set-key (kbd "C-H-0") 'emms-volume-raise)

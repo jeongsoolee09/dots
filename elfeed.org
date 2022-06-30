@@ -61,6 +61,7 @@
 *** https://www.cnet.com/rss/news/ :cnet_news:
 *** https://www.cnet.com/rss/deals/ :cnet_deals:
 *** https://www.cnet.com/rss/smart-home/ :cnet_smarthome:
+*** http://www.notebookcheck.net/News.152.100.html :notebookcheck:
 
 ** Hacker News :hnews:
 
