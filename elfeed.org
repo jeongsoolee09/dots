@@ -70,13 +70,6 @@
 *** https://hnrss.org/newest?q=vim :hn_vim:
 *** https://hnrss.org/newest?q=clojure :hn_clojure:
 *** https://hnrss.org/newest?q=haskell                           :hn_haskell:
-
-*** https://hnrss.org/newcomments?q=lisp :hn_lisp:
-*** https://hnrss.org/newcomments?q=emacs :hn_emacs:
-*** https://hnrss.org/newcomments?q=vim :hn_vim:
-*** https://hnrss.org/newcomments?q=clojure :hn_clojure:
-*** https://hnrss.org/newcomments?q=haskell                      :hn_haskell:
-
 *** https://hnrss.org/best                                          :hn_best:
 
 ** Programming                                                 :programming:
@@ -103,8 +96,9 @@
 *** https://ag91.github.io/rss.xml :whereparallelscross:
 *** https://corfield.org/atom.xml :seancorfield:
 *** http://cachestocaches.com/feed :cachestocaches:
-*** https://twobithistory.org/feed.xml :twobithistory:
-*** http://www.aaronsw.com/2002/feeds/pgessays.rss :paulgraham:
-*** https://www.dotkam.com/feed/ :tolitius:
-*** https://johngrib.github.io/feed.xml :johngrib:
-*** https://jdhao.github.io/index.xml :jdhao:
+*** https://twobithistory.org/feed.xml                        :twobithistory:
+*** http://www.aaronsw.com/2002/feeds/pgessays.rss               :paulgraham:
+*** https://www.dotkam.com/feed/                                   :tolitius:
+*** https://johngrib.github.io/feed.xml                            :johngrib:
+*** https://jdhao.github.io/index.xml                                 :jdhao:
+***  http://tonsky.me/blog/atom.xml                                  :tonsky:

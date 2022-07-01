@@ -103,6 +103,7 @@ alias la="exa -la"
 
 # ============ vim related ============
 
+alias vi="/opt/homebrew/bin/vim"
 alias vim='nvim'
 alias vs='nvim -O'
 alias sp='nvim -o'
