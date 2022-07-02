@@ -263,7 +263,7 @@ values."
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'org-mode
+   dotspacemacs-scratch-mode 'emacs-lisp-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
@@ -650,7 +650,7 @@ you should place your code here."
     (add-hook 'rescript-mode-hook 'lsp-ui-doc-mode))
 
 
-  ;; elfeed and elfeed-org config
+  ;; elfeed config
   (with-eval-after-load 'elfeed
     (require 'elfeed-org)
     (elfeed-org)
@@ -667,7 +667,7 @@ you should place your code here."
       (interactive)
       (let ((entry-link (elfeed-entry-link (elfeed-search-selected :single))))
         (if window-system
-            (xwidget-webkit-browse-url entry-link)
+            (xwidget-open-url-in-new-window entry-link)
             (async-shell-command (concat "mpv " "'" entry-link "'") nil nil))
         (elfeed-search-untag-all-unread)))
     (define-key elfeed-search-mode-map (kbd "P") #'elfeed-player)
@@ -784,7 +784,7 @@ you should place your code here."
   ;; command-shortcuts
   (global-set-key (kbd "H-p") 'lazy-helm/helm-recentf)
   (global-set-key (kbd "H-o") 'spacemacs/helm-find-files)
-  (global-set-key (kbd "H-f") 'evil-search-forward)
+  (global-set-key (kbd "H-f") 'spacemacs/toggle-frame-fullscreen-non-native)
   (global-set-key (kbd "H-b") 'helm-buffers-list)
   (global-set-key (kbd "H-e") 'eshell)
   (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
@@ -1008,6 +1008,16 @@ you should place your code here."
               (message (concat "opening " trimmed))
               (xwidget-webkit-new-session trimmed))
             (xwidget-webkit-new-session url))))
+    (defun xwidget-open-url-in-new-window (url)
+      (interactive)
+      (if (or (s-starts-with-p "https://https://" url)
+              (s-starts-with-p "https://http://" url)
+              (s-starts-with-p "http://http://" url)
+              (s-starts-with-p "http://https://" url))
+          (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
+            (message (concat "opening " trimmed))
+            (xwidget-webkit-new-session trimmed))
+          (xwidget-webkit-new-session url)))
     (defun xwidget-webkit-copy-current-url ()
       (interactive)
       (let ((current-url (->> (xwidget-webkit-current-url)
