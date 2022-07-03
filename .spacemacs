@@ -674,11 +674,28 @@ you should place your code here."
     (define-key elfeed-search-mode-map (kbd "Y") #'elfeed-youtube-player))
 
 
+  ;; hy config
+  (spacemacs/set-leader-keys-for-major-mode 'hy-mode "ef" 'hy-shell-eval-current-form)
+  (spacemacs/set-leader-keys-for-major-mode 'hy-mode "ee" 'hy-shell-eval-last-sexp)
+
+
   ;; clojure config
   (defun run-bb ()
     (interactive)
     (comint-run "bb" '()))
+  (defun run-nbb ()
+    (interactive)
+    (comint-run "nbb" '()))
   (spacemacs/set-leader-keys "atsb" 'run-bb)
+  (spacemacs/set-leader-keys "atsn" 'run-nbb)
+  (with-eval-after-load 'cider
+    (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
+    (defun mm/cider-connected-hook ()
+      (when (eq 'nbb cider-cljs-repl-type)
+        (setq-local cider-show-error-buffer nil)
+        (cider-set-repl-type 'cljs)))
+    (add-hook 'cider-connected-hook #'mm/cider-connected-hook)
+    (setq cider-check-cljs-repl-requirements nil))
 
 
   ;; scheme config
@@ -780,6 +797,24 @@ you should place your code here."
     (setq flycheck-checker-error-threshold 1000))
 
 
+  (defun kill-helm-buffers ()
+    (interactive)
+    (dolist (buffer (remove-if-not (lambda (buffer)
+                                     (s-starts-with? "*helm"
+                                                     (buffer-name buffer)))
+                                   (buffer-list)))
+      (kill-buffer buffer)))
+
+
+  (defun cleanup-emacs ()
+    (interactive)
+    (garbage-collect)
+    (helpful-kill-buffers)
+    (recentf-cleanup)
+    (kill-helm-buffers)
+    (message "no more garbage! yay!"))
+
+
   ;; Keybinding FLEX
   ;; command-shortcuts
   (global-set-key (kbd "H-p") 'lazy-helm/helm-recentf)
@@ -861,10 +896,7 @@ you should place your code here."
   (spacemacs/set-leader-keys "H-v" 'variable-pitch-mode)
   (spacemacs/set-leader-keys "H-f" 'spacemacs/toggle-frame-fullscreen-non-native)
   (spacemacs/set-leader-keys "H-u" 'emacs-uptime)
-  (spacemacs/set-leader-keys "H-g" (lambda ()
-                                     (interactive)
-                                     (garbage-collect)
-                                     (message "no more garbage! yay!")))
+  (spacemacs/set-leader-keys "H-g" 'cleanup-emacs)
   (spacemacs/set-leader-keys "H-i" 'insert-current-time)
   (spacemacs/set-leader-keys "H-y" 'youtube-viewer-start)
   (spacemacs/set-leader-keys "." 'eyebrowse-create-window-config)
