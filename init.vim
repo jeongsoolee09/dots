@@ -1,89 +1,242 @@
-call plug#begin('~/.config/nvim/plugged')
+lua << EOF
+    return require('packer').startup(function()
+        use 'wbthomason/packer.nvim'
 
-Plug 'Olical/aniseed'
+        use 'Olical/aniseed'
 
-Plug 'Olical/conjure'
+        use 'Olical/conjure'
 
-Plug 'Olical/fennel.vim'
+        use 'Olical/fennel.vim'
 
-Plug 'nvim-treesitter/nvim-treesitter'
+        use 'nvim-treesitter/nvim-treesitter'
 
-Plug 'whatyouhide/gotham'
+        use 'whatyouhide/gotham'
 
-Plug 'jiangmiao/auto-pairs'
+        use 'nvim-telescope/telescope.nvim'
 
-Plug 'nvim-telescope/telescope.nvim'
+        use 'nvim-telescope/telescope-file-browser.nvim'
 
-Plug 'nvim-telescope/telescope-file-browser.nvim'
+        use 'jpalardy/vim-slime'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+        use 'tpope/vim-commentary'
 
-Plug 'jpalardy/vim-slime'
+        use 'tpope/vim-repeat'
 
-Plug 'tpope/vim-commentary'
+        use 'tpope/vim-vinegar'
 
-Plug 'tpope/vim-repeat'
+        use 'tpope/vim-surround'
 
-Plug 'tpope/vim-vinegar'
+        use 'tpope/vim-endwise'
 
-Plug 'tpope/vim-surround'
+        use 'tpope/vim-sexp-mappings-for-regular-people'
 
-Plug 'tpope/vim-sexp-mappings-for-regular-people'
+        use 'vim-airline/vim-airline'
 
-Plug 'vim-airline/vim-airline'
+        use 'kyazdani42/nvim-web-devicons'
 
-Plug 'kyazdani42/nvim-web-devicons'
+        use 'kyazdani42/nvim-tree.lua'
 
-Plug 'kyazdani42/nvim-tree.lua'
+        use 'tpope/vim-fugitive'
 
-Plug 'tpope/vim-fugitive'
+        use 'christoomey/vim-tmux-navigator'
 
-Plug 'christoomey/vim-tmux-navigator'
+        use 'ryanoasis/vim-devicons'
 
-Plug 'ryanoasis/vim-devicons'
+        use 'yangmillstheory/vim-snipe'
 
-Plug 'yangmillstheory/vim-snipe'
+        use 'nvim-lua/popup.nvim'
 
-Plug 'nvim-lua/popup.nvim'
+        use 'nvim-lua/plenary.nvim'
 
-Plug 'nvim-lua/plenary.nvim'
+        use 'chrisbra/NrrwRgn'
 
-Plug 'chrisbra/NrrwRgn'
+        use 'hylang/vim-hy'
 
-Plug 'jiangmiao/auto-pairs'
+        use 'vim-airline/vim-airline-themes'
 
-Plug 'hylang/vim-hy'
+        use 'sbdchd/neoformat'
 
-Plug 'vim-airline/vim-airline-themes'
+        use 'rescript-lang/vim-rescript'
 
-Plug 'sbdchd/neoformat'
+        use 'nvim-orgmode/orgmode'
 
-Plug 'rescript-lang/vim-rescript'
+        use 'guns/vim-sexp'
 
-Plug 'nvim-orgmode/orgmode'
+        use 'farmergreg/vim-lastplace'
 
-Plug 'guns/vim-sexp'
+        use 'rafcamlet/nvim-luapad'
 
-Plug 'farmergreg/vim-lastplace'
+        use 'junegunn/seoul256.vim'
 
-Plug 'rafcamlet/nvim-luapad'
+        use 'rstacruz/vim-closer'
 
-call plug#end()
+        use 'andymass/vim-matchup'
+
+        use {'iamcco/markdown-preview.nvim',
+              run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
+
+        use 'neovim/nvim-lspconfig'
+
+        use 'hrsh7th/cmp-nvim-lsp'
+
+        use 'hrsh7th/cmp-buffer'
+
+        use 'hrsh7th/cmp-path'
+
+        use 'hrsh7th/cmp-cmdline'
+
+        use 'hrsh7th/nvim-cmp'
+
+        use 'SirVer/ultisnips'
+
+        use 'quangnguyen30192/cmp-nvim-ultisnips'
+    end)
+EOF
+
 
 lua << EOF
-vim.opt.encoding = "utf-8"
-vim.opt.fileencoding = "utf-8"
-vim.opt.hidden = true
-vim.opt.clipboard = unnamed
+  vim.cmd([[let g:iced_enable_default_key_mappings = v:true]])
+
+  -- Setup nvim-cmp.
+  local cmp = require 'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    window = {
+      completion = cmp.config.window.bordered(),
+      documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<tab>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+      -- { name = 'nvim_lsp' },
+      -- { name = 'vsnip' }, -- For vsnip users.
+      -- { name = 'luasnip' }, -- For luasnip users.
+      { name = 'ultisnips' }, -- For ultisnips users.
+      -- { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Set configuration for specific filetype.
+  cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline('/', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+
+EOF
+
+
+lua << EOF
+    vim.opt.encoding = "utf-8"
+    vim.opt.fileencoding = "utf-8"
+    vim.opt.hidden = true
+    vim.opt.clipboard = unnamed
 EOF
 
 " Visuals!
 lua << EOF
-vim.opt.termguicolors = true
-vim.opt.background = "dark"
-vim.cmd([[colorscheme gotham]])
-vim.g.airline_theme = "gotham"
-vim.cmd([[set shm+=I]]) -- disables startup message
+    vim.opt.termguicolors = true
+    vim.opt.background = "dark"
+    vim.g.seoul256_background = 233
+    vim.g.seoul256_light_background = 256
+    vim.cmd([[colorscheme seoul256]])
+    vim.g.airline_theme = "jellybeans"
+    vim.cmd([[set shm+=I]]) -- disables startup message
+EOF
+
+lua << EOF
+    local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+    -- Mappings.
+    -- See `:help vim.diagnostic.*` for documentation on any of the below functions
+    local opts = { noremap=true, silent=true }
+    vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
+    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+    vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+
+    -- Use an on_attach function to only map the following keys
+    -- after the language server attaches to the current buffer
+    local on_attach = function(client, bufnr)
+      -- Enable completion triggered by <c-x><c-o>
+      vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+      -- Mappings.
+      -- See `:help vim.lsp.*` for documentation on any of the below functions
+      local bufopts = { noremap=true, silent=true, buffer=bufnr }
+      vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+      vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+      vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+      vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+      vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+      vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+      vim.keymap.set('n', '<space>wl', function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+      end, bufopts)
+      vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+      vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
+      vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+      vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+      vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+    end
+
+    local lsp_flags = {
+      debounce_text_changes = 150,
+    }
+    require('lspconfig')['pyright'].setup{
+        on_attach = on_attach,
+        flags = lsp_flags,
+    }
+    require('lspconfig')['clojure_lsp'].setup{
+        on_attach = on_attach,
+        flags = lsp_flags,
+    }
+    require('lspconfig')['tsserver'].setup{
+        on_attach = on_attach,
+        flags = lsp_flags,
+    }
+    require('lspconfig')['rust_analyzer'].setup{
+        on_attach = on_attach,
+        flags = lsp_flags,
+        -- Server-specific settings...
+        settings = {
+          ["rust-analyzer"] = {}
+        }
+    }
 EOF
 
 " coc.nvim config DEPRECATED
@@ -120,7 +273,7 @@ vim.keymap.set("n", "<leader>st", ":CocOutline<cr>", opts)
 vim.keymap.set("n", "<leader>si", ":CocList outline<cr>", opts)
 vim.keymap.set("n", "<leader>fed", ":e ~/.config/nvim/init.vim<cr>", opts)
 vim.keymap.set("n", "<leader>feD", ":e ~/.gvimrc<cr>", opts)
-vim.keymap.set("n", "<leader>feR", ":so ~/.config/nvim/init.vim<cr>:PlugInstall<cr>", opts)
+vim.keymap.set("n", "<leader>feR", ":so ~/.config/nvim/init.vim<cr>:PackerInstall<cr>", opts)
 vim.keymap.set("n", "<leader>gs", ":Git<cr>", opts)
 vim.keymap.set("n", "<leader>/", ":call CocAction('diagnosticNext')<cr>", opts)
 vim.keymap.set("n", "<leader>\\", ":call CocAction('diagnosticPrevious')<cr>", opts)
@@ -149,6 +302,8 @@ vim.keymap.set("n", "<leader>cC", ":make<cr>", opts)
 vim.keymap.set("n", "<leader>ga", ":Git add .<cr>", opts)
 vim.keymap.set("n", "<leader>gc", ":Git commit<cr>", opts)
 vim.keymap.set("n", "<leader>gpu", ":Git push<cr>", opts)
+vim.keymap.set("n", "<leader>Tp", ":colorscheme seoul256<cr>", opts)
+vim.keymap.set("n", "<leader>Tn", ":colorscheme seoul256-light<cr>", opts)
 vim.keymap.set("n", "<localleader>sl", ":SlimeSendCurrentLine<cr>", opts)
 vim.keymap.set("n", "<localleader>se", ":SlimeSend<cr>", opts)
 vim.keymap.set("n", "<leader><leader>", ":", opts)
@@ -326,11 +481,6 @@ endif
 inoremap <C-U> <C-G>u<C-U>
 
 set viminfo+=n~/.local/share/nvim/shada/main.shada
-
-" Transparent!
-hi NonText ctermbg=none
-hi Normal guibg=NONE ctermbg=NONE
-highlight SignColumn guibg=NONE
 
 function SetupOCaml()
     setlocal shiftwidth=2 tabstop=2

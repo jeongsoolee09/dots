@@ -1,7 +1,3 @@
-" sensible.vim - Defaults everyone can agree on
-" Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.2
-
 call plug#begin('~/.vim/plugged')
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
@@ -10,7 +6,7 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'jpalardy/vim-slime'
 
-Plug 'nanotech/jellybeans.vim'
+Plug 'junegunn/seoul256.vim'
 
 Plug 'vim-airline/vim-airline'
 
@@ -36,8 +32,6 @@ Plug 'jiangmiao/auto-pairs'
 
 Plug 'hylang/vim-hy'
 
-Plug 'liuchengxu/vista.vim'
-
 Plug 'vim-airline/vim-airline-themes'
 
 Plug 'rescript-lang/vim-rescript'
@@ -60,12 +54,12 @@ set clipboard^=unnamed,unnamedplus
 
 " Visuals!
 set t_Co=256
-set background=dark
-colorscheme jellybeans
-set shm+=I  " disables startup message
-
+let g:seoul256_background = 233
+let g:seoul256_light_background = 256
+colorscheme seoul256
 let g:airline_theme='jellybeans'
 set fillchars+=vert:\│
+set shm+=I  " disables startup message
 
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
@@ -115,6 +109,8 @@ map <leader>cC :make<cr>
 map <leader>ga :Git add .<cr>
 map <leader>gc :Git commit<cr>
 map <leader>gpu :Git push<cr>
+map <leader>Tp :colorscheme seoul256<cr>
+map <leader>Tn :colorscheme seoul256-light<cr>
 map <localleader>sl :SlimeSendCurrentLine<cr>
 map <localleader>se :SlimeSend<cr>
 map <leader><leader> :
@@ -293,9 +289,9 @@ set nowritebackup
 set noundofile
 
 " Transparent!
-hi NonText ctermbg=none
-hi Normal guibg=NONE ctermbg=NONE
-highlight SignColumn guibg=NONE
+" hi NonText ctermbg=none
+" hi Normal guibg=NONE ctermbg=NONE
+" highlight SignColumn guibg=NONE
 
 function SetupOCaml()
     setlocal shiftwidth=2 tabstop=2
@@ -305,5 +301,3 @@ endfunction
 autocmd FileType ocaml call SetupOCaml()
 autocmd FileType lisp setlocal shiftwidth=2 tabstop=2
 autocmd FileType javascript setlocal shiftwidth=4 tabstop=4
-
-

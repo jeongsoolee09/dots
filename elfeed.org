@@ -65,11 +65,19 @@
 
 ** Hacker News :hnews:
 
-*** https://hnrss.org/newest?q=lisp :hn_lisp:
-*** https://hnrss.org/newest?q=emacs :hn_emacs:
-*** https://hnrss.org/newest?q=vim :hn_vim:
-*** https://hnrss.org/newest?q=clojure :hn_clojure:
+*** https://hnrss.org/newest?q=emacs                               :hn_emacs:
+*** https://hnrss.org/newest?q=vim                                   :hn_vim:
+*** https://hnrss.org/newest?q=neovim                             :hn_neovim:
+*** https://hnrss.org/newest?q=lisp                                 :hn_lisp:
+*** https://hnrss.org/newest?q=clojure                           :hn_clojure:
+*** https://hnrss.org/newest?q=scheme                             :hn_scheme:
+*** https://hnrss.org/newest?q=racket                             :hn_racket:
+*** https://hnrss.org/newest?q=fennel                             :hn_fennel:
+*** https://hnrss.org/newest?q=python                             :hn_python:
 *** https://hnrss.org/newest?q=haskell                           :hn_haskell:
+*** https://hnrss.org/newest?q=ocaml                             :hn_ocaml:
+*** https://hnrss.org/newest?q=scala                               :hn_scala:
+*** https://hnrss.org/newest?q=rust                               :hn_rust:
 *** https://hnrss.org/best                                          :hn_best:
 
 ** Programming                                                 :programming:
@@ -88,17 +96,20 @@
 
 ** Blogs :blog:
 
-*** https://emacsredux.com/atom.xml :emacs_redux:
-*** https://lucidmanager.org/index.xml :lucid_manager:
+*** https://emacsredux.com/atom.xml                             :emacs_redux:
+*** https://lucidmanager.org/index.xml                        :lucid_manager:
 *** https://protesilaos.com/feeds/                              :protesilaos:
-*** https://blog.michielborkent.nl/atom.xml :borkdude:
-*** https://irreal.org/blog/?feed=rss2 :irreal:
-*** https://ag91.github.io/rss.xml :whereparallelscross:
-*** https://corfield.org/atom.xml :seancorfield:
-*** http://cachestocaches.com/feed :cachestocaches:
+*** https://blog.michielborkent.nl/atom.xml                        :borkdude:
+*** https://irreal.org/blog/?feed=rss2                               :irreal:
+*** https://ag91.github.io/rss.xml                      :whereparallelscross:
+*** https://corfield.org/atom.xml                              :seancorfield:
+*** http://cachestocaches.com/feed                           :cachestocaches:
 *** https://twobithistory.org/feed.xml                        :twobithistory:
 *** http://www.aaronsw.com/2002/feeds/pgessays.rss               :paulgraham:
 *** https://www.dotkam.com/feed/                                   :tolitius:
 *** https://johngrib.github.io/feed.xml                            :johngrib:
 *** https://jdhao.github.io/index.xml                                 :jdhao:
 ***  http://tonsky.me/blog/atom.xml                                  :tonsky:
+*** https://dragan.rocks/feed.xml                                    :dragan:
+*** https://www.murilopereira.com/index.xml                        :mpereira:
+*** http://lisp-univ-etc.blogspot.com/feeds/posts/default/-/en     :lispuniv:

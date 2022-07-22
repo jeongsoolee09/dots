@@ -37,8 +37,6 @@ set -o emacs
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-eval `opam config env`
-
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/jslee/.oh-my-zsh"
 
@@ -136,3 +134,8 @@ alias dotfiles='/usr/bin/git --git-dir=/Users/jslee/.dotfiles.git/ --work-tree=/
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# >>> scala-cli completions >>>
+fpath=("/Users/jslee/Library/Application Support/ScalaCli/completions/zsh" $fpath)
+compinit
+# <<< scala-cli completions <<<
