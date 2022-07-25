@@ -110,7 +110,8 @@
                                             "^co\\.zeit\\.hyperterm$",
                                             "^co\\.zeit\\.hyper$",
                                             "^io\\.alacritty$",
-                                            "^net\\.kovidgoyal\\.kitty$"
+                                            "^net\\.kovidgoyal\\.kitty$",
+                                            "com.googlecode.iterm2"
                                         ],
                                         "type": "frontmost_application_if"
                                     }
@@ -375,7 +376,14 @@
                                             "org.gnu.Emacs",
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
-                                            "com.samsung.DeXonPC"
+                                            "com.samsung.DeXonPC",
+                                            "^com\\.extropy\\.oni$",
+                                            "^com\\.sublimetext\\.3$",
+                                            "^co\\.zeit\\.hyperterm$",
+                                            "^co\\.zeit\\.hyper$",
+                                            "^io\\.alacritty$",
+                                            "^net\\.kovidgoyal\\.kitty$",
+                                            "com.googlecode.iterm2"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
@@ -405,7 +413,14 @@
                                             "org.gnu.Emacs",
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
-                                            "com.samsung.DeXonPC"
+                                            "com.samsung.DeXonPC",
+                                            "^com\\.extropy\\.oni$",
+                                            "^com\\.sublimetext\\.3$",
+                                            "^co\\.zeit\\.hyperterm$",
+                                            "^co\\.zeit\\.hyper$",
+                                            "^io\\.alacritty$",
+                                            "^net\\.kovidgoyal\\.kitty$",
+                                            "com.googlecode.iterm2"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
@@ -435,7 +450,14 @@
                                             "org.gnu.Emacs",
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
-                                            "com.samsung.DeXonPC"
+                                            "com.samsung.DeXonPC",
+                                            "^com\\.extropy\\.oni$",
+                                            "^com\\.sublimetext\\.3$",
+                                            "^co\\.zeit\\.hyperterm$",
+                                            "^co\\.zeit\\.hyper$",
+                                            "^io\\.alacritty$",
+                                            "^net\\.kovidgoyal\\.kitty$",
+                                            "com.googlecode.iterm2"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
@@ -465,7 +487,14 @@
                                             "org.gnu.Emacs",
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
-                                            "com.samsung.DeXonPC"
+                                            "com.samsung.DeXonPC",
+                                            "^com\\.extropy\\.oni$",
+                                            "^com\\.sublimetext\\.3$",
+                                            "^co\\.zeit\\.hyperterm$",
+                                            "^co\\.zeit\\.hyper$",
+                                            "^io\\.alacritty$",
+                                            "^net\\.kovidgoyal\\.kitty$",
+                                            "com.googlecode.iterm2"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
