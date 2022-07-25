@@ -493,6 +493,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (tool-bar :background "#000000")
            (lsp-face-highlight-textual :weight bold :underline t))
           (modus-operandi
+           (tool-bar :background "#d7d7d7")
            (font-lock-keyword-face :foreground "#5317ac" :weight bold))
           (wheatgrass
            (cursor :background "wheat"))))
@@ -672,9 +673,7 @@ you should place your code here."
     (defun elfeed-youtube-player ()
       (interactive)
       (let ((entry-link (elfeed-entry-link (elfeed-search-selected :single))))
-        (if window-system
-            (xwidget-open-url-in-new-window entry-link)
-            (async-shell-command (concat "mpv " "'" entry-link "'") nil nil))
+        (async-shell-command (concat "mpv " "'" entry-link "'") nil nil)
         (elfeed-search-untag-all-unread)))
     (define-key elfeed-search-mode-map (kbd "P") #'elfeed-player)
     (define-key elfeed-search-mode-map (kbd "Y") #'elfeed-youtube-player))
@@ -708,7 +707,7 @@ you should place your code here."
 
   ;; scheme config
   (setq scheme-implementations '(chez chicken gambit guile kawa racket))
-  (setq scheme-program-name "csi -:c")
+  (setq scheme-program-name "guile")
 
 
   ;; kotlin config
@@ -861,6 +860,7 @@ you should place your code here."
   (global-set-key (kbd "C-H-a") (lambda ()
                                   (interactive)
                                   (insert-char ?&)))
+  (global-set-key (kbd "C-H-e") 'eww)
   (global-set-key (kbd "C-H-t") 'spacemacs/cycle-spacemacs-theme)
   (global-set-key (kbd "C-H-r") 'eradio-toggle)
   (global-set-key (kbd "C-H-f") 'spacemacs/toggle-frame-fullscreen-non-native)

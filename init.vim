@@ -26,8 +26,6 @@ lua << EOF
 
         use 'tpope/vim-surround'
 
-        use 'tpope/vim-endwise'
-
         use 'tpope/vim-sexp-mappings-for-regular-people'
 
         use 'vim-airline/vim-airline'

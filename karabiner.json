@@ -240,6 +240,17 @@
                         "description": "Change command+shift+hjkl to arrow keys",
                         "manipulators": [
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "h",
                                     "modifiers": {
@@ -260,6 +271,17 @@
                                 "type": "basic"
                             },
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "j",
                                     "modifiers": {
@@ -280,6 +302,17 @@
                                 "type": "basic"
                             },
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "k",
                                     "modifiers": {
@@ -300,12 +333,148 @@
                                 "type": "basic"
                             },
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "l",
                                     "modifiers": {
                                         "mandatory": [
                                             "left_command",
                                             "left_shift"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "right_arrow"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Change control+fpnb to arrow keys",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "b",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_arrow"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "n",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "down_arrow"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "p",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "up_arrow"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "org.gnu.Emacs",
+                                            "com.parallels.desktop.console",
+                                            "com.parallels.winapp..*",
+                                            "com.samsung.DeXonPC"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "f",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "left_control"
                                         ],
                                         "optional": [
                                             "any"
@@ -557,7 +726,8 @@
                             },
                             {
                                 "from": {
-                                    "key_code": "h", "modifiers": {
+                                    "key_code": "h",
+                                    "modifiers": {
                                         "mandatory": [
                                             "left_shift",
                                             "left_option"
