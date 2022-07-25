@@ -1,7 +1,0 @@
-export PATH="/Users/jslee/.emacs.d.doom/bin:$PATH"
-export PATH="/data/data/com.termux/files/home/.cargo/bin:$PATH"
-export PATH="/data/data/com.termux/files/home/.local/bin:$PATH"
-export NODE_PATH=/usr/local/lib/node_modules
-export DOOMDIR=/data/data/com.termux/files/home/.doom.d
-export BROWSER=$(which w3m)
-export EDITOR=$(which vim)
