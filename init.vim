@@ -28,7 +28,7 @@ lua << EOF
 
         use 'tpope/vim-sexp-mappings-for-regular-people'
 
-        use 'vim-airline/vim-airline'
+        use 'feline-nvim/feline.nvim'
 
         use 'kyazdani42/nvim-web-devicons'
 
@@ -49,8 +49,6 @@ lua << EOF
         use 'chrisbra/NrrwRgn'
 
         use 'hylang/vim-hy'
-
-        use 'vim-airline/vim-airline-themes'
 
         use 'sbdchd/neoformat'
 
@@ -88,9 +86,10 @@ lua << EOF
         use 'SirVer/ultisnips'
 
         use 'quangnguyen30192/cmp-nvim-ultisnips'
+
+        use { "catppuccin/nvim", as = "catppuccin" }
     end)
 EOF
-
 
 lua << EOF
   vim.cmd([[let g:iced_enable_default_key_mappings = v:true]])
@@ -164,14 +163,114 @@ lua << EOF
     vim.opt.clipboard = unnamed
 EOF
 
-" Visuals!
+" catppuccin.nvim config
 lua << EOF
-    vim.opt.termguicolors = true
+require("catppuccin").setup({
+	dim_inactive = {
+		enabled = false,
+		shade = "dark",
+		percentage = 0.15,
+	},
+	transparent_background = false,
+	term_colors = false,
+	compile = {
+		enabled = false,
+		path = vim.fn.stdpath "cache" .. "/catppuccin",
+	},
+	styles = {
+		comments = { "italic" },
+		conditionals = { "italic" },
+		loops = {},
+		functions = {},
+		keywords = {},
+		strings = {},
+		variables = {},
+		numbers = {},
+		booleans = {},
+		properties = {},
+		types = {},
+		operators = {},
+	},
+	integrations = {
+		treesitter = true,
+		native_lsp = {
+			enabled = true,
+			virtual_text = {
+				errors = { "italic" },
+				hints = { "italic" },
+				warnings = { "italic" },
+				information = { "italic" },
+			},
+			underlines = {
+				errors = { "underline" },
+				hints = { "underline" },
+				warnings = { "underline" },
+				information = { "underline" },
+			},
+		},
+		coc_nvim = false,
+		lsp_trouble = false,
+		cmp = true,
+		lsp_saga = false,
+		gitgutter = false,
+		gitsigns = true,
+		leap = false,
+		telescope = true,
+		nvimtree = {
+			enabled = true,
+			show_root = true,
+			transparent_panel = false,
+		},
+		neotree = {
+			enabled = false,
+			show_root = true,
+			transparent_panel = false,
+		},
+		dap = {
+			enabled = false,
+			enable_ui = false,
+		},
+		which_key = false,
+		indent_blankline = {
+			enabled = true,
+			colored_indent_levels = false,
+		},
+		dashboard = true,
+		neogit = false,
+		vim_sneak = false,
+		fern = false,
+		barbar = false,
+		bufferline = true,
+		markdown = true,
+		lightspeed = false,
+		ts_rainbow = false,
+		hop = false,
+		notify = true,
+		telekasten = true,
+		symbols_outline = true,
+		mini = false,
+		aerial = false,
+		vimwiki = true,
+		beacon = true,
+	},
+	color_overrides = {},
+	highlight_overrides = {},
+})
+
+    vim.cmd [[colorscheme catppuccin]]
+    vim.g.catppuccin_flavour = "mocha" -- latte, frappe, macchiato, mocha
+
+local ctp_feline = require('catppuccin.groups.integrations.feline')
+
+require("feline").setup({
+	components = ctp_feline.get(),
+})
+EOF
+
+
+lua << EOF
+    vim.opt.termguicolors = false
     vim.opt.background = "dark"
-    vim.g.seoul256_background = 233
-    vim.g.seoul256_light_background = 256
-    vim.cmd([[colorscheme seoul256]])
-    vim.g.airline_theme = "jellybeans"
     vim.cmd([[set shm+=I]]) -- disables startup message
 EOF
 

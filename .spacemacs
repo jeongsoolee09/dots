@@ -146,7 +146,9 @@ values."
      ipython-notebook
      common-lisp
      hy
-     scheme
+     (scheme :variables
+             scheme-implementations '(chez chicken gambit guile kawa racket)
+             scheme-program-name "guile")
      prolog
      django
      (nim :variables nim-backend 'lsp)
@@ -703,11 +705,6 @@ you should place your code here."
         (cider-set-repl-type 'cljs)))
     (add-hook 'cider-connected-hook #'mm/cider-connected-hook)
     (setq cider-check-cljs-repl-requirements nil))
-
-
-  ;; scheme config
-  (setq scheme-implementations '(chez chicken gambit guile kawa racket))
-  (setq scheme-program-name "guile")
 
 
   ;; kotlin config

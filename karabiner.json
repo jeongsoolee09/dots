@@ -377,6 +377,7 @@
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
                                             "com.samsung.DeXonPC",
+                                            "org.gnu.Emacs",
                                             "^com\\.extropy\\.oni$",
                                             "^com\\.sublimetext\\.3$",
                                             "^co\\.zeit\\.hyperterm$",
@@ -414,6 +415,7 @@
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
                                             "com.samsung.DeXonPC",
+                                            "org.gnu.Emacs",
                                             "^com\\.extropy\\.oni$",
                                             "^com\\.sublimetext\\.3$",
                                             "^co\\.zeit\\.hyperterm$",
@@ -451,6 +453,7 @@
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
                                             "com.samsung.DeXonPC",
+                                            "org.gnu.Emacs",
                                             "^com\\.extropy\\.oni$",
                                             "^com\\.sublimetext\\.3$",
                                             "^co\\.zeit\\.hyperterm$",
@@ -488,6 +491,7 @@
                                             "com.parallels.desktop.console",
                                             "com.parallels.winapp..*",
                                             "com.samsung.DeXonPC",
+                                            "org.gnu.Emacs",
                                             "^com\\.extropy\\.oni$",
                                             "^com\\.sublimetext\\.3$",
                                             "^co\\.zeit\\.hyperterm$",
@@ -1134,7 +1138,7 @@
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "3",
+                                    "key_code": "return_or_enter",
                                     "modifiers": {
                                         "mandatory": [
                                             "left_control",
@@ -1155,7 +1159,7 @@
                         ]
                     },
                     {
-                        "description": "Run Safari",
+                        "description": "Run Brave",
                         "manipulators": [
                             {
                                 "from": {
@@ -1172,7 +1176,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open /Applications/Safari.app"
+                                        "shell_command": "open /Applications/Brave\\ Browser.app"
                                     }
                                 ],
                                 "type": "basic"
