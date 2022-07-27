@@ -1184,11 +1184,11 @@
                         ]
                     },
                     {
-                        "description": "Run KakaoTalk",
+                        "description": "Run Brave (2)",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "5",
+                                    "key_code": "delete_or_backspace",
                                     "modifiers": {
                                         "mandatory": [
                                             "left_control",
@@ -1201,7 +1201,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open /Applications/AlDente.app"
+                                        "shell_command": "open /Applications/Brave\\ Browser.app"
                                     }
                                 ],
                                 "type": "basic"
