@@ -166,7 +166,8 @@ values."
      (rust :variables rust-backend 'lsp)
      (go :variables go-backend 'lsp)
      (kotlin :variables kotlin-backend 'lsp)
-     (lua :variables lua-backend 'lsp)
+     (lua :variables lua-backend 'lsp
+          lua-lsp-server 'lua-language-server)
      (sql :variables sql-backend 'lsp
           sql-lsp-sqls-workspace-config-path 'workspace)
      (crystal :variables crystal-backend 'lsp)
