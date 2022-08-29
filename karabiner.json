@@ -953,7 +953,7 @@
                         ]
                     },
                     {
-                        "description": "Run iTerm",
+                        "description": "Run Safari",
                         "manipulators": [
                             {
                                 "from": {
@@ -970,7 +970,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open /Applications/iTerm.app"
+                                        "shell_command": "open /Applications/Safari.app"
                                     }
                                 ],
                                 "type": "basic"
