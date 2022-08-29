@@ -62,6 +62,9 @@ values."
      xclipboard
      restclient
      (rcirc :variables rcirc-enable-authinfo-support t)
+     (erc :variables
+          erc-enable-sasl-auth t
+          erc-enable-notifications nil)
      docker
      kubernetes
      bm
@@ -73,8 +76,7 @@ values."
      ietf
      pandoc
      multiple-cursors
-     (streamlink :variables
-                 streamlink-player "mpv --no-video")
+     (streamlink :variables streamlink-player "mpv --no-video")
      emoji
      pocket
      reddit
@@ -1388,7 +1390,6 @@ you should place your code here."
   (spacemacs/set-leader-keys "awm" 'w3m)
   (spacemacs/set-leader-keys "wt" 'transpose-frame)
   (spacemacs/set-leader-keys "si" 'helm-imenu)
-  (spacemacs/set-leader-keys "it" 'org-insert-current-time)
   (spacemacs/set-leader-keys "ai" 'display-current-time)
   (spacemacs/set-leader-keys "ab" 'battery)
   (spacemacs/set-leader-keys "p/" 'projectile-ripgrep)
@@ -1420,11 +1421,6 @@ you should place your code here."
 
   ;; org-mode config
   (with-eval-after-load 'org
-    (defun org-insert-current-time ()
-      "insert the curren time at the cursor position."
-      (interactive)
-      (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
-
     (setq org-startup-with-inline-images t
           org-startup-folded 'show-all
           org-startup-latex-with-latex-preview t
@@ -1444,7 +1440,7 @@ you should place your code here."
              "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
             ("c" "Clipboard" entry (file+headline ,(concat org-directory "/Clipboard.org") "Clipboard")
              "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
-            ("a" "Journal" entry (file+datetree ,(concat org-directory "/Journal.org"))
+            ("a" "Journal" entry (file+datetree,(concat org-directory "/Journal.org"))
              "** %U\n\n%?\n%i\n")
             ("s" "ShowerThoughts" entry (file+headline ,(concat org-directory "/ShowerThoughts.org") "ShowerThoughts")
              "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")))
