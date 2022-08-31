@@ -99,7 +99,16 @@ values."
                  js2-basic-offset 2)
      (typescript :variables typescript-backend 'lsp)
      (solidity :variables solidity-flycheck-solium-checker-active t)
-     (clojure :variables clojure-backend 'lsp)
+     (clojure :variables clojure-backend 'lsp
+              cider-repl-display-help-banner nil      ;; disable help banner
+              cider-pprint-fn 'fipp                   ;; fast pretty printing
+              clojure-indent-style 'align-arguments
+              clojure-align-forms-automatically t
+              clojure-toplevel-inside-comment-form t  ;; evaluate expressions in comment as top level
+              cider-result-overlay-position 'at-point ;; results shown right after expression
+              cider-overlays-use-font-lock t
+              cider-repl-buffer-size-limit 100        ;; limit lines shown in REPL buffer
+              )
      (html :variables css-enable-lsp t
            less-enable-lsp t
            scss-enable-lsp t
@@ -153,7 +162,7 @@ values."
      hy
      (scheme :variables
              scheme-implementations '(chez chicken gambit guile kawa racket)
-             scheme-program-name "guile")
+             scheme-program-name "csi")
      prolog
      django
      (nim :variables nim-backend 'lsp)
@@ -459,6 +468,17 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
 
+  ;; I love my macros!!
+  (defmacro plaintext (&rest body)
+    (string-join
+     (-interpose " "
+                 (mapcar (lambda (elem)
+                           (cond
+                            ((stringp elem) elem)
+                            ((symbolp elem) (symbol-name elem)))) body))))
+
+  (defmacro comment (&body))
+
   (setq-default quelpa-build-tar-executable (executable-find "gtar"))
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -499,7 +519,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
           (tao-yang
            (lsp-face-highlight-textual :weight bold :underline t))
           (modus-vivendi
-           (erc-input-face :foreground "#C0FFEE")
            (tool-bar :background "#000000")
            (lsp-face-highlight-textual :weight bold :underline t))
           (modus-operandi
@@ -742,6 +761,7 @@ you should place your code here."
                              mechkeyboard scala haskell HHKB clojure
                              vim kotlin programmerhumor orgmode
                              commandline CityPorn OrgRoam))
+  (setq org-confirm-elisp-link-function nil)
 
 
   ;; eradio config
@@ -785,6 +805,11 @@ you should place your code here."
 
   ;; all-the-icons config
   (setq all-the-icons-scale-factor 1.0)
+
+
+  ;; tab-bar config
+  (global-set-key (kbd "M-[") 'tab-bar-switch-to-prev-tab)
+  (global-set-key (kbd "M-]") 'tab-bar-switch-to-next-tab)
 
 
   ;; Projectile Config
