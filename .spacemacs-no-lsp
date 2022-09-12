@@ -39,13 +39,14 @@ values."
                       cargo-process-reload-on-modify t)
      (elfeed :variables rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
      (mu4e :variables mu4e-installation-path (if (string-match "aarch64.*" system-configuration)
-                                                 "/opt/homebrew/Cellar/mu/1.6.11/share/emacs/site-lisp/mu/mu4e"
-                                                 "/usr/local/Cellar/mu/1.6.11/share/emacs/site-lisp/mu/mu4e"))
+                                                 "/opt/homebrew/Cellar/mu/1.8.8/share/emacs/site-lisp/mu/mu4e"
+                                                 "/usr/local/Cellar/mu/1.8.8/share/emacs/site-lisp/mu/mu4e"))
      (colors :variables colors-colorize-identifiers 'all)
      (copy-as-format :variables copy-as-format-default "markdown"
                      copy-as-format-asciidoc-include-file-name t
                      copy-as-format-asciidoc-language-alist '(("^.*\\.java$" "java")
                                                               ("^.*\\.clj[cs]?$" "clojure")))
+     (compleseus :variables compleseus-engine 'vertico)
      helm
      git
      version-control
@@ -53,9 +54,9 @@ values."
      pdf
      ibuffer
      epub
+     eww
      w3m
      hackernews
-     slack
      xclipboard
      restclient
      (rcirc :variables rcirc-enable-authinfo-support t)
@@ -70,8 +71,7 @@ values."
      ietf
      pandoc
      multiple-cursors
-     (streamlink :variables
-                 streamlink-player "mpv --no-video")
+     (streamlink :variables streamlink-player "mpv --no-video")
      emoji
      pocket
      reddit
@@ -80,20 +80,32 @@ values."
      evil-better-jumper
      evil-snipe
      command-log
+     spotify
+     bm
      ;; ============ languages ============
      (tree-sitter :variables
                   spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
                   tree-sitter-syntax-highlight-enable t
-                  tree-sitter-fold-enable t
+                  tree-sitter-fold-enable nil
                   tree-sitter-fold-indicators-enable nil)
      major-modes
      graphql
-     javascript
-     typescript
-     solidity
-     clojure
+     (javascript :variables javascript-backend nil
+                 js2-basic-offset 2)
+     (typescript :variables typescript-backend nil)
+     (solidity :variables solidity-flycheck-solium-checker-active t)
+     (clojure :variables clojure-backend nil
+              cider-repl-display-help-banner nil      ;; disable help banner
+              cider-pprint-fn 'fipp                   ;; fast pretty printing
+              clojure-indent-style 'align-arguments
+              clojure-align-forms-automatically t
+              clojure-toplevel-inside-comment-form t  ;; evaluate expressions in comment as top level
+              cider-result-overlay-position 'at-point ;; results shown right after expression
+              cider-overlays-use-font-lock t
+              cider-repl-buffer-size-limit 100        ;; limit lines shown in REPL buffer
+              )
      html
-     c-c++
+     (c-c++ :variables c-c++-backend nil)
      (org :variables
           org-enable-notifications t
           org-start-notification-daemon-on-startup t
@@ -118,63 +130,84 @@ values."
             shell-default-position 'bottom
             shell-default-term-shell "/bin/zsh"
             shell-default-shell 'vterm)
-     haskell
-     purescript
-     elm
-     ocaml
+     (haskell :variables haskell-backend nil)
+     (purescript :variables purescript-backend nil)
+     (elm :variables elm-backend nil)
+     idris
+     agda
+     (ocaml :variables ocaml-backend nil)
      (markdown :variables markdown-live-preview-engine 'vmd)
      asciidoc
      restructuredtext
-     python
-     csharp
-     fsharp
-     java
+     (python :variables python-backend nil)
+     (csharp :variables csharp-backend nil)
+     (fsharp :variables fsharp-backend nil)
+     (java :variables java-backend nil)
      coq
      racket
      emacs-lisp
      graphviz
      csv
-     ipython-notebook
+     ;; ipython-notebook
      common-lisp
      hy
-     scheme
+     (scheme :variables
+             scheme-implementations '(chez chicken gambit guile kawa racket)
+             scheme-program-name "csi")
      prolog
      django
-     nim
+     (nim :variables nim-backend nil)
      yaml
      (latex :variables latex-build-command "LatexMk")
-     dart
-     scala
-     ruby
-     perl5
+     (dart :variables dart-backend nil)
+     (scala :variables scala-backend nil)
+     (ruby :variables ruby-backend nil)
+     (perl5 :variables perl5-backend nil)
      (plantuml :variables plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2022.5/libexec/plantUml.jar"
                org-plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2022.5/libexec/plantUml.jar")
      mermaid
-     vimscript
-     rust
-     go
-     kotlin
-     lua
-     sql
-     crystal
-     zig
-     ess
-     julia
-     react
-     vue
-     svelte
-     elixir
-     erlang
+     (vimscript :variables vimscript-backend nil)
+     (rust :variables rust-backend nil)
+     (go :variables go-backend 'go-mode)
+     (kotlin :variables kotlin-backend nil)
+     (lua :variables lua-backend nil)
+     (sql :variables sql-backend nil)
+     (crystal :variables crystal-backend nil)
+     (zig :variables zls-backend nil)
+     (ess :variables ess-r-backend nil)
+     (julia :variables julia-backend nil)
+     (react :variables react-backend nil)
+     (vue :variables vue-backend nil)
+     (svelte :variables svelte-backend nil)
+     (elixir :variables elixir-backend nil)
+     (erlang :variables erlang-backend nil)
      tidalcycles)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio xwwp ag emamux format-all mermaid-mode rg python-pytest web-server org-journal org-kanban org-link-beautify org-listcruncher org-noter org-roam-bibtex citar grip-mode fennel-mode fstar-mode direx dired-k eshell-did-you-mean eshell-git-prompt eshell-info-banner eshell-syntax-highlighting deadgrep tron-legacy-theme trie clomacs clj-decompiler clj-deps-new clj-refactor inf-clojure inf-elixir parseclj helm-cider-history janet-mode ob-rust ob-kotlin helm-twitch mixed-pitch a org-auto-tangle ob-async 4clojure)
+   dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio
+                                                      xwwp ag emamux format-all mermaid-mode
+                                                      rg python-pytest 
+                                                      web-server org-journal org-kanban org-link-beautify
+                                                      org-listcruncher org-noter org-roam-bibtex citar
+                                                      grip-mode fennel-mode fstar-mode eshell-did-you-mean
+                                                      eshell-git-prompt eshell-info-banner eshell-syntax-highlighting
+                                                      deadgrep tron-legacy-theme trie
+                                                      clomacs clj-decompiler clj-deps-new clj-refactor inf-clojure
+                                                      inf-elixir parseclj helm-cider-history janet-mode ob-rust
+                                                      ob-kotlin mixed-pitch a org-auto-tangle ob-async
+                                                      tao-theme geiser-chicken geiser-guile geiser-mit
+                                                      coterm plz twitch-api denote
+                                                      (kbd-mode
+                                                       :location
+                                                       (recipe
+                                                        :fetcher github
+                                                        :repo "kmonad/kbd-mode")))
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(meghanada anaconda-mode merlin lsp-mode dap-mode)
+   dotspacemacs-excluded-packages '(meghanada anaconda-mode merlin)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -182,7 +215,7 @@ values."
    ;; `used-but-keep-unused' installs only the used packages but won't uninstall
    ;; them if they become unused. `all' installs *all* packages supported by
    ;; Spacemacs and never uninstall them. (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-but-keep-unused))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -226,8 +259,8 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/skull.png")
-   ;; dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/resistance_logo.png")
+   ;; dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/skull.png")
+   dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/resistance_logo.png")
    ;; dotspacemacs-startup-banner (concat spacemacs-banner-directory "img/eve-transparent.png")
    ;; dotspacemacs-startup-banner 'official
    ;; List of items to show in startup buffer or an association list of
@@ -236,25 +269,21 @@ values."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'."
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((agenda . 6)
-                                (todos . 6)
-                                (recents . 3)
-                                (projects . 3)
-                                (bookmarks . 6))
+   dotspacemacs-startup-lists '()
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'org-mode
+   dotspacemacs-scratch-mode 'emacs-lisp-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(tron-legacy)
+   dotspacemacs-themes '(modus-vivendi modus-operandi)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Fira Code"
-                               :size 18.0
+                               :size 20.0
                                :weight normal
                                :width normal)
    ;; The leader key
@@ -428,8 +457,22 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
 
+  ;; I love my macros!!
+  (defmacro plaintext (&rest body)
+    (string-join
+     (-interpose " "
+                 (mapcar (lambda (elem)
+                           (cond
+                            ((stringp elem) elem)
+                            ((symbolp elem) (symbol-name elem)))) body))))
+
+  (defmacro comment (&body))
+
+  (setq-default quelpa-build-tar-executable (executable-find "gtar"))
+
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "http://elpa.gnu.org/packages/")))
+
 
   (setq explicit-shell-file-name "/bin/zsh"
         shell-file-name "/bin/zsh")
@@ -441,31 +484,46 @@ before packages are loaded. If you are unsure, you should try in setting them in
               (when (file-remote-p dired-directory)
                 (setq-local dired-actual-switches "-alhB"))))
 
+
   ;; only for emacs-mac
   (mac-auto-operator-composition-mode)
 
+
   (setq dotspacemacs-scroll-bar-while-scrolling nil)
+
 
   (setq warning-minimum-level :emergency
         warning-minimum-log-level :emergency
         native-comp-async-report-warnings-errors nil)
 
-  (setq org-roam-directory "~/Dropbox/Roam")
 
+  (setq org-roam-directory "~/Dropbox/Roam")
   (setq theming-modifications
         '((tron-legacy
-           (org-code :font "Courier")
-           (erc-input-face :foreground "#C0FFEE")
            (mode-line :background "#000000")
            (mode-line-inactive :background "#000000")
-           (tool-bar :background "#000000"))))
+           (tool-bar :background "#000000"))
+          (modus-vivendi
+           (tool-bar :background "#000000"))
+          (modus-operandi
+           (tool-bar :background "#d7d7d7")
+           (font-lock-keyword-face :foreground "#5317ac" :weight bold))
+          (wheatgrass
+           (cursor :background "wheat"))))
+
+
+  (unless (display-graphic-p)
+    ;; activate mouse-based scrolling
+    (xterm-mouse-mode 1)
+    (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+    (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
+
 
   ;; disable spacemacs buffer
-  (defun spacemacs-buffer/goto-buffer (&optional refresh))
-  (defun spacemacs-buffer/display-startup-note ())
-  (defun spacemacs-buffer//startup-hook ())
-  (setq initial-buffer-choice t)
-
+  ;; (defun spacemacs-buffer/goto-buffer (&optional refresh))
+  ;; (defun spacemacs-buffer/display-startup-note ())
+  ;; (defun spacemacs-buffer//startup-hook ())
+  ;; (setq initial-buffer-choice t)
   ) ;; user-init end
 
 (defun dotspacemacs/user-config ()
@@ -486,29 +544,27 @@ you should place your code here."
   (setq dired-kill-when-opening-new-dired-buffer t)
   (setq delete-by-moving-to-trash t
         trash-directory "~/.Trash")
-  ;; (evil-define-key 'normal 'dired-mode-map (kbd "K") #'dired-k)
 
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
 
   ;; doom-modeline config
-  (setq-default doom-modeline-height 15)
+  (setq-default doom-modeline-height 10)
   (setq doom-modeline-buffer-file-name-style 'buffer-name)
+  (spacemacs/set-leader-keys "Tl" 'hidden-mode-line-mode)
 
 
   (spacemacs|do-after-display-system-init
    ;; For emacs-mac, avoid the notch
-   (when (string= (system-name) "JSLs-MacBookPro14.local")
-     (spacemacs/toggle-tool-bar-on))
    (spacemacs/load-spacemacs-env)
    (setq dotspacemacs-scroll-bar-while-scrolling nil))
 
 
   ;; transparent emacs in terminal
-  (unless window-system
-    (defun on-after-init ()
-      (unless (display-graphic-p (selected-frame))
-        (set-face-background 'default "unspecified-bg" (selected-frame))))
-    (add-hook 'window-setup-hook 'on-after-init))
+  ;; (unless window-system
+  ;;   (defun on-after-init ()
+  ;;     (unless (display-graphic-p (selected-frame))
+  ;;       (set-face-background 'default "unspecified-bg" (selected-frame))))
+  ;;   (add-hook 'window-setup-hook 'on-after-init))
 
 
   (global-visual-line-mode)
@@ -527,6 +583,17 @@ you should place your code here."
                              racket-mode clojure-mode
                              org-mode)
                    "'" "'" :actions nil))
+
+  ;; evil-cleverparens config
+  (use-package evil-cleverparens
+    :init
+    (setq evil-cleverparens-use-additional-bindings nil)
+    :config
+    (setq evil-cleverparens-use-additional-bindings t)
+    (unless window-system
+      (setq evil-cp-additional-bindings (assoc-delete-all "M-[" evil-cp-additional-bindings))
+      (setq evil-cp-additional-bindings (assoc-delete-all "M-]" evil-cp-additional-bindings)))
+    (evil-cp-set-additional-bindings))
 
 
   (defun lazy-ESC-k ()
@@ -571,7 +638,7 @@ you should place your code here."
           tramp-inline-compress-start-size 10000000))
 
 
-  ;; elfeed and elfeed-org config
+  ;; elfeed config
   (with-eval-after-load 'elfeed
     (require 'elfeed-org)
     (elfeed-org)
@@ -587,24 +654,50 @@ you should place your code here."
     (defun elfeed-youtube-player ()
       (interactive)
       (let ((entry-link (elfeed-entry-link (elfeed-search-selected :single))))
-        (if window-system
-            (xwidget-webkit-browse-url entry-link)
-            (async-shell-command (concat "mpv " "'" entry-link "'") nil nil))
+        (async-shell-command (concat "mpv " "'" entry-link "'") nil nil)
         (elfeed-search-untag-all-unread)))
     (define-key elfeed-search-mode-map (kbd "P") #'elfeed-player)
     (define-key elfeed-search-mode-map (kbd "Y") #'elfeed-youtube-player))
+
+
+  ;; hy config
+  (spacemacs/set-leader-keys-for-major-mode 'hy-mode "ef" 'hy-shell-eval-current-form)
+  (spacemacs/set-leader-keys-for-major-mode 'hy-mode "ee" 'hy-shell-eval-last-sexp)
+  (add-hook 'hy-mode-hook #'spacemacs/toggle-auto-completion-off)
+  (add-hook 'inferior-hy-mode-hook #'spacemacs/toggle-auto-completion-off)
 
 
   ;; clojure config
   (defun run-bb ()
     (interactive)
     (comint-run "bb" '()))
+  (defun run-nbb ()
+    (interactive)
+    (comint-run "nbb" '()))
   (spacemacs/set-leader-keys "atsb" 'run-bb)
-
-
-  ;; scheme config
-  (setq scheme-implementations '(chez chicken gambit guile kawa racket))
-  (setq scheme-program-name "csi")
+  (spacemacs/set-leader-keys "atsn" 'run-nbb)
+  (with-eval-after-load 'cider
+    (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
+    (defun mm/cider-connected-hook ()
+      (when (eq 'nbb cider-cljs-repl-type)
+        (setq-local cider-show-error-buffer nil)
+        (cider-set-repl-type 'cljs)))
+    (add-hook 'cider-connected-hook #'mm/cider-connected-hook)
+    (setq cider-check-cljs-repl-requirements nil)
+    (define-clojure-indent
+      (defroutes 'defun)
+      (GET 2)
+      (POST 2)
+      (PUT 2)
+      (DELETE 2)
+      (HEAD 2)
+      (ANY 2)
+      (OPTIONS 2)
+      (PATCH 2)
+      (rfn 2)
+      (let-routes 1)
+      (context 2)
+      (use-like-this 'defun)))
 
 
   ;; kotlin config
@@ -619,7 +712,8 @@ you should place your code here."
   (setq reddigg-subs '(emacs clojure orgmode lisp commandline
                              mechkeyboard scala haskell HHKB clojure
                              vim kotlin programmerhumor orgmode
-                             commandline CityPorn))
+                             commandline CityPorn OrgRoam))
+  (setq org-confirm-elisp-link-function nil)
 
 
   ;; eradio config
@@ -665,6 +759,11 @@ you should place your code here."
   (setq all-the-icons-scale-factor 1.0)
 
 
+  ;; tab-bar config
+  ;; (global-set-key (kbd "M-[") 'tab-bar-switch-to-prev-tab)
+  ;; (global-set-key (kbd "M-]") 'tab-bar-switch-to-next-tab)
+
+
   ;; Projectile Config
   (setq projectile-mode-line "Projectile"
         projectile-enable-caching t
@@ -701,12 +800,32 @@ you should place your code here."
     (setq flycheck-checker-error-threshold 1000))
 
 
+  (defun kill-helm-buffers ()
+    (interactive)
+    (dolist (buffer (remove-if-not (lambda (buffer)
+                                     (s-starts-with? "*helm"
+                                                     (buffer-name buffer)))
+                                   (buffer-list)))
+      (kill-buffer buffer)))
+
+
+  (defun cleanup-emacs ()
+    (interactive)
+    (garbage-collect)
+    (when (featurep 'helpful)
+      (helpful-kill-buffers))
+    (recentf-cleanup)
+    (kill-helm-buffers)
+    (message "no more garbage! yay!"))
+
+
   ;; Keybinding FLEX
   ;; command-shortcuts
   (global-set-key (kbd "H-p") 'lazy-helm/helm-recentf)
   (global-set-key (kbd "H-o") 'spacemacs/helm-find-files)
-  (global-set-key (kbd "H-f") 'evil-search-forward)
+  (global-set-key (kbd "H-f") 'spacemacs/toggle-frame-fullscreen-non-native)
   (global-set-key (kbd "H-b") 'helm-buffers-list)
+  (global-set-key (kbd "H-e") 'eshell)
   (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
   (global-set-key (kbd "H-]") 'eyebrowse-next-window-config)
   (global-set-key (kbd "H-.") 'eyebrowse-prev-window-config)
@@ -719,15 +838,16 @@ you should place your code here."
   (global-set-key (kbd "H-l") 'evil-window-right)
   (global-set-key (kbd "H-u") 'winner-undo)
   (global-set-key (kbd "H-d") 'kill-this-buffer)
-  (global-set-key (kbd "H-m") 'helm-filtered-bookmarks)
   (global-set-key (kbd "H-g") 'magit)
   (global-set-key (kbd "H-r") 'winner-redo)
   (global-set-key (kbd "H-t") 'spacemacs/toggle-tool-bar)
   (global-set-key (kbd "H-a") 'org-agenda)
+  (global-set-key (kbd "H-c") 'org-capture)
   (global-set-key (kbd "H-/") 'eyebrowse-create-window-config)
   (global-set-key (kbd "H-\\") 'eyebrowse-close-window-config)
   (global-set-key (kbd "H-?") 'yas-next-field)
   (global-set-key (kbd "H->") 'yas-prev-field)
+  (global-set-key (kbd "H-<return>") 'helm-spotify-plus)
 
   ;; command-control-shortcuts
   (global-set-key (kbd "C-H-o") (lambda ()
@@ -736,7 +856,8 @@ you should place your code here."
   (global-set-key (kbd "C-H-a") (lambda ()
                                   (interactive)
                                   (insert-char ?&)))
-  (global-set-key (kbd "C-H-t") 'transpose-frame)
+  (global-set-key (kbd "C-H-e") 'eww)
+  (global-set-key (kbd "C-H-t") 'spacemacs/cycle-spacemacs-theme)
   (global-set-key (kbd "C-H-r") 'eradio-toggle)
   (global-set-key (kbd "C-H-f") 'spacemacs/toggle-frame-fullscreen-non-native)
   (global-set-key (kbd "C-H-g") 'helm-do-ag)
@@ -751,7 +872,6 @@ you should place your code here."
   (global-set-key (kbd "C-H-0") 'emms-volume-raise)
   (global-set-key (kbd "C-H-9") 'emms-volume-lower)
   (global-set-key (kbd "C-H-=") 'balance-windows)
-  (global-set-key (kbd "C-H-w") 'markdown-preview)
   (global-set-key (kbd "C-H-4") 'play-fm4u)
   (global-set-key (kbd "C-H-i") 'imenu-list-smart-toggle)
   (global-set-key (kbd "C-H-x") 'xwidget-new-window)
@@ -768,26 +888,24 @@ you should place your code here."
   ;; control-shortcuts
   (global-set-key (kbd "C-;") 'hippie-expand)
   (global-set-key (kbd "C-M-;") 'completion-at-point)
-  (global-set-key (kbd "C-=") 'spacemacs/indent-region-or-buffer)
 
 
   ;; SPC-command-shortcuts
   (spacemacs/set-leader-keys "H-r" 'revert-buffer)
-  (spacemacs/set-leader-keys "H-e" 'eshell)
-  (spacemacs/set-leader-keys "H-t" 'tetris)
+  (spacemacs/set-leader-keys "H-t" 'spacemacs/scale-transparency-transient-state/spacemacs/toggle-transparency)
   (spacemacs/set-leader-keys "C-H-f" 'spacemacs/toggle-maximize-frame-on)
   (spacemacs/set-leader-keys "H-o" 'reveal-in-osx-finder)
-  (spacemacs/set-leader-keys "H-c" 'org-capture)
+  (spacemacs/set-leader-keys "H-c" 'compile)
   (spacemacs/set-leader-keys "H-h" 'hackernews)
   (spacemacs/set-leader-keys "H-v" 'variable-pitch-mode)
   (spacemacs/set-leader-keys "H-f" 'spacemacs/toggle-frame-fullscreen-non-native)
   (spacemacs/set-leader-keys "H-u" 'emacs-uptime)
-  (spacemacs/set-leader-keys "H-g" (lambda ()
-                                     (interactive)
-                                     (garbage-collect)
-                                     (message "no more garbage! yay!")))
+  (spacemacs/set-leader-keys "H-g" 'cleanup-emacs)
   (spacemacs/set-leader-keys "H-i" 'insert-current-time)
   (spacemacs/set-leader-keys "H-y" 'youtube-viewer-start)
+  (spacemacs/set-leader-keys "H-p" 'evil-unimpaired/next-frame)
+  (spacemacs/set-leader-keys "H-n" 'evil-unimpaired/previous-frame)
+  (spacemacs/set-leader-keys "H-k" 'helm-show-kill-ring)
   (spacemacs/set-leader-keys "." 'eyebrowse-create-window-config)
   (spacemacs/set-leader-keys "," 'eyebrowse-close-window-config)
   (spacemacs/set-leader-keys "[" 'eyebrowse-prev-window-config)
@@ -821,6 +939,8 @@ you should place your code here."
   (evil-define-key 'insert 'prog-mode-map (kbd "C-.") (lambda ()
                                                         (interactive)
                                                         (insert-char 41)))
+  (evil-define-key 'insert 'prog-mode-map (kbd "C-]") #'dumb-jump)
+  (evil-define-key 'normal 'prog-mode-map (kbd "C-]") #'dumb-jump)
 
   ;; more idiosyncratic window splitting
   (spacemacs/set-leader-keys "w;" 'split-window-right-and-focus)
@@ -846,10 +966,48 @@ you should place your code here."
   (defun run-hammerspoon ()
     (interactive)
     (comint-run "hs" '()))
-  (with-eval-after-load 'lua
+  (with-eval-after-load 'lua-mode
     (spacemacs/declare-prefix-for-mode 'lua-mode "n" "hammerspoon")
     (spacemacs/set-leader-keys-for-major-mode 'lua-mode
-      "n'" 'run-hammerspoon))
+      "n'" 'run-hammerspoon)
+
+    (defun toggle-lua-process-buffer ()
+      "Swap between *lua* and *hs*, depending on the current lua process."
+      (interactive)
+      (let ((lua-process-buffer-name (buffer-name lua-process-buffer)))
+        (cond ((string= lua-process-buffer-name "*lua*")
+               (let ((hammerspoon-buffer (get-buffer "*hs*")))
+                 (if hammerspoon-buffer
+                     (progn
+                       (setq lua-process (get-buffer-process hammerspoon-buffer)
+                             lua-process-buffer hammerspoon-buffer)
+                       (comint-send-string (get-buffer-process hammerspoon-buffer)
+                                            (concat lua-process-init-code "\n")))
+                     (progn
+                       (run-hammerspoon)
+                       (let ((new-hammerspoon-buffer (get-buffer "*hs*")))
+                         (setq lua-process (get-buffer-process new-hammerspoon-buffer)
+                               lua-process-buffer new-hammerspoon-buffer)
+                         (comint-send-string (get-buffer-process new-hammerspoon-buffer)
+                                             (concat lua-process-init-code "\n")))))
+                 (message "Switched to Hammerspoon.")))
+              ((string= lua-process-buffer-name "*hs*")
+               (let ((lua-buffer (get-buffer "*lua*")))
+                 (if lua-buffer
+                     (progn
+                       (setq lua-process (get-buffer-process lua-buffer)
+                             lua-process-buffer lua-buffer)
+                       (comint-send-string (get-buffer-process lua-buffer)
+                                           (concat lua-process-init-code "\n")))
+                     (progn
+                       (run-lua)
+                       (let ((new-lua-buffer (get-buffer "*lua*")))
+                         (setq lua-process (get-buffer-process new-lua-buffer)
+                               lua-process-buffer new-lua-buffer)
+                         (comint-send-string (get-buffer-process new-lua-buffer)
+                                             (concat lua-process-init-code "\n")))))
+                 (message "Switched to Lua."))))))
+    (spacemacs/set-leader-keys-for-major-mode 'lua-mode "n'" #'toggle-lua-process-buffer))
 
 
   ;; fennel config
@@ -859,13 +1017,11 @@ you should place your code here."
                       ("mh" . "help")))
       (spacemacs/declare-prefix-for-mode
         'fennel-mode (car prefix) (cdr prefix)))
-    (require 'hammerspoon-interaction)
     (spacemacs/set-leader-keys-for-major-mode 'fennel-mode
       "'" 'fennel-repl
       "r" 'fennel-reload
 
-      ;; eval
-      ;; "ea" 'lisp-show-arglist
+      "ea" 'lisp-show-arglist
       "eb" 'eval-buffer
       "ee" 'lisp-eval-last-sexp
       "ef" 'lisp-eval-defun
@@ -873,14 +1029,7 @@ you should place your code here."
       "en" 'lisp-eval-form-and-next
       "ep" 'lisp-eval-paragraph
       "er" 'lisp-eval-region
-
-      "hd" 'lisp-describe-sym
-
-      "n'" 'hammerspoon-fennel-repl-run
-      "ne" 'hammerspoon-fennel-repl-eval-last-sexp
-      "nE" 'hammerspoon-fennel-repl-eval-form-and-next
-      "nr" 'hammerspoon-fennel-repl-eval-region
-      "nb" 'hammerspoon-fennel-repl-eval-buffer))
+      "hd" 'lisp-describe-sym))
 
 
   ;; tuareg related
@@ -904,12 +1053,14 @@ you should place your code here."
 
   ;; haskell-mode config
   (with-eval-after-load 'haskell-mode
-    (define-key haskell-mode-map (kbd "H-\\") 'haskell-goto-prev-error)
-    (define-key haskell-mode-map (kbd "H-/") 'haskell-goto-next-error)
     (setq haskell-process-type 'stack-ghci
           haskell-interactive-popup-errors nil
           haskell-process-path-ghci "stack"))
 
+  ;; agda0mode config
+  (with-eval-after-load 'agda-mode
+    (load-file (let ((coding-system-for-read 'utf-8))
+                 (shell-command-to-string "agda-mode locate"))))
 
   ;; imenu config
   (setq imenu-list-position 'left)
@@ -929,11 +1080,24 @@ you should place your code here."
               (message (concat "opening " trimmed))
               (xwidget-webkit-new-session trimmed))
             (xwidget-webkit-new-session url))))
+
+    (defun xwidget-open-url-in-new-window (url)
+      (interactive)
+      (if (or (s-starts-with-p "https://https://" url)
+              (s-starts-with-p "https://http://" url)
+              (s-starts-with-p "http://http://" url)
+              (s-starts-with-p "http://https://" url))
+          (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
+            (message (concat "opening " trimmed))
+            (xwidget-webkit-new-session trimmed))
+          (xwidget-webkit-new-session url)))
+
     (defun xwidget-webkit-copy-current-url ()
       (interactive)
       (let ((current-url (->> (xwidget-webkit-current-url)
                               (s-chop-prefix "URL: "))))
         (kill-new current-url)))
+
     (setq xwidget-webkit-enable-plugins t)
     (spacemacs/set-leader-keys-for-major-mode 'xwidget-webkit-mode
       "f" 'xwwp-follow-link
@@ -947,16 +1111,24 @@ you should place your code here."
       "h" 'xwidget-webkit-back
       "b" 'xwidget-webkit-back
       "l" 'xwidget-webkit-forward
+      "y" 'xwidget-webkit-copy-selection-as-kill
       "H-c" 'xwidget-webkit-copy-selection-as-kill
       "c" 'xwidget-webkit-copy-current-url
       "q" 'kill-this-buffer)
     (add-hook 'xwidget-webkit-mode-hook
               (lambda ()
                 (local-unset-key (kbd "<backspace>"))))
+
     (defun xwidget-webkit-find-file (file)
       (interactive "fFilename: ")
       (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))
-    (spacemacs/set-leader-keys "awF" 'xwidget-webkit-find-file))
+
+    (spacemacs/set-leader-keys "awF" 'xwidget-webkit-find-file)
+
+    (defun xwidget-webkit-open-localhost ()
+      (interactive)
+      (xwidget-webkit-new-session (concat "http://localhost:"
+                                          (read-from-minibuffer "Port: " "8888")))))
 
 
   ;; hl-todo config
@@ -986,6 +1158,8 @@ you should place your code here."
   (setq zoneinfo-style-world-list '(("America/Los_Angeles" "Los Angeles")
                                     ("America/New_York" "New York")
                                     ("Asia/Seoul" "Seoul")))
+  (spacemacs/declare-prefix "aC" "clock")
+  (spacemacs/set-leader-keys "aCw" #'world-clock)
 
 
   ;; scala-mode config
@@ -1068,14 +1242,14 @@ you should place your code here."
     (define-key tetris-mode-map (kbd "l") 'tetris-move-right))
 
 
-  (spacemacs/declare-prefix "am" "emms")
-  (spacemacs/set-leader-keys "amo" 'emms)
-  (spacemacs/set-leader-keys "ams" 'emms-pause)
-  (spacemacs/set-leader-keys "amp" 'emms-previous)
-  (spacemacs/set-leader-keys "amn" 'emms-next)
-  (spacemacs/set-leader-keys "amd" 'emms-play-directory)
-  (spacemacs/set-leader-keys "amf" 'emms-play-file)
-  (spacemacs/set-leader-keys "amu" 'emms-play-url)
+  (spacemacs/declare-prefix "ame" "emms")
+  (spacemacs/set-leader-keys "ameo" 'emms)
+  (spacemacs/set-leader-keys "ames" 'emms-pause)
+  (spacemacs/set-leader-keys "amep" 'emms-previous)
+  (spacemacs/set-leader-keys "amen" 'emms-next)
+  (spacemacs/set-leader-keys "amed" 'emms-play-directory)
+  (spacemacs/set-leader-keys "amef" 'emms-play-file)
+  (spacemacs/set-leader-keys "ameu" 'emms-play-url)
 
 
   ;; emms config
@@ -1111,6 +1285,7 @@ you should place your code here."
   (spacemacs/set-leader-keys-for-major-mode 'python-mode
     "sS" 'python-shell-send-setup-code!)
   (setq python-test-runner 'pytest)
+  (add-hook 'python-mode-hook 'code-cells-mode-maybe)
 
 
   ;; ein config
@@ -1121,7 +1296,15 @@ you should place your code here."
   (defun display-current-time ()
     "display the current time in the buffer."
     (interactive)
-    (message (format-time-string "%Y-%m-%d %H:%M:%S")))
+    (let* ((weekday-num (format-time-string "%w"))
+           (weekday-str (alist-get weekday-num '(("0" . "Sun")
+                                                 ("1" . "Mon")
+                                                 ("2" . "Tue")
+                                                 ("3" . "Wed")
+                                                 ("4" . "Thu")
+                                                 ("5" . "Fri")
+                                                 ("6" . "Sat")) "" nil #'string-equal)))
+      (message (format-time-string (concat "%Y-%m-%d %H:%M:%S " weekday-str)))))
 
 
   (defun insert-current-time ()
@@ -1179,7 +1362,6 @@ you should place your code here."
   (spacemacs/set-leader-keys "awm" 'w3m)
   (spacemacs/set-leader-keys "wt" 'transpose-frame)
   (spacemacs/set-leader-keys "si" 'helm-imenu)
-  (spacemacs/set-leader-keys "it" 'org-insert-current-time)
   (spacemacs/set-leader-keys "ai" 'display-current-time)
   (spacemacs/set-leader-keys "ab" 'battery)
   (spacemacs/set-leader-keys "p/" 'projectile-ripgrep)
@@ -1208,17 +1390,8 @@ you should place your code here."
   (setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc")
 
 
-  ;; world-clock config
-  (spacemacs/declare-prefix "aC" "clock")
-  (spacemacs/set-leader-keys "aCw" #'world-clock)
-
   ;; org-mode config
   (with-eval-after-load 'org
-    (defun org-insert-current-time ()
-      "insert the curren time at the cursor position."
-      (interactive)
-      (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
-
     (setq org-startup-with-inline-images t
           org-startup-folded 'show-all
           org-startup-latex-with-latex-preview t
@@ -1227,9 +1400,28 @@ you should place your code here."
           org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
           org-superstar-bullet-list '("■" "◆" "▲" "▶")
           org-directory "~/Dropbox/Org")
+
+    ;; org-capture config
+    (setq org-capture-templates
+          `(("w" "Work TODO" entry (file+headline ,(concat org-directory "/WorkTODO.org") "Tasks")
+             "* TODO %?\n%i\n%a")
+            ("W" "TODO" entry (file+headline ,(concat org-directory "/TODO.org") "Tasks")
+             "* TODO %?\n%i\n%a")
+            ("j" "TIL" entry (file+headline ,(concat org-directory "/TIL.org") "TIL")
+             "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
+            ("c" "Clipboard" entry (file+headline ,(concat org-directory "/Clipboard.org") "Clipboard")
+             "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
+            ("a" "Journal" entry (file+datetree,(concat org-directory "/Journal.org"))
+             "** %U\n\n%?\n%i\n")
+            ("s" "ShowerThoughts" entry (file+headline ,(concat org-directory "/ShowerThoughts.org") "ShowerThoughts")
+             "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")))
+
     org-todo-keywords
     '((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))
     (add-hook 'org-mode-hook #'mixed-pitch-mode)
+
+    ;; org-roam config
+    (setq org-roam-completion-everywhere t)
 
     ;; org-babel config
     (require 'ob-lisp)
@@ -1239,13 +1431,16 @@ you should place your code here."
     (require 'ob-dot)
     (require 'ob-rust)
     (require 'ob-kotlin)
+    (require 'ob-shell)
     (require 'org-babel-no-tangle)
     (require 'org-babel-handle-imports)
     (org-babel-do-load-languages
      'org-babel-load-languages '((lisp . t) (clojure . t)
-                                 (python . t) (hy . t)
-                                 (scheme . t) (dot . t)
-                                 (mermaid . t) (plantuml . t)))
+                                 (scheme . t) (hy . t)
+                                 (dot . t) (rust . t)
+                                 (kotlin . t) (shell . t)
+                                 (mermaid . t) (plantuml . t)
+                                 (awk . t)))
     (require 'org-element)
     (defun org-babel-switch-to-file ()
       (interactive)
@@ -1317,23 +1512,15 @@ you should place your code here."
   (global-set-key (kbd "C-d C-d") 'evil-toggle-input-method)
 
 
-  ;; erc config
-  (require 'erc-my-config)
-
-
-  ;; slack config
-  (require 'slack-my-config)
-
-
   ;; graphviz config
   (with-eval-after-load 'graphviz
     (setq graphviz-dot-preview-extension "svg"))
 
 
   ;; twitch config
+  (require 'twitch-api)
   (require 'twitch-my-config)
   (require 'streamlink)
-  (spacemacs/set-leader-keys "awst" 'helm-twitch)
   (spacemacs/set-leader-keys "awsc" 'twitch-api-erc-tls)
 
 
@@ -1346,13 +1533,9 @@ you should place your code here."
     (spacemacs/set-leader-keys "ays" 'youtube-viewer-start))
 
 
-  ;; For emacs-mac, avoid the notch
-  (when (string= (system-name) "JSLs-MacBookPro14.local")
-    (spacemacs/toggle-tool-bar-on))
-
-
   ;; mu4e config
-  (when (executable-find "mbsync")
+  (when (and (executable-find "mbsync")
+             (executable-find "mu"))
     (require 'mu4e-my-config))
 
   ) ;; user-config end
@@ -1367,17 +1550,17 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("e80b1078c4ce2225f6f8d7621a55d3b675c86cad505b22b20243d4d075f491f5" default))
  '(package-selected-packages
-   '(geiser-racket geiser-kawa geiser-guile geiser-gambit geiser-chicken geiser-chez 4clojure ob-async org-auto-tangle a mixed-pitch ob-rust ob-kotlin keycast command-log-mode tidal janet-mode inf-elixir inf-clojure helm-cider-history clomacs clj-deps-new clj-decompiler valign ts-fold trie heap tNFA tree-sitter-langs tree-sitter tsc ox-asciidoc org-wild-notifier org-roam-ui org-re-reveal org-journal org-brain eshell-syntax-highlighting eshell-info-banner eshell-git-prompt eshell-did-you-mean deadgrep yaml-mode wolfram-mode vimrc-mode vala-snippets vala-mode typit mmt thrift sudoku stan-mode solidity-flycheck solidity-mode scad-mode rjsx-mode restclient-helm reddigg promise rcirc-notify rcirc-color rainbow-mode qml-mode psci purescript-mode psc-ide pony-mode pocket-reader org-web-tools rainbow-identifiers ov pocket-lib pkgbuild-mode pandoc-mode pacmacs ox-rfc ox-pandoc ob-restclient ob-http ob-elixir nim-mode flycheck-nimsuggest commenter matlab-mode logcat kubernetes-tramp kubernetes-evil kubernetes magit-popup julia-repl julia-mode ietf-docs hoon-mode helpful elisp-refs helm-twitch streamlink graphql-mode git-gutter-fringe fringe-helper git-gutter fstar-mode company-quickhelp quick-peek flycheck-nim flycheck-ledger flycheck-credo flutter evil-snipe evil-mc evil-ledger ledger-mode erlang ediprolog ebuild-mode dotnet djvu3 djvu direx dired-k dart-mode dactyl-mode copy-as-format company-restclient restclient know-your-http-well color-identifiers-mode browse-at-remote bm better-jumper arduino-mode alchemist elixir-mode adoc-mode markup-faces 2048-game soundklaus erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks ess-R-data-view ess citar citeproc sql-indent org-roam-bibtex bibtex-completion biblio parsebib biblio-core org-noter org-listcruncher org-link-beautify org-kanban company-lua lua-mode fennel-mode kotlin-mode flycheck-kotlin web-server yasnippet-snippets yapfify xwwp xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen utop use-package undo-tree ts treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil transpose-frame toml-mode toc-org tide terminal-here tagedit symon symbol-overlay string-inflection string-edit sphinx-doc spaceline-all-the-icons smeargle slime-company slim-mode slack sicp shell-pop seeing-is-believing scss-mode sbt-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocopfmt rubocop rspec-mode ron-mode robe rg reveal-in-osx-finder restart-emacs rbenv rake rainbow-delimiters racket-mode racer quickrun python-pytest pytest pyenv-mode pydoc py-isort pug-mode proof-general prettier-js poetry plantuml-mode pippel pipenv pip-requirements pdf-view-restore password-generator paradox overseer osx-trash osx-dictionary osx-clipboard orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file omnisharp ocp-indent ocamlformat ob-mermaid ob-hy npm-mode nov nose nodejs-repl nameless mvn multi-vterm multi-term multi-line mmm-mode minitest mermaid-mode merlin-iedit merlin-eldoc merlin-company maven-test-mode markdown-toc lorem-ipsum livid-mode live-py-mode launchctl json-reformat json-navigator js2-refactor js-doc inspector info+ indent-guide importmagic impatient-mode ibuffer-projectile hybrid-mode hy-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-w3m helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-ls-git helm-hoogle helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-cider helm-c-yasnippet helm-ag haskell-snippets hackernews groovy-mode groovy-imports graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md gendoxy geiser fuzzy fsharp-mode format-all font-lock+ flycheck-ycmd flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-haskell flycheck-elsa flycheck-elm flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-tex evil-terminal-cursor-changer evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eshell-z eshell-prompt-extras esh-help eradio emr emoji-cheat-sheet-plus emms emmet-mode emamux elm-test-runner elm-mode elisp-slime-nav elisp-def elfeed-org elfeed-goodies ein editorconfig dune dumb-jump drag-stuff dotenv-mode doom-modeline dockerfile-mode docker disaster dired-quick-sort diminish devdocs dante cython-mode csv-mode cpp-auto-include company-ycmd company-web company-rtags company-reftex company-plsense company-go company-emoji company-coq company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets column-enforce-mode code-cells cmm-mode clojure-snippets clean-aindent-mode cider-eval-sexp-fu chruby centered-cursor-mode cargo bundler blacken auto-yasnippet auto-highlight-symbol auto-compile auctex-latexmk attrap aggressive-indent ag ace-link ace-jump-helm-line ac-ispell)))
+   '(texfrag ht avy denote popup hydra ace-window math-symbol-lists polymode paredit markdown-mode persp-mode auctex clojure-mode closql helm-mu multiple-cursors vterm pdf-tools rust-mode compat tree-sitter-langs leetcode graphql rtags csharp-mode flycheck request f s forge ghub language-id with-editor kbd-mode evil-collection company all-the-icons cider dap-mode git-commit transient helm helm-core treemacs magit-section inf-ruby alert evil bind-key magit typescript-mode idris-mode prop-menu w3m async projectile multi-vterm coterm helm-spotify-plus multi spotify tao-theme modus-themes geiser-racket geiser-kawa geiser-guile geiser-gambit geiser-chicken geiser-chez 4clojure ob-async org-auto-tangle a mixed-pitch ob-rust ob-kotlin keycast command-log-mode tidal janet-mode inf-elixir inf-clojure helm-cider-history clomacs clj-deps-new clj-decompiler valign trie heap tNFA ox-asciidoc org-wild-notifier org-roam-ui org-re-reveal org-journal org-brain eshell-syntax-highlighting eshell-info-banner eshell-git-prompt eshell-did-you-mean deadgrep yaml-mode wolfram-mode vimrc-mode vala-snippets vala-mode typit mmt thrift sudoku stan-mode solidity-flycheck solidity-mode scad-mode rjsx-mode restclient-helm reddigg promise rcirc-notify rcirc-color rainbow-mode qml-mode psci purescript-mode psc-ide pony-mode pocket-reader org-web-tools rainbow-identifiers ov pocket-lib pkgbuild-mode pandoc-mode pacmacs ox-rfc ox-pandoc ob-restclient ob-http ob-elixir nim-mode flycheck-nimsuggest commenter matlab-mode logcat kubernetes-tramp kubernetes-evil kubernetes magit-popup julia-repl julia-mode ietf-docs hoon-mode helpful elisp-refs streamlink graphql-mode git-gutter-fringe fringe-helper git-gutter fstar-mode company-quickhelp quick-peek flycheck-nim flycheck-ledger flycheck-credo flutter evil-snipe evil-mc evil-ledger ledger-mode erlang ediprolog ebuild-mode dotnet djvu3 djvu direx dired-k dart-mode dactyl-mode copy-as-format company-restclient restclient know-your-http-well color-identifiers-mode browse-at-remote bm better-jumper arduino-mode alchemist elixir-mode adoc-mode markup-faces 2048-game soundklaus ess-R-data-view ess citar citeproc sql-indent org-roam-bibtex bibtex-completion biblio parsebib biblio-core org-noter org-listcruncher org-link-beautify org-kanban company-lua lua-mode fennel-mode kotlin-mode flycheck-kotlin web-server yasnippet-snippets yapfify xwwp xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen utop use-package undo-tree ts treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil transpose-frame toml-mode toc-org terminal-here tagedit symon symbol-overlay string-inflection string-edit sphinx-doc spaceline-all-the-icons smeargle slime-company slim-mode sicp shell-pop seeing-is-believing scss-mode sbt-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocopfmt rubocop rspec-mode ron-mode robe rg reveal-in-osx-finder restart-emacs rbenv rake rainbow-delimiters racket-mode racer quickrun python-pytest pytest pyenv-mode pydoc py-isort pug-mode proof-general prettier-js poetry plantuml-mode pippel pipenv pip-requirements pdf-view-restore password-generator paradox overseer osx-trash osx-dictionary osx-clipboard orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file omnisharp ocp-indent ocamlformat ob-mermaid ob-hy npm-mode nov nose nodejs-repl nameless mvn multi-term multi-line mmm-mode minitest mermaid-mode merlin-iedit merlin-eldoc merlin-company maven-test-mode markdown-toc lorem-ipsum livid-mode live-py-mode launchctl json-reformat json-navigator js2-refactor js-doc inspector info+ indent-guide importmagic impatient-mode ibuffer-projectile hybrid-mode hy-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-w3m helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-ls-git helm-hoogle helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-cider helm-c-yasnippet helm-ag haskell-snippets hackernews groovy-mode groovy-imports graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md gendoxy geiser fuzzy fsharp-mode format-all font-lock+ flycheck-ycmd flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-haskell flycheck-elsa flycheck-elm flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-tex evil-terminal-cursor-changer evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-cleverparens evil-args evil-anzu eshell-z eshell-prompt-extras esh-help eradio emr emoji-cheat-sheet-plus emms emmet-mode emamux elm-test-runner elm-mode elisp-slime-nav elisp-def elfeed-org elfeed-goodies ein editorconfig dune dumb-jump drag-stuff dotenv-mode doom-modeline dockerfile-mode docker disaster dired-quick-sort diminish devdocs dante cython-mode csv-mode cpp-auto-include company-ycmd company-web company-rtags company-reftex company-plsense company-go company-emoji company-coq company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets column-enforce-mode code-cells cmm-mode clojure-snippets clean-aindent-mode cider-eval-sexp-fu chruby centered-cursor-mode ccls cargo bundler blacken auto-yasnippet auto-highlight-symbol auto-compile auctex-latexmk attrap aggressive-indent ag ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(erc-input-face ((t (:foreground "#C0FFEE"))))
+ '(font-lock-keyword-face ((t (:foreground "#5317ac" :weight bold))))
  '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
- '(mode-line ((t (:background "#000000"))))
- '(mode-line-inactive ((t (:background "#000000"))))
  '(org-code ((t (:font "Courier"))))
  '(tool-bar ((t (:background "#000000")))))
 )
