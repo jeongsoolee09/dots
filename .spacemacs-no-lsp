@@ -130,11 +130,11 @@ values."
             shell-default-position 'bottom
             shell-default-term-shell "/bin/zsh"
             shell-default-shell 'vterm)
-     (haskell :variables haskell-backend nil)
+     (haskell :variables haskell-backend 'dante)
      (purescript :variables purescript-backend nil)
      (elm :variables elm-backend nil)
      idris
-     agda
+     ;; agda
      (ocaml :variables ocaml-backend nil)
      (markdown :variables markdown-live-preview-engine 'vmd)
      asciidoc
@@ -159,7 +159,6 @@ values."
      (nim :variables nim-backend nil)
      yaml
      (latex :variables latex-build-command "LatexMk")
-     (dart :variables dart-backend nil)
      (scala :variables scala-backend nil)
      (ruby :variables ruby-backend nil)
      (perl5 :variables perl5-backend nil)
@@ -188,7 +187,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(transpose-frame emms sicp s ts multi-vterm eradio
                                                       xwwp ag emamux format-all mermaid-mode
-                                                      rg python-pytest 
+                                                      rg python-pytest
                                                       web-server org-journal org-kanban org-link-beautify
                                                       org-listcruncher org-noter org-roam-bibtex citar
                                                       grip-mode fennel-mode fstar-mode eshell-did-you-mean
@@ -207,7 +206,10 @@ values."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(meghanada anaconda-mode merlin)
+   dotspacemacs-excluded-packages '(meghanada anaconda-mode merlin
+                                    lsp-mode lsp-docker lsp-treemacs helm-lsp
+                                    lsp-haskell lsp-julia lsp-ui lsp-metals
+                                    inspector)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -1538,9 +1540,7 @@ you should place your code here."
              (executable-find "mu"))
     (require 'mu4e-my-config))
 
-  ) ;; user-config end
-
-(defun dotspacemacs/emacs-custom-settings ()
+  ) (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
@@ -1559,8 +1559,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-keyword-face ((t (:foreground "#5317ac" :weight bold))))
  '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
- '(org-code ((t (:font "Courier"))))
  '(tool-bar ((t (:background "#000000")))))
 )
