@@ -88,22 +88,20 @@ values."
                   tree-sitter-syntax-highlight-enable t
                   tree-sitter-fold-enable nil
                   tree-sitter-fold-indicators-enable nil)
-     major-modes
      graphql
      (javascript :variables javascript-backend nil
                  js2-basic-offset 2)
      (typescript :variables typescript-backend nil)
      (solidity :variables solidity-flycheck-solium-checker-active t)
      (clojure :variables clojure-backend nil
-              cider-repl-display-help-banner nil      ;; disable help banner
-              cider-pprint-fn 'fipp                   ;; fast pretty printing
+              cider-repl-display-help-banner nil
+              cider-pprint-fn 'fipp
               clojure-indent-style 'align-arguments
               clojure-align-forms-automatically t
-              clojure-toplevel-inside-comment-form t  ;; evaluate expressions in comment as top level
-              cider-result-overlay-position 'at-point ;; results shown right after expression
+              clojure-toplevel-inside-comment-form t
+              cider-result-overlay-position 'at-point
               cider-overlays-use-font-lock t
-              cider-repl-buffer-size-limit 100        ;; limit lines shown in REPL buffer
-              )
+              cider-repl-buffer-size-limit 100)
      html
      (c-c++ :variables c-c++-backend nil)
      (org :variables
