@@ -1271,13 +1271,34 @@ you should place your code here."
 
 
   ;; python config
-  (defun python-shell-send-setup-code! ()
-    (interactive)
-    (funcall #'python-shell-send-setup-code))
-  (spacemacs/set-leader-keys-for-major-mode 'python-mode
-    "sS" 'python-shell-send-setup-code!)
-  (setq python-test-runner 'pytest)
-  (add-hook 'python-mode-hook 'code-cells-mode-maybe)
+  (with-eval-after-load 'python-mode
+    (setq python-shell-setup-codes '(python-shell-eval-setup-code
+                                     python-shell-eval-file-setup-code
+                                     python-shell-completion-setup-code))
+    ;; TODO borken: command-execute: The mark is not set now, so there is no region
+    (defun python-shell-send-setup-code! ()
+      "Send all setup code for shell.
+This function takes the list of setup code to send from the
+`python-shell-setup-codes' list."
+      (interactive)
+      (when python-shell-setup-codes
+        (let ((process (python-shell-get-process))
+              (code (concat
+                     (-interpose "\n\n"
+                      (mapcar
+                       (lambda (elt)
+                         (cond ((stringp elt) elt)
+                               ((symbolp elt) (symbol-value elt))
+                               (t "")))
+                       python-shell-setup-codes
+                       "\n\nprint ('python.el: sent setup code')")))))
+          (message code)
+          (python-shell-send-string code process)
+          (python-shell-accept-process-output process))))
+    (spacemacs/set-leader-keys-for-major-mode 'python-mode
+      "sS" 'python-shell-send-setup-code!)
+    (setq python-test-runner 'pytest)
+    (add-hook 'python-mode-hook 'code-cells-mode-maybe))
 
 
   ;; ein config
