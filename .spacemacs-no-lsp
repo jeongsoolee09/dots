@@ -489,7 +489,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (mode-line-inactive :background "#000000")
            (tool-bar :background "#000000"))
           (modus-vivendi
-           (tool-bar :background "#000000"))
+           (tool-bar :background "#000000")
+           (pdf-view-midnight-colors ("#ffffff" . "#000000")))
           (modus-operandi
            (tool-bar :background "#d7d7d7")
            (font-lock-keyword-face :foreground "#5317ac" :weight bold))
