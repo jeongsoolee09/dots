@@ -8,4 +8,13 @@ return {
     disable_default_mouse_bindings = true,
     audible_bell = "Disabled",
     window_close_confirmation = "NeverPrompt",
+    color_scheme = "Cupertino (base16)",
+    keys = {
+        {
+          key = 'f',
+          mods = 'CTRL|CMD',
+          action = wezterm.action.ToggleFullScreen,
+        },
+    },
+    native_macos_fullscreen_mode = true
 }
