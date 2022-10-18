@@ -23,11 +23,7 @@
   (setq my-packages
 	'(magit
 	  company
-	  sicp
 	  ripgrep
-	  multi-vterm
-	  xwwp
-	  vterm
 	  use-package
 	  yasnippet
 	  hy-mode
@@ -37,10 +33,12 @@
 	  flycheck
 	  company
 	  undo-tree
-	  tuareg
 	  git-gutter
 	  all-the-icons
 	  which-key))
+
+  (when (not (package-installed-p 'use-package))
+    (package-install 'use-package))
 
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
@@ -51,12 +49,13 @@
   (use-package dash)
   (use-package s)
   (use-package ts)
-  
+
   ;; macOS Key Settings ===============================
   ;; ==================================================
 
   (setq mac-command-modifier 'hyper)
   (setq mac-option-modifier 'meta)
+  (global-set-key (kbd "H-w") 'delete-window)
 
   ;; Lisp config ======================================
   ;; ==================================================
@@ -582,10 +581,10 @@
   (global-set-key (kbd "H-8") 'winum-select-window-8)
   (global-set-key (kbd "H-9") 'winum-select-window-9)
 
-					; (global-set-key (kbd "H-p") 'counsel-recentf)
+  ;; (global-set-key (kbd "H-p") 'counsel-recentf)
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
-					; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
+  ;; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
   (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
   (global-set-key (kbd "H-]") 'eyebrowse-next-window-config)
   (global-set-key (kbd "H-.") 'eyebrowse-create-window-config)
@@ -822,7 +821,13 @@
 
   (set-face-attribute 'default nil :height 140)
 
+  ;; Misc =============================================
+  ;; ==================================================
+
+  (use-package sicp)
+
   (message "config loaded!")
+
   ;; config end =======================================
   ;; ==================================================
   )
