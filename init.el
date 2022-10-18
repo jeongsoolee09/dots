@@ -267,6 +267,7 @@
   ;; xwidget config ===================================
   ;; ==================================================
 
+  (use-package xwwp)
   (use-package xwidget
     :config
     (setq xwidget-webkit-enable-plugins t)
@@ -282,14 +283,10 @@
 	      (message (concat "opening " trimmed))
 	      (xwidget-webkit-new-session trimmed))
 	  (xwidget-webkit-new-session url))))
-    (define-key xwidget-webkit-mode-map
-      (kbd "f") 'xwwp-follow-link)
-    (define-key xwidget-webkit-mode-map
-      (kbd "l") 'xwidget-webkit-browse-url)
-    (define-key xwidget-webkit-mode-map
-      (kbd "H-c") 'xwidget-webkit-copy-selection-as-kill)
-    (define-key xwidget-webkit-mode-map
-      (kbd "q") 'kill-this-buffer)
+    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
+    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
+    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "H-c") 'xwidget-webkit-copy-selection-as-kill)
+    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "q") 'kill-this-buffer)
     (add-hook 'xwidget-webkit-mode-hook
 	      (lambda ()
 		(local-unset-key (kbd "<backspace>"))))
@@ -792,7 +789,7 @@
  '(custom-safe-themes
    '("a8950f7287870cd993d7e56991a45e1414a09d97e4fbf08f48973a1381bc7aaf" "92d350334df87fe61a682518ff214c773625c6d5ace8060d128adc550bc60c9b" default))
  '(package-selected-packages
-   '(lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
+   '(xwidget lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
  '(recentf-auto-cleanup 'never))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
