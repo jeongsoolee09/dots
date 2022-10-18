@@ -25,8 +25,8 @@
 	  company
 	  sicp
 	  ripgrep
-	  xwwp
 	  multi-vterm
+	  xwwp
 	  vterm
 	  use-package
 	  yasnippet
@@ -34,7 +34,6 @@
 	  pdf-tools
 	  transient
 	  esup
-	  swiper
 	  flycheck
 	  company
 	  undo-tree
@@ -43,12 +42,9 @@
 	  all-the-icons
 	  which-key))
 
-  (when (eq system-type 'darwin)
-    (add-to-list 'my-packages 'exec-path-from-shell))
-
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
-  
+
   ;; Useful Elisp Libraries ===========================
   ;; ==================================================
 
@@ -66,6 +62,9 @@
   ;; ==================================================
   
   (use-package lispy)
+  (electric-pair-mode)
+  (electric-indent-mode)
+  (show-paren-mode 1)
 
   ;; Clojure config ===================================
   ;; ==================================================
@@ -89,9 +88,13 @@
   ;; ==================================================
 
   (setq explicit-shell-file-name "/bin/zsh")
-  (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI"))
-  (setq exec-path-from-shell-arguments '("-l"))
-  (exec-path-from-shell-initialize)
+  (use-package exec-path-from-shell
+    :config
+    (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI"))
+    (setq exec-path-from-shell-arguments '("-l"))
+    (when (or (memq window-system '(mac ns x))
+	      (daemonp))
+      (exec-path-from-shell-initialize)))
 
   ;; evil-mode config =================================
   ;; ==================================================
@@ -150,9 +153,9 @@
     (use-package evil-commentary
       :config (evil-commentary-mode)))
   
-    (use-package evil-terminal-cursor-changer)
+  (use-package evil-terminal-cursor-changer)
 
-    (use-package evil-ediff)
+  (use-package evil-ediff)
 
   ;; anzu config ======================================
   ;; ==================================================
@@ -178,7 +181,7 @@
   (use-package undo-tree
     :config
     (global-undo-tree-mode)
-   (setq undo-tree-auto-save-history nil))
+    (setq undo-tree-auto-save-history nil))
 
   ;; centered-window-mode config =====================
   ;; =================================================
@@ -213,7 +216,7 @@
   (use-package tex :ensure auctex)
   (use-package auctex-lua)
   ;; currently broken:
-  ; (use-package auctex-latexmk)
+  ;; (use-package auctex-latexmk)
   (use-package company-auctex)
 
   (with-eval-after-load 'tex
@@ -321,8 +324,6 @@
   (add-to-list 'load-path "~/.emacs.d/custom-lisp")
   (fset 'yes-or-no-p 'y-or-n-p)
   (setq create-lockfiles nil)
-  (setq electric-indent-mode nil)
-  (show-paren-mode 1)
 
   ;; eldoc-mode config ================================
   ;; ==================================================
@@ -366,7 +367,7 @@
     (setq which-key-idle-delay 0.3))
 
   ;; isearch configs ==================================
-  ;; ================================================== 
+  ;; ==================================================
 
   (global-set-key (kbd "C-s") 'isearch-forward-regexp)
   (global-set-key (kbd "C-r") 'isearch-backward-regexp)
@@ -374,7 +375,7 @@
   (global-set-key (kbd "C-M-r") 'isearch-backward)
 
   ;; hippie-expand configs ============================
-  ;; ================================================== 
+  ;; ==================================================
 
   (global-set-key (kbd "M-/") 'hippie-expand)
 
@@ -386,17 +387,17 @@
 	  try-complete-lisp-symbol))
 
   ;; uniquify configs =================================
-  ;; ================================================== 
+  ;; ==================================================
 
   (setq uniquify-buffer-name-style 'forward)
 
   ;; flycheck configs =================================
-  ;; ================================================== 
+  ;; ==================================================
   
   (global-flycheck-mode)
 
   ;; recentf configs ==================================
-  ;; ================================================== 
+  ;; ==================================================
 
   (use-package recentf
     :init
@@ -421,6 +422,14 @@
     :config
     (projectile-mode))
 
+  ;; minions config ===================================
+  ;; ==================================================
+
+  (use-package minions
+    :config
+    (minions-mode 1)
+    (setq minions-hidden-modes t))
+
   ;; visuals ==========================================
   ;; ==================================================
 
@@ -430,10 +439,9 @@
       (set-face-background 'default "unspecified-bg" (selected-frame))))
 
   (add-hook 'window-setup-hook 'on-after-init)
-
   
-  (global-display-line-numbers-mode)
-  (setq display-line-numbers-type 'relative)
+  ;;(global-display-line-numbers-mode)
+  ;;(setq display-line-numbers-type 'relative)
 
   ;; (defun my-change-window-divider ()
   ;;   (let ((display-table (or buffer-display-table standard-display-table)))
@@ -459,19 +467,58 @@
   ;; =================================================
   
   (global-visual-line-mode t)
-  (setq hooks '(doc-view-mode-hook
-		pdf-view-mode-hook
-		w3m-mode-hook
-		eww-mode-hook
-		inferior-hy-mode-hook
-		inferior-python-mode-hook
-		vterm-mode-hook))
-  (dolist (hook hooks)
-    (add-hook hook
+  (let ((hooks '(doc-view-mode-hook
+		 pdf-view-mode-hook
+		 w3m-mode-hook
+		 eww-mode-hook
+		 inferior-hy-mode-hook
+		 inferior-python-mode-hook
+		 vterm-mode-hook)))
+    (dolist (hook hooks)
+      (add-hook hook
+		(lambda ()
+		  (display-line-numbers-mode -1)))))
+
+  ;; vterm config =====================================
+  ;; ==================================================
+
+  (use-package multi-vterm
+    :ensure t
+    :config
+    (add-hook 'vterm-mode-hook
 	      (lambda ()
-		(display-line-numbers-mode -1))))
+		(setq-local evil-insert-state-cursor 'box)
+		(evil-insert-state)))
+    (define-key vterm-mode-map [return]                      #'vterm-send-return)
 
-
+    (setq vterm-keymap-exceptions nil)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-e")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-f")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-a")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-v")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-b")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-w")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-u")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-d")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-n")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-m")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-p")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-j")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-k")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-r")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-t")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-g")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-c")      #'vterm--self-insert)
+    (evil-define-key 'insert vterm-mode-map (kbd "C-SPC")    #'vterm--self-insert)
+    (evil-define-key 'normal vterm-mode-map (kbd "C-d")      #'vterm--self-insert)
+    (evil-define-key 'normal vterm-mode-map (kbd ",c")       #'multi-vterm)
+    (evil-define-key 'normal vterm-mode-map (kbd ",n")       #'multi-vterm-next)
+    (evil-define-key 'normal vterm-mode-map (kbd ",p")       #'multi-vterm-prev)
+    (evil-define-key 'normal vterm-mode-map (kbd "i")        #'evil-insert-resume)
+    (evil-define-key 'normal vterm-mode-map (kbd "o")        #'evil-insert-resume)
+    (evil-define-key 'normal vterm-mode-map (kbd "<return>") #'evil-insert-resume))
+  (use-package vterm)
+  
   ;; custom functions =================================
   ;; ==================================================
   
@@ -520,7 +567,7 @@
   ;; ==================================================
   
   (global-set-key (kbd "C-x C-l") 'count-lines-page)
-  ; (global-set-key (kbd "M-x") 'counsel-M-x)
+					; (global-set-key (kbd "M-x") 'counsel-M-x)
 
   ;; command-key keybindings ==========================
   ;; ==================================================
@@ -535,10 +582,10 @@
   (global-set-key (kbd "H-8") 'winum-select-window-8)
   (global-set-key (kbd "H-9") 'winum-select-window-9)
 
-  ; (global-set-key (kbd "H-p") 'counsel-recentf)
+					; (global-set-key (kbd "H-p") 'counsel-recentf)
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
-  ; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
+					; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
   (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
   (global-set-key (kbd "H-]") 'eyebrowse-next-window-config)
   (global-set-key (kbd "H-.") 'eyebrowse-create-window-config)
@@ -584,7 +631,7 @@
     (interactive)
     (find-file "~/.emacs.d/init.el"))
 
-  ; (evil-define-key 'normal 'global (kbd "<leader>SPC") 'counsel-M-x)
+					; (evil-define-key 'normal 'global (kbd "<leader>SPC") 'counsel-M-x)
   (evil-define-key 'normal 'global (kbd "<leader>TAB") 'evil-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>x TAB") 'indent-rigidly)
 
@@ -605,7 +652,7 @@
 
   (evil-define-key 'normal 'global (kbd "<leader>fs") 'save-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fed") 'visit-init-dot-el)
-  ; (evil-define-key 'normal 'global (kbd "<leader>fr") 'counsel-recentf)
+					; (evil-define-key 'normal 'global (kbd "<leader>fr") 'counsel-recentf)
   (evil-define-key 'normal 'global (kbd "<leader>fd") 'kill-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fj") 'dired-jump)
 
@@ -634,7 +681,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>]") 'eyebrowse-next-window-config)
   (evil-define-key 'normal 'global (kbd "<leader>;") 'evil-window-vsplit)
   (evil-define-key 'normal 'global (kbd "<leader>'") 'evil-window-split)
-  ; (evil-define-key 'normal 'global (kbd "<leader>o") 'counsel-find-file)
+					; (evil-define-key 'normal 'global (kbd "<leader>o") 'counsel-find-file)
   (evil-define-key 'normal 'global (kbd "<leader>/") 'flycheck-next-error)
   (evil-define-key 'normal 'global (kbd "<leader>\\") 'flycheck-previous-error)
 
@@ -789,7 +836,7 @@
  '(custom-safe-themes
    '("a8950f7287870cd993d7e56991a45e1414a09d97e4fbf08f48973a1381bc7aaf" "92d350334df87fe61a682518ff214c773625c6d5ace8060d128adc550bc60c9b" default))
  '(package-selected-packages
-   '(xwidget lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
+   '(multi-vterm minions xwidget lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
  '(recentf-auto-cleanup 'never))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
