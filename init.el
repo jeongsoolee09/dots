@@ -24,19 +24,7 @@
   ;; ==================================================
 
   (setq my-packages
-	'(modus-themes
-	  lispy
-	  clojure-mode
-	  clojure-mode-extra-font-locking
-	  cider
-	  projectile
-	  rainbow-delimiters
-	  tagedit
-	  magit
-	  auctex
-	  auctex-lua
-	  auctex-latexmk
-	  company-auctex
+	'(magit
 	  company
 	  transpose-frame
 	  sicp
@@ -46,37 +34,19 @@
 	  xwwp
 	  multi-vterm
 	  vterm
-	  evil
-	  evil-collection
-	  evil-terminal-cursor-changer
-	  evil-surround
-	  evil-anzu
-	  evil-commentary
-	  evil-ediff
-	  dash
-	  dash-functional
 	  use-package
-	  w3m
-	  smartparens
 	  yasnippet
 	  hy-mode
 	  pdf-tools
-	  winum
-	  graphviz-dot-mode
 	  transient
-	  magit
 	  ivy
 	  esup
-	  eyebrowse
 	  counsel
 	  swiper
 	  flycheck
 	  company
 	  undo-tree
 	  tuareg
-	  json-mode
-	  anzu
-	  smex
 	  git-gutter
 	  all-the-icons
 	  which-key))
@@ -87,11 +57,15 @@
   (dolist (p my-packages)
     (when (not (package-installed-p p))
       (package-install p)))
+
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t)
   
   ;; Useful Elisp Libraries ===========================
   ;; ==================================================
 
   (use-package dash :ensure t)
+  (use-package dash-functional :ensure t)
   (use-package s :ensure t)
   
   ;; macOS Key Settings ===============================
@@ -99,6 +73,22 @@
 
   (setq mac-command-modifier 'hyper)
   (setq mac-option-modifier 'meta)
+
+  ;; Lisp config ======================================
+  ;; ==================================================
+  
+  (use-package lispy :ensure t)
+
+  ;; Clojure config ===================================
+  ;; ==================================================
+
+  (use-package clojure-mode :ensure t)
+  (use-package cider :ensure t)
+
+  ;; HTML config ======================================
+  ;; ==================================================
+
+  (use-package tagedit :ensure t)
 
   ;; auto-indent on RET ===============================
   ;; ==================================================
@@ -170,22 +160,32 @@
       :config
       (global-evil-surround-mode 1))
 
-    (use-package evil-anzu)
+    (use-package evil-anzu :ensure t)
 
     (use-package evil-commentary
+      :ensure t
       :config (evil-commentary-mode)))
   
+    (use-package evil-terminal-cursor-changer
+      :ensure t)
+
+    (use-package evil-ediff
+      :ensure t)
+
   ;; anzu config ======================================
   ;; ==================================================
 
   (use-package anzu
+    :ensure t
     :config
     (global-anzu-mode +1))
 
   ;; rainbow delimiters config ========================
   ;; ==================================================
 
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook prog-mode)
 
   ;; undo-tree config =================================
   ;; ==================================================
@@ -205,6 +205,7 @@
   ;; =================================================
 
   (use-package winum
+    :ensure t
     :init (setq winum-auto-setup-mode-line nil)
     :config (winum-mode))
 
@@ -232,6 +233,12 @@
 
   ;; LaTeX config =====================================
   ;; ==================================================
+
+  (use-package tex :ensure auctex)
+  (use-package auctex-lua :ensure t)
+  ;; currently broken:
+  ; (use-package auctex-latexmk :ensure t)
+  (use-package company-auctex :ensure t)
 
   (with-eval-after-load 'tex
     (require 'pdf-sync)
@@ -262,7 +269,10 @@
   ;; eyebrowse config =================================
   ;; ==================================================
 
-  (eyebrowse-mode)
+  (use-package eyebrowse
+    :ensure t
+    :config
+    (eyebrowse-mode))
 
   ;; dired configs ====================================
   ;; ==================================================
@@ -316,21 +326,25 @@
   ;; json config =====================================
   ;; =================================================
 
-  (use-package json-mode)
+  (use-package json-mode :ensure t)
 
   ;; git-gutter config ================================
   ;; ==================================================
 
   (use-package git-gutter
-    :config (global-git-gutter-mode +1))
+    :ensure t
+    :config
+    (global-git-gutter-mode +1))
 
   ;; magit config =====================================
   ;; ==================================================
 
-  (use-package magit)
-  (add-hook 'magit-mode-hook
-	    (lambda ()
-	      (evil-define-key 'normal magit-mode-map (kbd "SPC") nil)))
+  (use-package magit
+    :ensure t
+    :config
+    (add-hook 'magit-mode-hook
+	      (lambda ()
+		(evil-define-key 'normal magit-mode-map (kbd "SPC") nil))))
 
   ;; custom lisp scripts, misc configs ================
   ;; ==================================================
@@ -380,8 +394,7 @@
   (use-package which-key
     :config
     (which-key-mode)
-    (setq which-key-idle-delay 0.3)
-    (which-key-declare-prefixes))
+    (setq which-key-idle-delay 0.3))
 
   ;; isearch configs ==================================
   ;; ================================================== 
@@ -406,9 +419,7 @@
   ;; uniquify configs =================================
   ;; ================================================== 
 
-  (use-package uniquify
-    :config
-    (setq uniquify-buffer-name-style 'forward))
+  (setq uniquify-buffer-name-style 'forward)
 
   ;; flycheck configs =================================
   ;; ================================================== 
@@ -437,7 +448,10 @@
   ;; projectile configs ===============================
   ;; ==================================================
 
-  (projectile-mode)
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-mode))
 
   ;; visuals ==========================================
   ;; ==================================================
@@ -459,7 +473,11 @@
   ;;     (set-window-display-table (selected-window) display-table)))
   ;; (add-hook 'window-configuration-change-hook 'my-change-window-divider)
 
-  (load-theme 'modus-operandi t)
+  (use-package modus-themes
+    :ensure t
+    :config
+    (load-theme 'modus-operandi t))
+
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
   (blink-cursor-mode 0)
@@ -540,6 +558,16 @@
   ;; command-key keybindings ==========================
   ;; ==================================================
 
+  (global-set-key (kbd "H-1") 'winum-select-window-1)
+  (global-set-key (kbd "H-2") 'winum-select-window-2)
+  (global-set-key (kbd "H-3") 'winum-select-window-3)
+  (global-set-key (kbd "H-4") 'winum-select-window-4)
+  (global-set-key (kbd "H-5") 'winum-select-window-5)
+  (global-set-key (kbd "H-6") 'winum-select-window-6)
+  (global-set-key (kbd "H-7") 'winum-select-window-7)
+  (global-set-key (kbd "H-8") 'winum-select-window-8)
+  (global-set-key (kbd "H-9") 'winum-select-window-9)
+
   (global-set-key (kbd "H-p") 'counsel-recentf)
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
@@ -579,6 +607,8 @@
   (global-set-key (kbd "C-H-i") 'imenu-list)
   (global-set-key (kbd "C-H-x") 'xwidget-new-window)
   (global-set-key (kbd "C-H-.") 'hl-todo-occur)
+  (global-set-key (kbd "C-H-;") 'flycheck-previous-error)
+  (global-set-key (kbd "C-H-'") 'flycheck-next-error)
 
   ;; leader keybindings ===============================
   ;; ==================================================
@@ -673,41 +703,39 @@
     :config
     (setq graphviz-dot-indent-width 4))
 
-  (use-package company-graphviz-dot
-    )
-
   ;; w3m config =======================================
   ;; ==================================================
 
-  (setq w3m-default-display-inline-images t)
-  (setq w3m-session-load-crashed-sessions 'never)
-  (defun xwidget-webkit-open-w3m-current-url ()
-    (interactive)
-    (require 'xwidget)
-    (xwidget-webkit-new-session w3m-current-url))
-  (defun eww-open-w3m-current-url ()
-    (interactive)
-    (eww-browse-url w3m-current-url))
-  (evil-define-key 'normal 'global (kbd "<leader>awx") 'xwidget-webkit-open-w3m-current-url)
-  (evil-define-key 'normal 'global (kbd "<leader>awW") 'eww-open-w3m-current-url)
-  (setq w3m-search-word-at-point nil)
-  (if window-system
-      (setq browse-url-browser-function 'browse-url-default-browser)
-    (setq browse-url-browser-function 'w3m-browse-url))
-  (defun w3m-copy-current-url ()
-    (interactive)
-    (kill-new w3m-current-url)
-    (message "Copied current URL."))
-  (eval-after-load 'w3m
-    '(progn
-       (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
-       (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil)
-       ()))
-  
-  (defun w3m-open-this-file ()
-    (interactive)
-    (let ((current-filename (buffer-file-name)))
-      (w3m-find-file current-filename)))
+  (use-package w3m
+    :ensure t
+    :config
+    (setq w3m-default-display-inline-images t)
+    (setq w3m-session-load-crashed-sessions 'never)
+    (defun xwidget-webkit-open-w3m-current-url ()
+      (interactive)
+      (require 'xwidget)
+      (xwidget-webkit-new-session w3m-current-url))
+    (defun eww-open-w3m-current-url ()
+      (interactive)
+      (eww-browse-url w3m-current-url))
+    (evil-define-key 'normal 'global (kbd "<leader>awx") 'xwidget-webkit-open-w3m-current-url)
+    (evil-define-key 'normal 'global (kbd "<leader>awW") 'eww-open-w3m-current-url)
+    (setq w3m-search-word-at-point nil)
+    (if window-system
+	(setq browse-url-browser-function 'browse-url-default-browser)
+      (setq browse-url-browser-function 'w3m-browse-url))
+    (defun w3m-copy-current-url ()
+      (interactive)
+      (kill-new w3m-current-url)
+      (message "Copied current URL."))
+    (eval-after-load 'w3m
+      '(progn
+	 (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
+	 (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil)))
+    (defun w3m-open-this-file ()
+      (interactive)
+      (let ((current-filename (buffer-file-name)))
+	(w3m-find-file current-filename))))
 
   ;; all-the-icons config =============================
   ;; ==================================================
