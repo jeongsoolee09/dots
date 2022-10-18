@@ -71,7 +71,21 @@
 
   (setq mac-command-modifier 'hyper)
   (setq mac-option-modifier 'meta)
+  ;; (global-set-key (kbd "0") 'spacemacs/reset-font-size)
+  (global-set-key (kbd "H-v") 'yank)
+  (global-set-key (kbd "H-c") 'evil-yank)
+  (global-set-key (kbd "H-x") 'kill-region)
   (global-set-key (kbd "H-w") 'delete-window)
+  (global-set-key (kbd "H-W") 'delete-frame)
+  ;; (global-set-key (kbd "n") 'make-frame)
+  (global-set-key (kbd "H-`") 'other-frame)
+  (global-set-key (kbd "H-z") 'undo-tree-undo)
+  (global-set-key (kbd "H-s") 'save-buffer)
+
+  ;; Eglot config =====================================
+  ;; ==================================================
+
+  (use-package eglot)
 
   ;; Lisp config ======================================
   ;; ==================================================
@@ -601,10 +615,12 @@
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
   ;; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
-  (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
-  (global-set-key (kbd "H-]") 'eyebrowse-next-window-config)
-  (global-set-key (kbd "H-.") 'eyebrowse-create-window-config)
-  (global-set-key (kbd "H-,") 'eyebrowse-close-window-config)
+  (global-set-key (kbd "H-{") 'tab-previous)
+  (global-set-key (kbd "H-}") 'tab-next)
+  (global-set-key (kbd "H-[") 'tab-previous)
+  (global-set-key (kbd "H-]") 'tab-next)
+  (global-set-key (kbd "H-.") 'tab-new)
+  (global-set-key (kbd "H-,") 'tab-close)
   (global-set-key (kbd "H-;") 'evil-window-vsplit)
   (global-set-key (kbd "H-'") 'evil-window-split)
   (global-set-key (kbd "H-h") 'evil-window-left)
@@ -865,3 +881,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(fringe ((t (:background "#ffffff")))))
+(put 'narrow-to-region 'disabled nil)
