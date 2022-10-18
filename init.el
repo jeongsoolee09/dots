@@ -8,9 +8,6 @@
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			   ("gnu" . "http://elpa.gnu.org/packages/")))
   (setq package-quickstart t)
-  (package-initialize)
-  (when (not package-archive-contents)
-    (package-refresh-contents))
 
   ;; Korean environment ===============================
   ;; ==================================================
@@ -26,10 +23,7 @@
   (setq my-packages
 	'(magit
 	  company
-	  transpose-frame
 	  sicp
-	  s
-	  ts
 	  ripgrep
 	  xwwp
 	  multi-vterm
@@ -39,9 +33,7 @@
 	  hy-mode
 	  pdf-tools
 	  transient
-	  ivy
 	  esup
-	  counsel
 	  swiper
 	  flycheck
 	  company
@@ -54,19 +46,15 @@
   (when (eq system-type 'darwin)
     (add-to-list 'my-packages 'exec-path-from-shell))
 
-  (dolist (p my-packages)
-    (when (not (package-installed-p p))
-      (package-install p)))
-
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
   
   ;; Useful Elisp Libraries ===========================
   ;; ==================================================
 
-  (use-package dash :ensure t)
-  (use-package dash-functional :ensure t)
-  (use-package s :ensure t)
+  (use-package dash)
+  (use-package s)
+  (use-package ts)
   
   ;; macOS Key Settings ===============================
   ;; ==================================================
@@ -77,18 +65,18 @@
   ;; Lisp config ======================================
   ;; ==================================================
   
-  (use-package lispy :ensure t)
+  (use-package lispy)
 
   ;; Clojure config ===================================
   ;; ==================================================
 
-  (use-package clojure-mode :ensure t)
-  (use-package cider :ensure t)
+  (use-package clojure-mode)
+  (use-package cider)
 
   ;; HTML config ======================================
   ;; ==================================================
 
-  (use-package tagedit :ensure t)
+  (use-package tagedit)
 
   ;; auto-indent on RET ===============================
   ;; ==================================================
@@ -110,7 +98,6 @@
 
   (setq evil-undo-system 'undo-tree)
   (use-package evil
-    :ensure t
     :init
     (setq evil-want-C-u-scroll t)
     (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
@@ -152,39 +139,37 @@
 
     (use-package evil-collection
       :after evil
-      :ensure t
       :config (evil-collection-init))
     
     (use-package evil-surround
-      :ensure t
       :config
       (global-evil-surround-mode 1))
 
-    (use-package evil-anzu :ensure t)
+    (use-package evil-anzu)
 
     (use-package evil-commentary
-      :ensure t
       :config (evil-commentary-mode)))
   
-    (use-package evil-terminal-cursor-changer
-      :ensure t)
+    (use-package evil-terminal-cursor-changer)
 
-    (use-package evil-ediff
-      :ensure t)
+    (use-package evil-ediff)
 
   ;; anzu config ======================================
   ;; ==================================================
 
   (use-package anzu
-    :ensure t
     :config
     (global-anzu-mode +1))
 
+  ;; transpose-frame config ===========================
+  ;; ==================================================
+
+  (use-package transpose-frame)
+  
   ;; rainbow delimiters config ========================
   ;; ==================================================
 
   (use-package rainbow-delimiters
-    :ensure t
     :hook prog-mode)
 
   ;; undo-tree config =================================
@@ -198,23 +183,14 @@
   ;; centered-window-mode config =====================
   ;; =================================================
 
-  (use-package centered-window
-    :ensure t)
+  (use-package centered-window)
 
   ;; winum configs ===================================
   ;; =================================================
 
   (use-package winum
-    :ensure t
     :init (setq winum-auto-setup-mode-line nil)
     :config (winum-mode))
-
-  ;; ivy configs =====================================
-  ;; =================================================
-
-  (ivy-mode)
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers nil)
 
   ;; scratch buffer configs ==========================
   ;; =================================================
@@ -235,10 +211,10 @@
   ;; ==================================================
 
   (use-package tex :ensure auctex)
-  (use-package auctex-lua :ensure t)
+  (use-package auctex-lua)
   ;; currently broken:
-  ; (use-package auctex-latexmk :ensure t)
-  (use-package company-auctex :ensure t)
+  ; (use-package auctex-latexmk)
+  (use-package company-auctex)
 
   (with-eval-after-load 'tex
     (require 'pdf-sync)
@@ -253,7 +229,6 @@
   ;; ==================================================
 
   (use-package clipetty
-    :ensure t
     :hook (after-init . global-clipetty-mode))
 
   ;; company-mode config ==============================
@@ -270,7 +245,6 @@
   ;; ==================================================
 
   (use-package eyebrowse
-    :ensure t
     :config
     (eyebrowse-mode))
 
@@ -326,13 +300,12 @@
   ;; json config =====================================
   ;; =================================================
 
-  (use-package json-mode :ensure t)
+  (use-package json-mode)
 
   ;; git-gutter config ================================
   ;; ==================================================
 
   (use-package git-gutter
-    :ensure t
     :config
     (global-git-gutter-mode +1))
 
@@ -340,7 +313,6 @@
   ;; ==================================================
 
   (use-package magit
-    :ensure t
     :config
     (add-hook 'magit-mode-hook
 	      (lambda ()
@@ -449,7 +421,6 @@
   ;; ==================================================
 
   (use-package projectile
-    :ensure t
     :config
     (projectile-mode))
 
@@ -474,7 +445,6 @@
   ;; (add-hook 'window-configuration-change-hook 'my-change-window-divider)
 
   (use-package modus-themes
-    :ensure t
     :config
     (load-theme 'modus-operandi t))
 
@@ -553,7 +523,7 @@
   ;; ==================================================
   
   (global-set-key (kbd "C-x C-l") 'count-lines-page)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
+  ; (global-set-key (kbd "M-x") 'counsel-M-x)
 
   ;; command-key keybindings ==========================
   ;; ==================================================
@@ -568,10 +538,10 @@
   (global-set-key (kbd "H-8") 'winum-select-window-8)
   (global-set-key (kbd "H-9") 'winum-select-window-9)
 
-  (global-set-key (kbd "H-p") 'counsel-recentf)
+  ; (global-set-key (kbd "H-p") 'counsel-recentf)
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
-  (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
+  ; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
   (global-set-key (kbd "H-[") 'eyebrowse-prev-window-config)
   (global-set-key (kbd "H-]") 'eyebrowse-next-window-config)
   (global-set-key (kbd "H-.") 'eyebrowse-create-window-config)
@@ -617,7 +587,7 @@
     (interactive)
     (find-file "~/.emacs.d/init.el"))
 
-  (evil-define-key 'normal 'global (kbd "<leader>SPC") 'counsel-M-x)
+  ; (evil-define-key 'normal 'global (kbd "<leader>SPC") 'counsel-M-x)
   (evil-define-key 'normal 'global (kbd "<leader>TAB") 'evil-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>x TAB") 'indent-rigidly)
 
@@ -638,7 +608,7 @@
 
   (evil-define-key 'normal 'global (kbd "<leader>fs") 'save-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fed") 'visit-init-dot-el)
-  (evil-define-key 'normal 'global (kbd "<leader>fr") 'counsel-recentf)
+  ; (evil-define-key 'normal 'global (kbd "<leader>fr") 'counsel-recentf)
   (evil-define-key 'normal 'global (kbd "<leader>fd") 'kill-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fj") 'dired-jump)
 
@@ -667,7 +637,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>]") 'eyebrowse-next-window-config)
   (evil-define-key 'normal 'global (kbd "<leader>;") 'evil-window-vsplit)
   (evil-define-key 'normal 'global (kbd "<leader>'") 'evil-window-split)
-  (evil-define-key 'normal 'global (kbd "<leader>o") 'counsel-find-file)
+  ; (evil-define-key 'normal 'global (kbd "<leader>o") 'counsel-find-file)
   (evil-define-key 'normal 'global (kbd "<leader>/") 'flycheck-next-error)
   (evil-define-key 'normal 'global (kbd "<leader>\\") 'flycheck-previous-error)
 
@@ -699,7 +669,6 @@
   ;; ==================================================
 
   (use-package graphviz-dot-mode
-    :ensure t
     :config
     (setq graphviz-dot-indent-width 4))
 
@@ -707,7 +676,6 @@
   ;; ==================================================
 
   (use-package w3m
-    :ensure t
     :config
     (setq w3m-default-display-inline-images t)
     (setq w3m-session-load-crashed-sessions 'never)
@@ -824,7 +792,7 @@
  '(custom-safe-themes
    '("a8950f7287870cd993d7e56991a45e1414a09d97e4fbf08f48973a1381bc7aaf" "92d350334df87fe61a682518ff214c773625c6d5ace8060d128adc550bc60c9b" default))
  '(package-selected-packages
-   '(merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
+   '(lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
  '(recentf-auto-cleanup 'never))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
