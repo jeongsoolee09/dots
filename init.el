@@ -273,13 +273,6 @@
     (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
     (define-key company-active-map (kbd "TAB") #'company-complete-selection))
 
-  ;; eyebrowse config =================================
-  ;; ==================================================
-
-  (use-package eyebrowse
-    :config
-    (eyebrowse-mode))
-
   ;; dired configs ====================================
   ;; ==================================================
 
@@ -706,10 +699,10 @@
   (evil-define-key 'normal 'global (kbd "<leader>9") 'winum-select-window-9)
 
 
-  (evil-define-key 'normal 'global (kbd "<leader>.") 'eyebrowse-create-window-config)
-  (evil-define-key 'normal 'global (kbd "<leader>,") 'eyebrowse-close-window-config)
-  (evil-define-key 'normal 'global (kbd "<leader>[") 'eyebrowse-prev-window-config)
-  (evil-define-key 'normal 'global (kbd "<leader>]") 'eyebrowse-next-window-config)
+  (evil-define-key 'normal 'global (kbd "<leader>.") 'tab-new)
+  (evil-define-key 'normal 'global (kbd "<leader>,") 'tab-close)
+  (evil-define-key 'normal 'global (kbd "<leader>[") 'tab-previous)
+  (evil-define-key 'normal 'global (kbd "<leader>]") 'tab-next)
   (evil-define-key 'normal 'global (kbd "<leader>;") 'evil-window-vsplit)
   (evil-define-key 'normal 'global (kbd "<leader>'") 'evil-window-split)
 					; (evil-define-key 'normal 'global (kbd "<leader>o") 'counsel-find-file)
