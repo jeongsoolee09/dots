@@ -6,7 +6,7 @@
   ;; ==================================================
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("gnu" . "http://elpa.gnu.org/packages/")))
+                   			   ("gnu" . "http://elpa.gnu.org/packages/")))
   (setq package-quickstart t)
 
   ;; Korean environment ===============================
@@ -37,11 +37,27 @@
 	  all-the-icons
 	  which-key))
 
-  (when (not (package-installed-p 'use-package))
-    (package-install 'use-package))
+  ;;(when (not (package-installed-p 'use-package))
+  ;;  (package-install 'use-package))
 
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
+
+  ;; No Littering! ====================================
+  ;; ==================================================
+
+  (use-package no-littering
+    :config
+    (require 'recentf)
+    (add-to-list 'recentf-exclude no-littering-var-directory)
+    (add-to-list 'recentf-exclude no-littering-etc-directory)
+    (setq auto-save-file-name-transforms
+	  `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+    (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
+    (when (fboundp 'startup-redirect-eln-cache)
+      (startup-redirect-eln-cache
+       (convert-standard-filename
+	(expand-file-name  "var/eln-cache/" user-emacs-directory)))))
 
   ;; Useful Elisp Libraries ===========================
   ;; ==================================================
@@ -841,7 +857,7 @@
  '(custom-safe-themes
    '("a8950f7287870cd993d7e56991a45e1414a09d97e4fbf08f48973a1381bc7aaf" "92d350334df87fe61a682518ff214c773625c6d5ace8060d128adc550bc60c9b" default))
  '(package-selected-packages
-   '(multi-vterm minions xwidget lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
+   '(no-littering multi-vterm minions xwidget lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
  '(recentf-auto-cleanup 'never))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
