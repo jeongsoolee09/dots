@@ -1,13 +1,24 @@
 (let ((file-name-handler-alist nil))
-
   (setq gc-cons-threshold 100000000)
 
   ;; packages =========================================
   ;; ==================================================
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                   			   ("gnu" . "http://elpa.gnu.org/packages/")))
+			   ("gnu" . "http://elpa.gnu.org/packages/")))
   (setq package-quickstart t)
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (eval-when-compile
+    (require 'use-package))
+
+  (require 'bind-key)
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t)
 
   ;; Korean environment ===============================
   ;; ==================================================
@@ -37,11 +48,8 @@
 	  all-the-icons
 	  which-key))
 
-  ;;(when (not (package-installed-p 'use-package))
-  ;;  (package-install 'use-package))
-
-  (require 'use-package-ensure)
-  (setq use-package-always-ensure t)
+  ;; (when (not (package-installed-p 'use-package))
+  ;;   (package-install 'use-package))
 
   ;; No Littering! ====================================
   ;; ==================================================
@@ -85,7 +93,7 @@
   ;; Eglot config =====================================
   ;; ==================================================
 
-  (use-package eglot)
+  (use-package eglot :ensure t)
 
   ;; Lisp config ======================================
   ;; ==================================================
@@ -504,15 +512,16 @@
   ;; vterm config =====================================
   ;; ==================================================
 
+  (use-package vterm)
   (use-package multi-vterm
     :ensure t
+    :after vterm
     :config
     (add-hook 'vterm-mode-hook
 	      (lambda ()
 		(setq-local evil-insert-state-cursor 'box)
 		(evil-insert-state)))
     (define-key vterm-mode-map [return]                      #'vterm-send-return)
-
     (setq vterm-keymap-exceptions nil)
     (evil-define-key 'insert vterm-mode-map (kbd "C-e")      #'vterm--self-insert)
     (evil-define-key 'insert vterm-mode-map (kbd "C-f")      #'vterm--self-insert)
@@ -539,7 +548,6 @@
     (evil-define-key 'normal vterm-mode-map (kbd "i")        #'evil-insert-resume)
     (evil-define-key 'normal vterm-mode-map (kbd "o")        #'evil-insert-resume)
     (evil-define-key 'normal vterm-mode-map (kbd "<return>") #'evil-insert-resume))
-  (use-package vterm)
   
   ;; custom functions =================================
   ;; ==================================================
