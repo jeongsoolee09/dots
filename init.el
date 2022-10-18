@@ -26,7 +26,6 @@
   (set-language-environment "Korean")
   (prefer-coding-system 'utf-8)
   (global-set-key (kbd "<f6>") 'toggle-korean-input-method)
-  (global-set-key (kbd "C-<backspace>") 'toggle-korean-input-method)
 
   ;; additional packages ==============================
   ;; ==================================================
@@ -94,7 +93,7 @@
   ;; ==================================================
 
   (use-package eglot :ensure t)
-
+  
   ;; Lisp config ======================================
   ;; ==================================================
   
@@ -165,6 +164,9 @@
     (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
     (evil-define-key 'normal 'global (kbd "C-w C-l") 'evil-window-right)
     (unbind-key (kbd "C-@"))
+    (defalias #'forward-evil-word #'forward-evil-symbol)
+    ;; make evil-search-word look for symbol rather than word boundaries
+    (setq-default evil-symbol-word-search t)
 
     (defun evil-toggle-input-method ()
       "when toggle on input method, switch to evil-insert-state if possible.
@@ -463,6 +465,9 @@
   ;; visuals ==========================================
   ;; ==================================================
 
+  (tool-bar-mode -1)
+  (tab-bar-mode 1)
+
   ;; transparent emacs in terminal
   (defun on-after-init ()
     (unless (display-graphic-p (selected-frame))
@@ -470,14 +475,8 @@
 
   (add-hook 'window-setup-hook 'on-after-init)
   
-  ;;(global-display-line-numbers-mode)
-  ;;(setq display-line-numbers-type 'relative)
-
-  ;; (defun my-change-window-divider ()
-  ;;   (let ((display-table (or buffer-display-table standard-display-table)))
-  ;;     (set-display-table-slot display-table 5 ?│)
-  ;;     (set-window-display-table (selected-window) display-table)))
-  ;; (add-hook 'window-configuration-change-hook 'my-change-window-divider)
+  ;; (global-display-line-numbers-mode)
+  ;; (setq display-line-numbers-type 'relative)
 
   (use-package modus-themes
     :config
@@ -514,8 +513,7 @@
 
   (use-package vterm)
   (use-package multi-vterm
-    :ensure t
-    :after vterm
+    :after (vterm projectile)
     :config
     (add-hook 'vterm-mode-hook
 	      (lambda ()
@@ -612,7 +610,7 @@
   (global-set-key (kbd "H-8") 'winum-select-window-8)
   (global-set-key (kbd "H-9") 'winum-select-window-9)
 
-  ;; (global-set-key (kbd "H-p") 'counsel-recentf)
+  (global-set-key (kbd "H-p") 'recentf-open-files)
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
   ;; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
@@ -874,7 +872,7 @@
  '(custom-safe-themes
    '("a8950f7287870cd993d7e56991a45e1414a09d97e4fbf08f48973a1381bc7aaf" "92d350334df87fe61a682518ff214c773625c6d5ace8060d128adc550bc60c9b" default))
  '(package-selected-packages
-   '(no-littering multi-vterm minions xwidget lispy merlin-iedit iedit git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
+   '(no-littering multi-vterm minions xwidget lispy git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
  '(recentf-auto-cleanup 'never))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

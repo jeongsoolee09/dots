@@ -28,8 +28,6 @@ lua << EOF
 
         use 'tpope/vim-sexp-mappings-for-regular-people'
 
-        use 'feline-nvim/feline.nvim'
-
         use 'kyazdani42/nvim-web-devicons'
 
         use 'kyazdani42/nvim-tree.lua'
@@ -259,12 +257,6 @@ require("catppuccin").setup({
 
     vim.cmd [[colorscheme catppuccin]]
     vim.g.catppuccin_flavour = "mocha" -- latte, frappe, macchiato, mocha
-
-local ctp_feline = require('catppuccin.groups.integrations.feline')
-
-require("feline").setup({
-	components = ctp_feline.get(),
-})
 EOF
 
 
@@ -275,7 +267,7 @@ lua << EOF
 EOF
 
 lua << EOF
-    local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
     -- Mappings.
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
