@@ -829,10 +829,10 @@
   (global-set-key (kbd "H-8") 'winum-select-window-8)
   (global-set-key (kbd "H-9") 'winum-select-window-9)
 
-  (global-set-key (kbd "H-p") 'recentf-open-files)
+  (global-set-key (kbd "H-p") 'consult-recent-file)
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
-  ;; (global-set-key (kbd "H-b") 'counsel-buffer-or-recentf)
+  (global-set-key (kbd "H-b") 'switch-to-buffer)
   (global-set-key (kbd "H-{") 'tab-previous)
   (global-set-key (kbd "H-}") 'tab-next)
   (global-set-key (kbd "H-[") 'tab-previous)
@@ -881,7 +881,8 @@
     (find-file "~/.emacs.d/init.el"))
 
 					; (evil-define-key 'normal 'global (kbd "<leader>SPC") 'counsel-M-x)
-  (evil-define-key 'normal 'global (kbd "<leader>TAB") 'evil-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader>SPC") 'execute-extended-command)
+  (evil-define-key 'normal 'global (kbd "<leader>TAB") 'evil-switch-to-windows-last-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>x TAB") 'indent-rigidly)
 
   (evil-define-key 'normal 'global (kbd "<leader>C-r") 'revert-buffer)
