@@ -833,6 +833,7 @@
   (global-set-key (kbd "H-o") 'find-file)
   (global-set-key (kbd "H-f") 'evil-search-forward)
   (global-set-key (kbd "H-b") 'switch-to-buffer)
+  (global-set-key (kbd "H-e") 'eshell)
   (global-set-key (kbd "H-{") 'tab-previous)
   (global-set-key (kbd "H-}") 'tab-next)
   (global-set-key (kbd "H-[") 'tab-previous)
@@ -872,6 +873,9 @@
   (global-set-key (kbd "C-H-.") 'hl-todo-occur)
   (global-set-key (kbd "C-H-;") 'flycheck-previous-error)
   (global-set-key (kbd "C-H-'") 'flycheck-next-error)
+  (global-set-key (kbd "C-H-e") 'eww)
+  (global-set-key (kbd "C-H-p") 'previous-buffer)
+  (global-set-key (kbd "C-H-n") 'next-buffer)
 
   ;; leader keybindings ===============================
   ;; ==================================================
@@ -913,6 +917,8 @@
 
   (evil-define-key 'normal 'global (kbd "<leader>bd") 'kill-this-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>bb") 'switch-to-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader>bp") 'previous-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader>bn") 'next-buffer)
 
   (evil-define-key 'normal 'global (kbd "<leader>1") 'winum-select-window-1)
   (evil-define-key 'normal 'global (kbd "<leader>2") 'winum-select-window-2)
@@ -938,6 +944,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
 
   (evil-define-key 'normal 'global (kbd "<leader>ai") 'display-current-time)
+  (evil-define-key 'normal 'global (kbd "<leader>ab") 'battery)
   (evil-define-key 'normal 'global (kbd "<leader>awm") 'w3m)
   (evil-define-key 'normal 'global (kbd "<leader>aww") 'eww)
 
