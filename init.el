@@ -27,29 +27,6 @@
   (prefer-coding-system 'utf-8)
   (global-set-key (kbd "<f6>") 'toggle-korean-input-method)
 
-  ;; additional packages ==============================
-  ;; ==================================================
-
-  (setq my-packages
-	'(magit
-	  company
-	  ripgrep
-	  use-package
-	  yasnippet
-	  hy-mode
-	  pdf-tools
-	  transient
-	  esup
-	  flycheck
-	  company
-	  undo-tree
-	  git-gutter
-	  all-the-icons
-	  which-key))
-
-  ;; (when (not (package-installed-p 'use-package))
-  ;;   (package-install 'use-package))
-
   ;; No Littering! ====================================
   ;; ==================================================
 
@@ -65,6 +42,17 @@
       (startup-redirect-eln-cache
        (convert-standard-filename
 	(expand-file-name  "var/eln-cache/" user-emacs-directory)))))
+
+
+  ;; Esup config ======================================
+  ;; ==================================================
+
+  (use-package esup)
+
+  ;; Transient config =================================
+  ;; ==================================================
+
+  (use-package transient)
 
   ;; Useful Elisp Libraries ===========================
   ;; ==================================================
@@ -92,15 +80,30 @@
   ;; Eglot config =====================================
   ;; ==================================================
 
-  (use-package eglot :ensure t)
+  (use-package eglot)
   
-  ;; Lisp config ======================================
+  ;; Yasnippet config  ================================
+  ;; ==================================================
+
+  (use-package yasnippet)
+
+  ;; Ripgrep config ===================================
+  ;; ==================================================
+
+  (use-package ripgrep)
+
+  ;; Lispy config ======================================
   ;; ==================================================
   
   (use-package lispy)
   (electric-pair-mode)
   (electric-indent-mode)
   (show-paren-mode 1)
+
+  ;; Hy-mode config ===================================
+  ;; ==================================================
+
+  (use-package hy-mode)
 
   ;; Clojure config ===================================
   ;; ==================================================
@@ -112,6 +115,11 @@
   ;; ==================================================
 
   (use-package tagedit)
+
+  ;; PDF-tools config =================================
+  ;; ==================================================
+  
+  (use-package pdf-tools)
 
   ;; auto-indent on RET ===============================
   ;; ==================================================
@@ -138,6 +146,7 @@
   (setq evil-undo-system 'undo-tree)
   (use-package evil
     :init
+    (setq evil-disable-insert-state-bindings t)
     (setq evil-want-C-u-scroll t)
     (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
     (setq evil-want-keybinding nil)
@@ -475,7 +484,7 @@
   (use-package auctex-lua)
   ;; currently broken:
   ;; (use-package auctex-latexmk)
-  (use-package company-auctex)
+  (use-package company-auctex :after (company))
 
   (with-eval-after-load 'tex
     (require 'pdf-sync)
@@ -495,8 +504,9 @@
   ;; company-mode config ==============================
   ;; ==================================================
 
-  (global-company-mode)
-  (with-eval-after-load 'company
+  (use-package company
+    :config
+    (global-company-mode)
     (define-key company-active-map (kbd "<return>") nil)
     (define-key company-active-map (kbd "RET") nil)
     (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
@@ -668,7 +678,9 @@
   ;; flycheck configs =================================
   ;; ==================================================
 
-  (global-flycheck-mode)
+  (use-package flycheck
+    :config
+    (global-flycheck-mode))
 
   ;; recentf configs ==================================
   ;; ==================================================
