@@ -100,6 +100,18 @@
   (electric-indent-mode)
   (show-paren-mode 1)
 
+
+  ;; Tree-sitter config ===============================
+  ;; ==================================================
+
+  (use-package tree-sitter-langs)
+
+  (use-package tree-sitter
+    :after (tree-sitter-langs)
+    :config
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
   ;; Hy-mode config ===================================
   ;; ==================================================
 
@@ -110,6 +122,15 @@
 
   (use-package clojure-mode)
   (use-package cider)
+
+  ;; Rust config ======================================
+  ;; ==================================================
+
+  (use-package rust-mode
+    :config
+    (add-hook 'rust-mode-hook
+          (lambda () (setq indent-tabs-mode nil)))
+    (define-key rust-mode-map (kbd "C-c C-c") 'rust-run))
 
   ;; HTML config ======================================
   ;; ==================================================
@@ -465,7 +486,7 @@
   ;; scratch buffer configs ==========================
   ;; =================================================
 
-  (setq initial-scratch-message "# 그대 따라갈 이 언덕에\n\n")
+  (setq initial-scratch-message "")
   (setq initial-major-mode 'org-mode)
 
   ;; dash configs =====================================
@@ -486,8 +507,8 @@
     (define-key TeX-mode-map (kbd "H-\\") #'TeX-previous-error)
     (define-key TeX-mode-map (kbd "H-/") #'TeX-next-error)
     (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-	TeX-source-correlate-start-server t))
+	  TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+	  TeX-source-correlate-start-server t))
   (use-package auctex-lua)
   ;; currently broken:
   ;; (use-package auctex-latexmk)
