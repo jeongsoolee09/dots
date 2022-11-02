@@ -480,21 +480,19 @@
   ;; LaTeX config =====================================
   ;; ==================================================
 
-  (use-package tex :ensure auctex)
+  (use-package tex :ensure auctex
+    :config
+    (require 'pdf-sync)
+    (define-key TeX-mode-map (kbd "H-\\") #'TeX-previous-error)
+    (define-key TeX-mode-map (kbd "H-/") #'TeX-next-error)
+    (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+	TeX-source-correlate-start-server t))
   (use-package auctex-lua)
   ;; currently broken:
   ;; (use-package auctex-latexmk)
   (use-package company-auctex :after (company))
-
-  (with-eval-after-load 'tex
-    (require 'pdf-sync)
-    (define-key LaTeX-mode-map (kbd "H-\\") 'TeX-previous-error)
-    (define-key LaTeX-mode-map (kbd "H-/") 'TeX-next-error))
-  ;; to use pdfview with auctex
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-	TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
-
+  
   ;; clipetty config ==================================
   ;; ==================================================
 
@@ -864,9 +862,10 @@
   (global-set-key (kbd "H-8") 'winum-select-window-8)
   (global-set-key (kbd "H-9") 'winum-select-window-9)
 
-  (global-set-key (kbd "H-p") 'consult-recent-file)
+  (global-set-key (kbd "H-p") 'projectile-find-file)
+  (global-set-key (kbd "H-P") 'consult-recent-file)
   (global-set-key (kbd "H-o") 'find-file)
-  (global-set-key (kbd "H-f") 'evil-search-forward)
+  (global-set-key (kbd "H-f") 'projectile-find-file)
   (global-set-key (kbd "H-b") 'switch-to-buffer)
   (global-set-key (kbd "H-e") 'eshell)
   (global-set-key (kbd "H-{") 'tab-previous)
@@ -911,6 +910,7 @@
   (global-set-key (kbd "C-H-e") 'eww)
   (global-set-key (kbd "C-H-p") 'previous-buffer)
   (global-set-key (kbd "C-H-n") 'next-buffer)
+  (global-set-key (kbd "C-H-t") 'modus-themes-toggle)
 
   ;; leader keybindings ===============================
   ;; ==================================================
@@ -991,6 +991,11 @@
 
   (evil-define-key 'normal 'global (kbd "<leader>qq") 'kill-emacs)
   (evil-define-key 'normal 'global (kbd "<leader>qf") 'delete-frame)
+
+  (evil-define-key 'normal 'global (kbd "<leader>hdf") 'describe-function)
+  (evil-define-key 'normal 'global (kbd "<leader>hdk") 'describe-key)
+  (evil-define-key 'normal 'global (kbd "<leader>hdv") 'describe-variable)
+  (evil-define-key 'normal 'global (kbd "<leader>hdm") 'describe-mode)
 
   ;; enable mouse scroll in terminal ==================
   ;; ==================================================
@@ -1118,6 +1123,8 @@
   ;; ==================================================
 
   (use-package sicp)
+  (setq inhibit-splash-screen t)
+  (advice-add 'delete-window :after #'balance-windows)
 
   (message "config loaded!")
 
