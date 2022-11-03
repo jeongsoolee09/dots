@@ -129,8 +129,14 @@
   (use-package rust-mode
     :config
     (add-hook 'rust-mode-hook
-          (lambda () (setq indent-tabs-mode nil)))
+	      (lambda () (setq indent-tabs-mode nil)))
     (define-key rust-mode-map (kbd "C-c C-c") 'rust-run))
+
+  (use-package flycheck-rust
+    :after (rust-mode)
+    :config
+    (with-eval-after-load 'rust-mode
+      (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
   ;; HTML config ======================================
   ;; ==================================================
@@ -751,9 +757,7 @@
   ;; (global-display-line-numbers-mode)
   ;; (setq display-line-numbers-type 'relative)
 
-  (use-package modus-themes
-    :config
-    (load-theme 'modus-operandi t))
+  
 
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
@@ -765,6 +769,17 @@
   (set-face-attribute 'default nil :height 140)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
 
+  (if window-system
+      ;; load modus themes
+      (use-package modus-themes
+	:config
+	(load-theme 'modus-operandi t))
+    ;; make terminal transparent
+    (defun on-after-init ()
+      (unless (display-graphic-p (selected-frame))
+	(set-face-background 'default "unspecified-bg" (selected-frame))))
+    (add-hook 'window-setup-hook 'on-after-init))
+  
   ;; line numbers ====================================
   ;; =================================================
 

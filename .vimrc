@@ -6,10 +6,6 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'jpalardy/vim-slime'
 
-Plug 'junegunn/seoul256.vim'
-
-Plug 'vim-airline/vim-airline'
-
 Plug 'tpope/vim-commentary'
 
 Plug 'tpope/vim-fugitive'
@@ -56,7 +52,7 @@ set clipboard^=unnamed,unnamedplus
 set t_Co=256
 let g:seoul256_background = 233
 let g:seoul256_light_background = 256
-colorscheme seoul256
+" colorscheme seoul256
 let g:airline_theme='jellybeans'
 set fillchars+=vert:\│
 set shm+=I  " disables startup message
