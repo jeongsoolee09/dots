@@ -230,8 +230,6 @@
   
   (use-package evil-terminal-cursor-changer)
 
-  (use-package evil-ediff)
-
   ;; vertico config ===================================
   ;; ==================================================
 
