@@ -100,7 +100,6 @@
   (electric-indent-mode)
   (show-paren-mode 1)
 
-
   ;; Tree-sitter config ===============================
   ;; ==================================================
 
@@ -123,6 +122,20 @@
   (use-package clojure-mode)
   (use-package cider)
 
+  ;; Racket config ====================================
+  ;; ==================================================
+
+  (use-package racket-mode)
+
+  ;; Scheme config ====================================
+  ;; ==================================================
+
+  (use-package geiser)
+  (use-package geiser-chicken)
+  (use-package geiser-chez)
+  (use-package geiser-gambit)
+  (use-package geiser-guile)
+  
   ;; Rust config ======================================
   ;; ==================================================
 
@@ -505,7 +518,8 @@
   ;; LaTeX config =====================================
   ;; ==================================================
 
-  (use-package tex :ensure auctex
+  (use-package tex
+    :ensure auctex
     :config
     (require 'pdf-sync)
     (define-key TeX-mode-map (kbd "s-\\") #'TeX-previous-error)
@@ -755,8 +769,6 @@
   ;; (global-display-line-numbers-mode)
   ;; (setq display-line-numbers-type 'relative)
 
-  
-
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
   (blink-cursor-mode 0)
@@ -973,6 +985,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>w;") 'evil-window-vsplit)
   (evil-define-key 'normal 'global (kbd "<leader>w'") 'evil-window-split)
 
+  (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>fs") 'save-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fed") 'visit-init-dot-el)
 					; (evil-define-key 'normal 'global (kbd "<leader>fr") 'counsel-recentf)
@@ -1152,6 +1165,10 @@
 	mouse-yank-at-point t)
 
   (set-face-attribute 'default nil :height 140)
+  
+  (evil-define-key 'insert 'global-map (kbd "C-h") 'backward-delete-char)
+  ;; 
+
 
   ;; Misc =============================================
   ;; ==================================================
