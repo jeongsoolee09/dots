@@ -43,6 +43,22 @@
        (convert-standard-filename
 	(expand-file-name  "var/eln-cache/" user-emacs-directory)))))
 
+  ;; General.el config ================================
+  ;; ==================================================
+
+  (use-package general
+    :config
+    (general-auto-unbind-keys)
+    (general-create-definer global-leader
+      :keymaps 'override
+      :states '(normal)
+      :prefix "SPC"
+      "" '(:ignore t))
+    (general-create-definer local-leader
+      :keymaps 'override
+      :states '(normal)
+      :prefix ","
+      "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode)))))))
 
   ;; Esup config ======================================
   ;; ==================================================
@@ -125,7 +141,49 @@
   ;; Racket config ====================================
   ;; ==================================================
 
-  (use-package racket-mode)
+  (use-package racket-mode
+    :general
+    (local-leader
+     :major-modes
+     '(racket-mode racket-repl-mode racket-xp-mode t)
+     :keymaps
+     '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
+      ;; errors
+      "E" '(:ignore t :which-key "error")
+      "En" 'racket-xp-next-error
+      "EN" 'racket-xp-previous-error
+      ;; navigation
+      "g" '(:ignore t :which-key "goto")
+      "g`" 'racket-unvisit
+      "gg" 'racket-xp-visit-definition
+      "gn" 'racket-xp-next-definition
+      "gN" 'racket-xp-previous-definition
+      "gm" 'racket-visit-module
+      "gr" 'racket-open-require-path
+      "gu" 'racket-xp-next-use
+      "gU" 'racket-xp-previous-use
+      ;; doc
+      "h" '(:ignore t :which-key "help")
+      "ha" 'racket-xp-annotate
+      "hd" 'racket-xp-describe
+      "hh" 'racket-xp-documentation
+      ;; insert
+      "i" '(:ignore t :which-key "insert")
+      "il" 'racket-insert-lambda
+      ;; refactor
+      "m" '(:ignore t :which-key "refactor")
+      "mr" 'racket-xp-rename
+      ;; REPL
+      "e" '(:ignore t :which-key "eval")
+      "'"  'racket-repl
+      "eb" 'racket-run
+      "ee" 'racket-send-last-sexp
+      "ef" 'racket-send-definition
+      "ei" 'racket-repl
+      "er" 'racket-send-region
+      ;; Tests
+      "t" '(:ignore t :which-key "test")
+      "tb" 'racket-test))
 
   ;; Scheme config ====================================
   ;; ==================================================
@@ -634,10 +692,19 @@
   ;; ==================================================
 
   (use-package magit
+    :general
+    (global-leader
+      :major-modes
+      '(magit-mode))
     :config
     (add-hook 'magit-mode-hook
 	      (lambda ()
 		(evil-define-key 'normal magit-mode-map (kbd "SPC") nil))))
+
+  (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit)
+  (evil-define-key 'normal 'global (kbd "<leader>ga") 'magit-stage-file)
+  (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit-create)
+  (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
 
   ;; custom lisp scripts, misc configs ================
   ;; ==================================================
@@ -965,9 +1032,10 @@
     (interactive)
     (find-file "~/.emacs.d/init.el"))
 
-					; (evil-define-key 'normal 'global (kbd "<leader>SPC") 'counsel-M-x)
-  (evil-define-key 'normal 'global (kbd "<leader>SPC") 'execute-extended-command)
-  (evil-define-key 'normal 'global (kbd "<leader>TAB") 'evil-switch-to-windows-last-buffer)
+  (global-leader
+   "SPC" 'execute-extended-command
+   "TAB" 'evil-switch-to-windows-last-buffer
+   "C-r" 'revert-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>x TAB") 'indent-rigidly)
 
   (evil-define-key 'normal 'global (kbd "<leader>C-r") 'revert-buffer)
@@ -985,17 +1053,13 @@
   (evil-define-key 'normal 'global (kbd "<leader>w;") 'evil-window-vsplit)
   (evil-define-key 'normal 'global (kbd "<leader>w'") 'evil-window-split)
 
-  (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>fs") 'save-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>fed") 'visit-init-dot-el)
-					; (evil-define-key 'normal 'global (kbd "<leader>fr") 'counsel-recentf)
-  (evil-define-key 'normal 'global (kbd "<leader>fd") 'kill-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>fj") 'dired-jump)
-
-  (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit)
-  (evil-define-key 'normal 'global (kbd "<leader>ga") 'magit-stage-file)
-  (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit-create)
-  (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
+  (global-leader
+    "f" '(:ignore t :which-key "file")
+    "ff" 'find-file
+    "fs" 'save-buffer
+    "fed" 'visit-init-dot-el
+    "fr" 'consult-recent-file
+    "fj" 'dired-jump)
 
   (evil-define-key 'normal 'global (kbd "<leader>bd") 'kill-this-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>bb") 'switch-to-buffer)
