@@ -723,17 +723,14 @@
   (use-package magit
     :general
     (global-leader
-      :major-modes
-      '(magit-mode))
+      "gs" 'magit
+      "ga" 'magit-stage-file
+      "gc" 'magit-commit-create
+      "gp" 'magit-push)
     :config
     (add-hook 'magit-mode-hook
 	      (lambda ()
 		(evil-define-key 'normal magit-mode-map (kbd "SPC") nil))))
-
-  (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit)
-  (evil-define-key 'normal 'global (kbd "<leader>ga") 'magit-stage-file)
-  (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit-create)
-  (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
 
   ;; custom lisp scripts, misc configs ================
   ;; ==================================================
@@ -748,14 +745,6 @@
   (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
   (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
   (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-
-  ;; (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-  ;; (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-  ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-  ;; (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-  ;; (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-  ;; (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  ;; (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
   ;; comment the current line =========================
   ;; ==================================================
