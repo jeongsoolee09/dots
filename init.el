@@ -158,7 +158,13 @@
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
-  ;; kbd-mode config
+  ;; kbd-mode config ==================================
+  ;; ==================================================
+
+  (use-package kbd-mode
+    :quelpa (kbd-mode :fetcher github :repo "kmonad/kbd-mode")
+    :mode "\\.kbd\\'"
+    :commands kbd-mode)
 
   ;; Elisp config =====================================
   ;; ==================================================
