@@ -6,7 +6,6 @@
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			   ("gnu" . "http://elpa.gnu.org/packages/")))
-  (setq package-quickstart t)
   (package-initialize)
 
   (unless (package-installed-p 'use-package)
@@ -15,7 +14,6 @@
 
   (eval-when-compile
     (require 'use-package))
-
   (require 'bind-key)
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
@@ -51,13 +49,23 @@
     (general-auto-unbind-keys)
     (general-create-definer global-leader
       :keymaps 'override
-      :states '(normal)
+      :states '(normal visual operator motion)
       :prefix "SPC"
       "" '(:ignore t))
     (general-create-definer local-leader
       :keymaps 'override
-      :states '(normal)
+      :states '(normal visual operator motion)
       :prefix ","
+      "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+    (general-create-definer insert-mode-major-mode
+      :keymaps 'override
+      :states '(insert)
+      :prefix ""
+      "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+    (general-create-definer normal-mode-major-mode
+      :keymaps 'override
+      :states '(normal visual operator motion)
+      :prefix ""
       "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode)))))))
 
   ;; Esup config ======================================
@@ -113,7 +121,6 @@
   
   (use-package lispy)
   (electric-pair-mode)
-  (electric-indent-mode)
   (show-paren-mode 1)
 
   ;; Tree-sitter config ===============================
@@ -126,6 +133,26 @@
     :config
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  ;; Elisp config =====================================
+  ;; ==================================================
+
+  (use-package elisp-mode
+    :ensure nil
+    :general
+    (local-leader
+      :major-modes
+      '(emacs-lisp-mode lisp-interaction-mode t)
+      :keymaps
+      '(emacs-lisp-mode-map lisp-interaction-mode)
+      "e" '(:ignore t :which-key "eval")
+      "eb" 'eval-buffer
+      "ef" 'eval-defun
+      "er" 'eval-region
+      "ee" 'eval-expression
+      "ep" 'pp-eval-last-sexp
+      "es" 'eval-last-sexp
+      "i" 'elisp-index-search))
 
   ;; Hy-mode config ===================================
   ;; ==================================================
@@ -144,10 +171,10 @@
   (use-package racket-mode
     :general
     (local-leader
-     :major-modes
-     '(racket-mode racket-repl-mode racket-xp-mode t)
-     :keymaps
-     '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
+      :major-modes
+      '(racket-mode racket-repl-mode racket-xp-mode t)
+      :keymaps
+      '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
       ;; errors
       "E" '(:ignore t :which-key "error")
       "En" 'racket-xp-next-error
@@ -189,10 +216,10 @@
   ;; ==================================================
 
   (use-package geiser)
-  (use-package geiser-chicken)
-  (use-package geiser-chez)
-  (use-package geiser-gambit)
-  (use-package geiser-guile)
+  (use-package geiser-chicken :after (geiser))
+  (use-package geiser-chez :after (geiser))
+  (use-package geiser-gambit :after (geiser))
+  (use-package geiser-guile :after (geiser))
   
   ;; Rust config ======================================
   ;; ==================================================
@@ -217,7 +244,9 @@
   ;; PDF-tools config =================================
   ;; ==================================================
   
-  (use-package pdf-tools)
+  (use-package pdf-tools
+    :config
+    (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000")))
 
   ;; auto-indent on RET ===============================
   ;; ==================================================
@@ -826,16 +855,6 @@
   (tool-bar-mode -1)
   (tab-bar-mode 1)
 
-  ;; transparent emacs in terminal
-  (defun on-after-init ()
-    (unless (display-graphic-p (selected-frame))
-      (set-face-background 'default "unspecified-bg" (selected-frame))))
-
-  (add-hook 'window-setup-hook 'on-after-init)
-
-  ;; (global-display-line-numbers-mode)
-  ;; (setq display-line-numbers-type 'relative)
-
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
   (blink-cursor-mode 0)
@@ -844,7 +863,6 @@
   (menu-bar-mode -1)
 
   (set-face-attribute 'default nil :height 140)
-  (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
 
   (if window-system
       ;; load modus themes
@@ -884,33 +902,49 @@
 	      (lambda ()
 		(setq-local evil-insert-state-cursor 'box)
 		(evil-insert-state)))
-    (define-key vterm-mode-map [return]                      #'vterm-send-return)
+    (define-key vterm-mode-map (kbd "<return>") #'vterm-send-return)
     (setq vterm-keymap-exceptions nil)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-e")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-f")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-a")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-v")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-b")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-w")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-u")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-d")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-n")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-m")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-p")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-j")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-k")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-r")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-t")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-g")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-c")      #'vterm--self-insert)
-    (evil-define-key 'insert vterm-mode-map (kbd "C-SPC")    #'vterm--self-insert)
-    (evil-define-key 'normal vterm-mode-map (kbd "C-d")      #'vterm--self-insert)
-    (evil-define-key 'normal vterm-mode-map (kbd ",c")       #'multi-vterm)
-    (evil-define-key 'normal vterm-mode-map (kbd ",n")       #'multi-vterm-next)
-    (evil-define-key 'normal vterm-mode-map (kbd ",p")       #'multi-vterm-prev)
-    (evil-define-key 'normal vterm-mode-map (kbd "i")        #'evil-insert-resume)
-    (evil-define-key 'normal vterm-mode-map (kbd "o")        #'evil-insert-resume)
-    (evil-define-key 'normal vterm-mode-map (kbd "<return>") #'evil-insert-resume))
+    :general
+    (insert-mode-major-mode
+      :major-modes
+      '(vterm-mode vterm-copy-mode t)
+      :keymaps
+      '(vterm-mode-map vterm-copy-mode-map)
+      "C-e" 'vterm--self-insert
+      "C-f" 'vterm--self-insert
+      "C-a" 'vterm--self-insert
+      "C-v" 'vterm--self-insert
+      "C-b" 'vterm--self-insert
+      "C-w" 'vterm--self-insert
+      "C-u" 'vterm--self-insert
+      "C-d" 'vterm--self-insert
+      "C-n" 'vterm--self-insert
+      "C-m" 'vterm--self-insert
+      "C-p" 'vterm--self-insert
+      "C-j" 'vterm--self-insert
+      "C-k" 'vterm--self-insert
+      "C-r" 'vterm--self-insert
+      "C-t" 'vterm--self-insert
+      "C-g" 'vterm--self-insert
+      "C-c" 'vterm--self-insert
+      (kbd "C-SPC") 'vterm--self-insert
+      "C-d" 'vterm--self-insert)
+    (local-leader
+      :major-modes
+      '(vterm-mode vterm-copy-mode t)
+      :keymaps
+      '(vterm-mode-map vterm-copy-mode-map)
+      "c" 'multi-vterm
+      "n" 'multi-vterm-next
+      "p" 'multi-vterm-prev)
+    (normal-mode-major-mode
+      :major-modes
+      '(vterm-mode vterm-copy-mode t)
+      :keymaps
+      '(vterm-mode-map vterm-copy-mode-map)
+      "i" 'evil-insert-resume
+      "o" 'evil-insert-resume
+      (kbd "<return>") #'evil-insert-resume))
 
   ;; custom functions =================================
   ;; ==================================================
@@ -1033,9 +1067,9 @@
     (find-file "~/.emacs.d/init.el"))
 
   (global-leader
-   "SPC" 'execute-extended-command
-   "TAB" 'evil-switch-to-windows-last-buffer
-   "C-r" 'revert-buffer)
+    "SPC" 'execute-extended-command
+    "TAB" 'evil-switch-to-windows-last-buffer
+    "C-r" 'revert-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>x TAB") 'indent-rigidly)
 
   (evil-define-key 'normal 'global (kbd "<leader>C-r") 'revert-buffer)
@@ -1231,6 +1265,7 @@
   (set-face-attribute 'default nil :height 140)
   
   (evil-define-key 'insert 'global-map (kbd "C-h") 'backward-delete-char)
+  (evil-define-key 'insert 'company-mode-map (kbd "C-h") 'backward-delete-char)
   ;; 
 
 
