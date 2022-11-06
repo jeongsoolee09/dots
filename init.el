@@ -18,6 +18,20 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
 
+  ;; Quelpa config ====================================
+  ;; ==================================================
+
+  (use-package quelpa
+    :config
+    (unless (package-installed-p 'quelpa)
+      (with-temp-buffer
+	(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+	(eval-buffer)
+	(quelpa-self-upgrade))))
+
+  (use-package quelpa-use-package
+    :after (quelpa))
+
   ;; Korean environment ===============================
   ;; ==================================================
 
@@ -133,6 +147,8 @@
     :config
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  ;; kbd-mode config
 
   ;; Elisp config =====================================
   ;; ==================================================
