@@ -57,6 +57,11 @@
       :states '(normal visual operator motion)
       :prefix ","
       "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+    (general-create-definer agnostic-key
+      :keymaps 'override
+      :states '(normal visual operator motion hybrid emacs)
+      :prefix ""
+      "" '(:ignore t))
     (general-create-definer insert-mode-major-mode
       :keymaps 'override
       :states '(insert)
@@ -983,75 +988,76 @@
   ;; emacs key remappings =============================
   ;; ==================================================
 
-  (global-set-key (kbd "C-x C-l") 'count-lines-page)
-					; (global-set-key (kbd "M-x") 'counsel-M-x)
+  (agnostic-key
+    "C-x C-l" 'count-lines-page)
 
-  ;; command-key keybindings ==========================
-  ;; ==================================================
+  ;; Mode-agnostic keybindings ==========================
+  ;; ====================================================
 
-  (global-set-key (kbd "s-1") 'winum-select-window-1)
-  (global-set-key (kbd "s-2") 'winum-select-window-2)
-  (global-set-key (kbd "s-3") 'winum-select-window-3)
-  (global-set-key (kbd "s-4") 'winum-select-window-4)
-  (global-set-key (kbd "s-5") 'winum-select-window-5)
-  (global-set-key (kbd "s-6") 'winum-select-window-6)
-  (global-set-key (kbd "s-7") 'winum-select-window-7)
-  (global-set-key (kbd "s-8") 'winum-select-window-8)
-  (global-set-key (kbd "s-9") 'winum-select-window-9)
+  ;; super-shortcuts
+  (agnostic-key
+    "s-1" 'winum-select-window-1
+    "s-2" 'winum-select-window-2
+    "s-3" 'winum-select-window-3
+    "s-4" 'winum-select-window-4
+    "s-5" 'winum-select-window-5
+    "s-6" 'winum-select-window-6
+    "s-7" 'winum-select-window-7
+    "s-8" 'winum-select-window-8
+    "s-9" 'winum-select-window-9
+    "s-0" 'winum-select-window-0)
 
-  (global-set-key (kbd "s-p") 'projectile-find-file)
-  (global-set-key (kbd "s-P") 'consult-recent-file)
-  (global-set-key (kbd "s-o") 'find-file)
-  (global-set-key (kbd "s-f") 'projectile-find-file)
-  (global-set-key (kbd "s-b") 'switch-to-buffer)
-  (global-set-key (kbd "s-e") 'eshell)
-  (global-set-key (kbd "s-{") 'tab-previous)
-  (global-set-key (kbd "s-}") 'tab-next)
-  (global-set-key (kbd "s-[") 'tab-previous)
-  (global-set-key (kbd "s-]") 'tab-next)
-  (global-set-key (kbd "s-.") 'tab-new)
-  (global-set-key (kbd "s-,") 'tab-close)
-  (global-set-key (kbd "s-;") 'evil-window-vsplit)
-  (global-set-key (kbd "s-'") 'evil-window-split)
-  (global-set-key (kbd "s-h") 'evil-window-left)
-  (global-set-key (kbd "s-j") 'evil-window-down)
-  (global-set-key (kbd "s-k") 'evil-window-up)
-  (global-set-key (kbd "s-l") 'evil-window-right)
-  (global-set-key (kbd "s-u") 'winner-undo)
-  (global-set-key (kbd "s-d") 'kill-this-buffer)
-  ;; (global-set-key (kbd "s-m") 'helm-filtered-bookmarks)
-  (global-set-key (kbd "s-g") 'magit)
-  (global-set-key (kbd "s-r") 'winner-redo)
-  (global-set-key (kbd "s-i") 'comment-dwim)
-  (global-set-key (kbd "s-t") 'transpose-frame)
-  (global-set-key (kbd "s-a") 'org-agenda)
-  (global-set-key (kbd "s-y") 'mu4e-update-mail-and-index)
-  (global-set-key (kbd "s-/") 'flycheck-next-error)
-  (global-set-key (kbd "s-\\") 'flycheck-previous-error)
-  (global-set-key (kbd "s-?") 'yas-next-field)
-  (global-set-key (kbd "s->") 'yas-prev-field)
+    "s-p" 'projectile-find-file-dwim
+    "s-P" 'consult-find-file
+    "s-o" 'find-file
+    "s-f" 'projectile-find-file-dwim
+    "s-b" 'switch-to-buffer
+    "s-e" 'eshell
+    "s-{" 'tab-previous
+    "s-}" 'tab-next
+    "s-[" 'tab-previous
+    "s-]" 'tab-next
+    "s-." 'tab-new
+    "s-," 'tab-close
+    "s-;" 'evil-window-vsplit
+    "s-'" 'evil-window-split
+    "s-h" 'evil-window-left
+    "s-j" 'evil-window-down
+    "s-k" 'evil-window-up
+    "s-l" 'evil-window-right
+    "s-u" 'winner-undo
+    "s-d" 'kill-this-buffer
+    "s-m" 'helm-filtered-bookmarks
+    "s-g" 'magit
+    "s-r" 'winner-redo
+    "s-i" 'comment-dwim
+    "s-t" 'transpose-frame
+    "s-a" 'org-agenda
+    "s-y" 'mu4e-update-mail-and-index
+    "s-/" 'flycheck-next-error
+    "s-\\" 'flycheck-previous-error
+    "s-?" 'yas-next-field
+    "s->" 'yas-prev-field
 
-  ;; command-control-shortcuts
+  ;; control-super-shortcuts
+  (agnostic-key
+    "C-s-f" 'toggle-frame-fullscreen
+    "C-s-v" 'multi-vterm
+    "C-s-b" 'ibuffer
+    "C-s-/" 'next-error
+    "C-s-\\" 'previous-error
+    "C-s-=" 'balance-windows
+    "C-s-i" 'imenu-list
+    "C-s-x" 'xwidget-new-window
+    "C-s-." 'hl-todo-occur
+    "C-s-;" 'flycheck-previous-error
+    "C-s-'" 'flycheck-next-error
+    "C-s-e" 'eww
+    "C-s-p" 'previous-buffer
+    "C-s-n" 'next-buffer
+    "C-s-t" 'modus-themes-toggle)
 
-  (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
-  (global-set-key (kbd "C-s-v") 'multi-vterm)
-  (global-set-key (kbd "C-s-b") 'ibuffer)
-  (global-set-key (kbd "C-s-/") 'next-error)
-  (global-set-key (kbd "C-s-\\") 'previous-error)
-  (global-set-key (kbd "C-s-=") 'balance-windows)
-  (global-set-key (kbd "C-s-i") 'imenu-list)
-  (global-set-key (kbd "C-s-x") 'xwidget-new-window)
-  (global-set-key (kbd "C-s-.") 'hl-todo-occur)
-  (global-set-key (kbd "C-s-;") 'flycheck-previous-error)
-  (global-set-key (kbd "C-s-'") 'flycheck-next-error)
-  (global-set-key (kbd "C-s-e") 'eww)
-  (global-set-key (kbd "C-s-p") 'previous-buffer)
-  (global-set-key (kbd "C-s-n") 'next-buffer)
-  (global-set-key (kbd "C-s-t") 'modus-themes-toggle)
-
-  ;; leader keybindings ===============================
-  ;; ==================================================
-
+  ;; leader shortcuts
   (defun visit-init-dot-el ()
     (interactive)
     (find-file "~/.emacs.d/init.el"))
@@ -1093,7 +1099,7 @@
     "7" 'winum-select-window-7
     "8" 'winum-select-window-8
     "9" 'winum-select-window-9
-    "0" 'winum-select-window-0-or-10)
+    "0" 'winum-select-window-0)
 
   (global-leader
     "f" '(:ignore t :which-key "file")
@@ -1110,17 +1116,15 @@
     "bb" 'switch-to-buffer
     "bp" 'previous-buffer
     "bn" 'next-buffer)
-  
 
   (global-leader
     "." 'tab-new
     "," 'tab-close
     "[" 'tab-previous
-    "]" 'tab-next)
+    "]" 'tab-next
+    "/" 'flycheck-next-error
+    "\\" 'flycheck-previous-error)
   
-  (evil-define-key 'normal 'global (kbd "<leader>/") 'flycheck-next-error)
-  (evil-define-key 'normal 'global (kbd "<leader>\\") 'flycheck-previous-error)
-
   (evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
 
   (global-leader
