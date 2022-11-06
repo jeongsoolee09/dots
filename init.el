@@ -723,6 +723,7 @@
   (use-package magit
     :general
     (global-leader
+      "g" '(:ignore t :which-key "magit")
       "gs" 'magit
       "ga" 'magit-stage-file
       "gc" 'magit-commit-create
@@ -1058,23 +1059,41 @@
   (global-leader
     "SPC" 'execute-extended-command
     "TAB" 'evil-switch-to-windows-last-buffer
-    "C-r" 'revert-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>x TAB") 'indent-rigidly)
+    "C-r" 'revert-buffer
+    (kbd "x TAB") 'indent-rigidly)
 
-  (evil-define-key 'normal 'global (kbd "<leader>C-r") 'revert-buffer)
+  (global-leader
+    "w" '(:ignore t :which-key "window")
+    "wd" 'delete-window
+    "wh" 'evil-window-left
+    "wj" 'evil-window-down
+    "wk" 'evil-window-up
+    "wl" 'evil-window-right
+    "wL" 'evil-window-bottom-right
 
-  (evil-define-key 'normal 'global (kbd "<leader>wd") 'delete-window)
-  (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
-  (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-down)
-  (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
-  (evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
-  (evil-define-key 'normal 'global (kbd "<leader>wt") 'transpose-frame)
-  (evil-define-key 'normal 'global (kbd "<leader>wr") 'evil-window-rotate-downwards)
-  (evil-define-key 'normal 'global (kbd "<leader>w=") 'balance-windows)
-  (evil-define-key 'normal 'global (kbd "<leader>wu") 'winner-undo)
-  (evil-define-key 'normal 'global (kbd "<leader>wU") 'winner-redo)
-  (evil-define-key 'normal 'global (kbd "<leader>w;") 'evil-window-vsplit)
-  (evil-define-key 'normal 'global (kbd "<leader>w'") 'evil-window-split)
+    "wt" 'transpose-frame
+    "wr" 'evil-window-rotate-downwards
+    "wR" 'evil-window-rotate-upwards
+
+    "w=" 'balance-windows
+    "wu" 'winner-undo
+    "wU" 'winner-redo
+    "w;" 'evil-window-vsplit
+    "w'" 'evil-window-split
+
+    ";" 'evil-window-vsplit
+    "'" 'evil-window-split
+
+    "1" 'winum-select-window-1
+    "2" 'winum-select-window-2
+    "3" 'winum-select-window-3
+    "4" 'winum-select-window-4
+    "5" 'winum-select-window-5
+    "6" 'winum-select-window-6
+    "7" 'winum-select-window-7
+    "8" 'winum-select-window-8
+    "9" 'winum-select-window-9
+    "0" 'winum-select-window-0-or-10)
 
   (global-leader
     "f" '(:ignore t :which-key "file")
@@ -1082,55 +1101,57 @@
     "fs" 'save-buffer
     "fed" 'visit-init-dot-el
     "fr" 'consult-recent-file
-    "fj" 'dired-jump)
+    "fj" 'dired-jump
+    "o" 'find-file)
 
-  (evil-define-key 'normal 'global (kbd "<leader>bd") 'kill-this-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>bb") 'switch-to-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>bp") 'previous-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>bn") 'next-buffer)
+  (global-leader
+    "b" '(:ignore t :which-key "buffer")
+    "bd" 'kill-this-buffer
+    "bb" 'switch-to-buffer
+    "bp" 'previous-buffer
+    "bn" 'next-buffer)
+  
 
-  (evil-define-key 'normal 'global (kbd "<leader>1") 'winum-select-window-1)
-  (evil-define-key 'normal 'global (kbd "<leader>2") 'winum-select-window-2)
-  (evil-define-key 'normal 'global (kbd "<leader>3") 'winum-select-window-3)
-  (evil-define-key 'normal 'global (kbd "<leader>4") 'winum-select-window-4)
-  (evil-define-key 'normal 'global (kbd "<leader>5") 'winum-select-window-5)
-  (evil-define-key 'normal 'global (kbd "<leader>6") 'winum-select-window-6)
-  (evil-define-key 'normal 'global (kbd "<leader>7") 'winum-select-window-7)
-  (evil-define-key 'normal 'global (kbd "<leader>8") 'winum-select-window-8)
-  (evil-define-key 'normal 'global (kbd "<leader>9") 'winum-select-window-9)
-
-
-  (evil-define-key 'normal 'global (kbd "<leader>.") 'tab-new)
-  (evil-define-key 'normal 'global (kbd "<leader>,") 'tab-close)
-  (evil-define-key 'normal 'global (kbd "<leader>[") 'tab-previous)
-  (evil-define-key 'normal 'global (kbd "<leader>]") 'tab-next)
-  (evil-define-key 'normal 'global (kbd "<leader>;") 'evil-window-vsplit)
-  (evil-define-key 'normal 'global (kbd "<leader>'") 'evil-window-split)
-					; (evil-define-key 'normal 'global (kbd "<leader>o") 'counsel-find-file)
+  (global-leader
+    "." 'tab-new
+    "," 'tab-close
+    "[" 'tab-previous
+    "]" 'tab-next)
+  
   (evil-define-key 'normal 'global (kbd "<leader>/") 'flycheck-next-error)
   (evil-define-key 'normal 'global (kbd "<leader>\\") 'flycheck-previous-error)
 
   (evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
 
-  (evil-define-key 'normal 'global (kbd "<leader>ai") 'display-current-time)
-  (evil-define-key 'normal 'global (kbd "<leader>ab") 'battery)
-  (evil-define-key 'normal 'global (kbd "<leader>awm") 'w3m)
-  (evil-define-key 'normal 'global (kbd "<leader>aww") 'eww)
+  (global-leader
+    "a" '(:ignore t :which-key "utilities")
+    "ai" 'display-current-time
+    "ab" 'battery
+    "awm" 'w3m
+    "aww" 'eww)
 
-  (evil-define-key 'normal 'global (kbd "<leader>p/") 'projectile-ripgrep)
-  (evil-define-key 'normal 'global (kbd "<leader>pf") 'projectile-find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>pp") 'projectile-switch-project)
+  (global-leader
+    "p" '(:ignore t :which-key "project")
+    "p/" 'projectile-ripgrep
+    "pf" 'projectile-find-file
+    "pp" 'projectile-switch-project
+    "pP" 'projectile-switch-open-project)
 
   (evil-define-key 'normal 'global (kbd "<leader>cC") 'compile)
 
-  (evil-define-key 'normal 'global (kbd "<leader>qq") 'kill-emacs)
-  (evil-define-key 'normal 'global (kbd "<leader>qf") 'delete-frame)
-
-  (evil-define-key 'normal 'global (kbd "<leader>hdf") 'describe-function)
-  (evil-define-key 'normal 'global (kbd "<leader>hdk") 'describe-key)
-  (evil-define-key 'normal 'global (kbd "<leader>hdv") 'describe-variable)
-  (evil-define-key 'normal 'global (kbd "<leader>hdm") 'describe-mode)
-
+  (global-leader
+    "q" '(:ignore t :which-key "quit")
+    "qq" 'kill-emacs
+    "qf" 'delete-frame)
+  
+  (global-leader
+    "h" '(:ignore t :which-key "help")
+    "hd" '(:ignore t :which-key "describe")
+    "hdf" 'describe-function
+    "hdk" 'describe-key
+    "hdv" 'describe-variable
+    "hdm" 'describe-mode)
+  
   ;; enable mouse scroll in terminal ==================
   ;; ==================================================
 
