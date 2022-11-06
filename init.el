@@ -46,17 +46,22 @@
 
   (use-package general
     :config
+    (general-override-mode)
     (general-auto-unbind-keys)
+    (setq general-use-package-emit-autoloads t)
+    ;; TODO fix global-leader
     (general-create-definer global-leader
       :keymaps 'override
-      :states '(normal visual operator motion)
+      :states '(insert emacs normal hybrid motion visual operator)
       :prefix "SPC"
-      "" '(:ignore t))
+      :non-normal-prefix "S-SPC")
     (general-create-definer local-leader
       :keymaps 'override
       :states '(normal visual operator motion)
       :prefix ","
+      :non-normal-prefix "M-,"
       "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+    ;; TODO fix agnostic-key
     (general-create-definer agnostic-key
       :keymaps 'override
       :states '(normal visual operator motion hybrid emacs)
@@ -142,7 +147,7 @@
   ;; Elisp config =====================================
   ;; ==================================================
 
-  (use-package elisp-mode
+  (use-package emacs-lisp-mode
     :ensure nil
     :general
     (local-leader
@@ -285,9 +290,9 @@
     :config
     (evil-mode 1)
     ;; set leader key in normal state
-    (evil-set-leader 'normal (kbd "SPC"))
+    ;; (evil-set-leader 'normal (kbd "SPC"))
     ;; set local leader
-    (evil-set-leader 'normal "," t)
+    ;; (evil-set-leader 'normal "," t)
     (setq evil-motion-state-cursor 'box)
     (setq evil-visual-state-cursor 'box)
     (setq evil-normal-state-cursor 'box)
@@ -1057,7 +1062,7 @@
     "C-s-n" 'next-buffer
     "C-s-t" 'modus-themes-toggle)
 
-  ;; leader shortcuts
+  ;; leader bindings
   (defun visit-init-dot-el ()
     (interactive)
     (find-file "~/.emacs.d/init.el"))
