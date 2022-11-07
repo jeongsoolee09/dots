@@ -4,19 +4,22 @@
   ;; packages =========================================
   ;; ==================================================
 
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("gnu" . "http://elpa.gnu.org/packages/")))
+  (require 'package)
+  (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+			   ("melpa" . "https://melpa.org/packages/")))
   (package-initialize)
 
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
 
-  (eval-when-compile
+  (eval-and-compile
     (require 'use-package))
   (require 'bind-key)
   (require 'use-package-ensure)
-  (setq use-package-always-ensure t)
+  (eval-and-compile
+    (setq use-package-always-ensure t  
+	  use-package-expand-minimally t))
 
   ;; Quelpa config ====================================
   ;; ==================================================
@@ -44,10 +47,10 @@
       when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
     (interactive)
     (if (not current-input-method)
-        (if (not (string= evil-state "insert"))
-            (evil-insert-state))
-        (if (string= evil-state "insert")
-            (evil-normal-state)))
+	(if (not (string= evil-state "insert"))
+	    (evil-insert-state))
+      (if (string= evil-state "insert")
+	  (evil-normal-state)))
     (toggle-input-method))
   (unbind-key (kbd "C-d"))
   (unbind-key (kbd "C-d C-d"))
@@ -162,13 +165,6 @@
 
   (use-package ripgrep)
 
-  ;; Lispy config ======================================
-  ;; ==================================================
-  
-  (use-package lispy)
-  (electric-pair-mode)
-  (show-paren-mode 1)
-
   ;; Tree-sitter config ===============================
   ;; ==================================================
 
@@ -179,6 +175,18 @@
     :config
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  ;; Lisp config ======================================
+  ;; ==================================================
+  
+  (use-package lispy)
+  (electric-pair-mode)
+  (use-package paren
+    :ensure nil
+    :init
+    (setq show-paren-delay 0)
+    :config
+    (show-paren-mode 1))
 
   ;; kbd-mode config ==================================
   ;; ==================================================
@@ -211,13 +219,16 @@
   ;; Hy-mode config ===================================
   ;; ==================================================
 
-  (use-package hy-mode)
+  (use-package hy-mode
+    :mode "\\.hy\\'")
 
   ;; Clojure config ===================================
   ;; ==================================================
 
   (use-package clojure-mode)
-  (use-package cider)
+  (use-package cider
+    :mode "\\.clj(s|c)?\\'"
+    )
 
   ;; Racket config ====================================
   ;; ==================================================
