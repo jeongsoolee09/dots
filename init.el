@@ -4,14 +4,24 @@
   ;; packages =========================================
   ;; ==================================================
 
+<<<<<<< HEAD
   (require 'package)
   (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			   ("melpa" . "https://melpa.org/packages/")))
   (package-initialize)
+=======
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			   ("gnu" . "http://elpa.gnu.org/packages/")))
+  (package-initialize t)
+
+  ;; use-package config ===============================
+  ;; ==================================================
+>>>>>>> 721a30e0cd8afdafeead095c3415d12bbe67fa40
 
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
+<<<<<<< HEAD
 
   (eval-and-compile
     (require 'use-package))
@@ -20,6 +30,12 @@
   (eval-and-compile
     (setq use-package-always-ensure t  
 	  use-package-expand-minimally t))
+=======
+  (require 'use-package)
+  (require 'use-package-ensure)
+  (require 'bind-key)
+  (setq use-package-always-ensure t)
+>>>>>>> 721a30e0cd8afdafeead095c3415d12bbe67fa40
 
   ;; Quelpa config ====================================
   ;; ==================================================
@@ -117,6 +133,13 @@
       :prefix ""
       "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode)))))))
 
+  ;; Korean environment ===============================
+  ;; ==================================================
+
+  (set-language-environment "Korean")
+  (prefer-coding-system 'utf-8)
+  (global-set-key (kbd "<f6>") 'toggle-korean-input-method)
+
   ;; Esup config ======================================
   ;; ==================================================
 
@@ -145,7 +168,6 @@
   (global-set-key (kbd "s-x") 'kill-region)
   (global-set-key (kbd "s-w") 'delete-window)
   (global-set-key (kbd "s-W") 'delete-frame)
-  ;; (global-set-key (kbd "n") 'make-frame)
   (global-set-key (kbd "s-`") 'other-frame)
   (global-set-key (kbd "s-z") 'undo-tree-undo)
   (global-set-key (kbd "s-s") 'save-buffer)
@@ -193,13 +215,15 @@
 
   (use-package kbd-mode
     :quelpa (kbd-mode :fetcher github :repo "kmonad/kbd-mode")
+    :ensure t
     :mode "\\.kbd\\'"
     :commands kbd-mode)
 
   ;; Elisp config =====================================
   ;; ==================================================
 
-  (use-package emacs-lisp-mode
+  (use-package elisp-mode
+    :demand t
     :ensure nil
     :general
     (local-leader
@@ -325,12 +349,11 @@
 
   (setq explicit-shell-file-name "/bin/zsh")
   (use-package exec-path-from-shell
+    :if (or (memq window-system '(mac ns)) (daemonp))
     :config
     (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI"))
     (setq exec-path-from-shell-arguments '("-l"))
-    (when (or (memq window-system '(mac ns x))
-	      (daemonp))
-      (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize))
 
   ;; evil-mode config =================================
   ;; ==================================================
@@ -1067,6 +1090,7 @@
     "s-9" 'winum-select-window-9
     "s-0" 'winum-select-window-0)
 
+<<<<<<< Updated upstream
   (agnostic-key
     "s-p" 'projectile-find-file-dwim
     "s-P" 'consult-find-file
@@ -1099,6 +1123,39 @@
     "s-\\" 'flycheck-previous-error
     "s-?" 'yas-next-field
     "s->" 'yas-prev-field)
+=======
+  "s-p" 'projectile-find-file-dwim
+  "s-P" 'consult-find-file
+  "s-o" 'find-file
+  "s-f" 'projectile-find-file-dwim
+  "s-b" 'switch-to-buffer
+  "s-e" 'eshell
+  "s-{" 'tab-previous
+  "s-}" 'tab-next
+  "s-[" 'tab-previous
+  "s-]" 'tab-next
+  "s-." 'tab-new
+  "s-," 'tab-close
+  "s-;" 'evil-window-vsplit
+  "s-'" 'evil-window-split
+  "s-h" 'evil-window-left
+  "s-j" 'evil-window-down
+  "s-k" 'evil-window-up
+  "s-l" 'evil-window-right
+  "s-u" 'winner-undo
+  "s-d" 'kill-this-buffer
+  "s-m" 'helm-filtered-bookmarks
+  "s-g" 'magit
+  "s-r" 'winner-redo
+  "s-i" 'comment-dwim
+  "s-t" 'transpose-frame
+  "s-a" 'org-agenda
+  "s-y" 'mu4e-update-mail-and-index
+  "s-/" 'flycheck-next-error
+  "s-\\" 'flycheck-previous-error
+  "s-?" 'yas-next-field
+  "s->" 'yas-prev-field
+>>>>>>> Stashed changes
 
   ;; control-super-shortcuts
   (agnostic-key
