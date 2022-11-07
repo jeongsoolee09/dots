@@ -132,9 +132,9 @@
   ;; ==================================================
 
   (when (memq window-system '(mac ns))
-    (setq mac-command-modifier 'super)
+    (setq mac-function-modifier 'hyper)
     (setq mac-option-modifier 'meta)
-    (setq mac-function-modifier 'hyper))
+    (setq mac-command-modifier 'super))
 
   (global-set-key (kbd "s-v") 'yank)
   (global-set-key (kbd "s-c") 'evil-yank)
