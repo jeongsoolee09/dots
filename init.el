@@ -147,7 +147,7 @@
   ;; macOS Key Settings ===============================
   ;; ==================================================
 
-  (when (and (memq window-system '(mac ns)) (daemonp))
+  (when (memq window-system '(mac ns))
     (setq mac-command-modifier 'super)
     (setq mac-option-modifier 'meta)
     (setq mac-function-modifier 'hyper))
@@ -179,13 +179,15 @@
   ;; Tree-sitter config ===============================
   ;; ==================================================
 
-  (use-package tree-sitter-langs)
-
   (use-package tree-sitter
-    :after (tree-sitter-langs)
+    ;; :after (tree-sitter-langs)
+    :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'"
     :config
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  (use-package tree-sitter-langs
+    :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'")
 
   ;; Lisp config ======================================
   ;; ==================================================
@@ -339,7 +341,7 @@
 
   (setq explicit-shell-file-name "/bin/zsh")
   (use-package exec-path-from-shell
-    :if (and (memq window-system '(mac ns)) (daemonp))
+    :if (memq window-system '(mac ns))
     :config
     (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI"))
     (setq exec-path-from-shell-arguments '("-l"))
@@ -1127,7 +1129,7 @@
     "C-s-;" 'flycheck-previous-error
     "C-s-'" 'flycheck-next-error
     "C-s-e" 'eww
-    "C-s-p" 'previous-buffer
+    "C-s-p" 'previous-buffer		;
     "C-s-n" 'next-buffer
     "C-s-t" 'modus-themes-toggle)
 
