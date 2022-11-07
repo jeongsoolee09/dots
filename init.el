@@ -39,6 +39,28 @@
   (prefer-coding-system 'utf-8)
   (global-set-key (kbd "<f6>") 'toggle-korean-input-method)
 
+  (defun evil-toggle-input-method ()
+    "when toggle on input method, switch to evil-insert-state if possible.
+      when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
+    (interactive)
+    (if (not current-input-method)
+        (if (not (string= evil-state "insert"))
+            (evil-insert-state))
+        (if (string= evil-state "insert")
+            (evil-normal-state)))
+    (toggle-input-method))
+  (unbind-key (kbd "C-d"))
+  (unbind-key (kbd "C-d C-d"))
+  ;; (global-set-key (kbd "C-d C-d") 'evil-toggle-input-method)
+  (global-set-key (kbd "C-d C-d") 'toggle-input-method)
+  (unbind-key (kbd "C-d C-l"))
+  ;; (global-set-key (kbd "C-d C-l") 'evil-toggle-input-method)
+  (global-set-key (kbd "C-d C-l") 'toggle-input-method)
+  ;; (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
+  (global-set-key (kbd "C-\\") 'toggle-input-method)
+  ;; (global-set-key (kbd "C-d C-d") 'evil-toggle-input-method)
+  (global-set-key (kbd "C-d C-d") 'toggle-input-method)
+
   ;; No Littering! ====================================
   ;; ==================================================
 
@@ -1034,6 +1056,7 @@
     "s-9" 'winum-select-window-9
     "s-0" 'winum-select-window-0)
 
+  (agnostic-key
     "s-p" 'projectile-find-file-dwim
     "s-P" 'consult-find-file
     "s-o" 'find-file
@@ -1064,7 +1087,7 @@
     "s-/" 'flycheck-next-error
     "s-\\" 'flycheck-previous-error
     "s-?" 'yas-next-field
-    "s->" 'yas-prev-field
+    "s->" 'yas-prev-field)
 
   ;; control-super-shortcuts
   (agnostic-key
