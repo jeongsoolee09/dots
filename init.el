@@ -147,9 +147,11 @@
   ;; macOS Key Settings ===============================
   ;; ==================================================
 
-  (setq mac-command-modifier 'super)
-  (setq mac-option-modifier 'meta)
-  ;; (global-set-key (kbd "0") 'spacemacs/reset-font-size)
+  (when (and (memq window-system '(mac ns)) (daemonp))
+    (setq mac-command-modifier 'super)
+    (setq mac-option-modifier 'meta)
+    (setq mac-function-modifier 'hyper))
+
   (global-set-key (kbd "s-v") 'yank)
   (global-set-key (kbd "s-c") 'evil-yank)
   (global-set-key (kbd "s-x") 'kill-region)
@@ -201,7 +203,8 @@
   ;; ==================================================
 
   (use-package kbd-mode
-    :quelpa (kbd-mode :fetcher github :repo "kmonad/kbd-mode")
+    :after (quelpa quelpa-use-package)
+    :quelpa (kbd-mode :stable nil :fetcher github :repo "kmonad/kbd-mode")
     :ensure t
     :mode "\\.kbd\\'"
     :commands kbd-mode)
@@ -336,7 +339,7 @@
 
   (setq explicit-shell-file-name "/bin/zsh")
   (use-package exec-path-from-shell
-    :if (or (memq window-system '(mac ns)) (daemonp))
+    :if (and (memq window-system '(mac ns)) (daemonp))
     :config
     (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI"))
     (setq exec-path-from-shell-arguments '("-l"))
