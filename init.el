@@ -1109,8 +1109,16 @@
 
   ;; leader bindings
   (defun visit-init-dot-el ()
+    "visit `~/.emacs.d/init.el'."
     (interactive)
     (find-file "~/.emacs.d/init.el"))
+
+  (defun eval-init-dot-el ()
+    "evaluates the contents of `~/.emacs.d/init.el'."
+    (interactive)
+    (with-temp-buffer
+      (insert-file-contents "~/.emacs.d/init.el")
+      (eval-buffer)))
 
   (global-leader
     "SPC" 'execute-extended-command
@@ -1156,6 +1164,7 @@
     "ff" 'find-file
     "fs" 'save-buffer
     "fed" 'visit-init-dot-el
+    "feR" 'eval-init-dot-el
     "fr" 'consult-recent-file
     "fj" 'dired-jump
     "o" 'find-file)
