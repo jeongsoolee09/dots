@@ -4,24 +4,17 @@
   ;; packages =========================================
   ;; ==================================================
 
-<<<<<<< HEAD
   (require 'package)
   (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			   ("melpa" . "https://melpa.org/packages/")))
-  (package-initialize)
-=======
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("gnu" . "http://elpa.gnu.org/packages/")))
   (package-initialize t)
 
   ;; use-package config ===============================
   ;; ==================================================
->>>>>>> 721a30e0cd8afdafeead095c3415d12bbe67fa40
 
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
-<<<<<<< HEAD
 
   (eval-and-compile
     (require 'use-package))
@@ -30,12 +23,6 @@
   (eval-and-compile
     (setq use-package-always-ensure t  
 	  use-package-expand-minimally t))
-=======
-  (require 'use-package)
-  (require 'use-package-ensure)
-  (require 'bind-key)
-  (setq use-package-always-ensure t)
->>>>>>> 721a30e0cd8afdafeead095c3415d12bbe67fa40
 
   ;; Quelpa config ====================================
   ;; ==================================================
@@ -1090,7 +1077,6 @@
     "s-9" 'winum-select-window-9
     "s-0" 'winum-select-window-0)
 
-<<<<<<< Updated upstream
   (agnostic-key
     "s-p" 'projectile-find-file-dwim
     "s-P" 'consult-find-file
@@ -1120,42 +1106,9 @@
     "s-a" 'org-agenda
     "s-y" 'mu4e-update-mail-and-index
     "s-/" 'flycheck-next-error
-    "s-\\" 'flycheck-previous-error
+    "s-\\" 'flycHeck-previous-error
     "s-?" 'yas-next-field
     "s->" 'yas-prev-field)
-=======
-  "s-p" 'projectile-find-file-dwim
-  "s-P" 'consult-find-file
-  "s-o" 'find-file
-  "s-f" 'projectile-find-file-dwim
-  "s-b" 'switch-to-buffer
-  "s-e" 'eshell
-  "s-{" 'tab-previous
-  "s-}" 'tab-next
-  "s-[" 'tab-previous
-  "s-]" 'tab-next
-  "s-." 'tab-new
-  "s-," 'tab-close
-  "s-;" 'evil-window-vsplit
-  "s-'" 'evil-window-split
-  "s-h" 'evil-window-left
-  "s-j" 'evil-window-down
-  "s-k" 'evil-window-up
-  "s-l" 'evil-window-right
-  "s-u" 'winner-undo
-  "s-d" 'kill-this-buffer
-  "s-m" 'helm-filtered-bookmarks
-  "s-g" 'magit
-  "s-r" 'winner-redo
-  "s-i" 'comment-dwim
-  "s-t" 'transpose-frame
-  "s-a" 'org-agenda
-  "s-y" 'mu4e-update-mail-and-index
-  "s-/" 'flycheck-next-error
-  "s-\\" 'flycheck-previous-error
-  "s-?" 'yas-next-field
-  "s->" 'yas-prev-field
->>>>>>> Stashed changes
 
   ;; control-super-shortcuts
   (agnostic-key
