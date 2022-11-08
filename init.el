@@ -87,7 +87,6 @@
       :prefix ","
       :non-normal-prefix "M-,"
       "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
-    ;; TODO fix agnostic-key
     (general-create-definer agnostic-key
       :keymaps 'override
       :states '(normal visual operator motion hybrid emacs)
@@ -96,13 +95,11 @@
     (general-create-definer insert-mode-major-mode
       :keymaps 'override
       :states '(insert)
-      :prefix ""
-      "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+      :prefix "")
     (general-create-definer normal-mode-major-mode
       :keymaps 'override
       :states '(normal visual operator motion)
-      :prefix ""
-      "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode)))))))
+      :prefix ""))
 
   ;; Korean environment ===============================
   ;; ==================================================
@@ -201,6 +198,7 @@
   (use-package elisp-mode
     :demand t
     :ensure nil
+    :mode ("\\.el\\'" . emacs-lisp-mode)
     :general
     (local-leader
       :major-modes
@@ -785,13 +783,6 @@
   ;; ==================================================
 
   (use-package magit
-    :general
-    (global-leader
-      "g" '(:ignore t :which-key "magit")
-      "gs" 'magit
-      "ga" 'magit-stage-file
-      "gc" 'magit-commit-create
-      "gp" 'magit-push)
     :config
     (add-hook 'magit-mode-hook
 	      (lambda ()
@@ -1135,6 +1126,13 @@
     "TAB" 'evil-switch-to-windows-last-buffer
     "C-r" 'revert-buffer
     (kbd "x TAB") 'indent-rigidly)
+
+  (global-leader
+    "g" '(:ignore t :which-key "magit")
+    "gs" 'magit
+    "ga" 'magit-stage-file
+    "gc" 'magit-commit-create
+    "gp" 'magit-push)
 
   (global-leader
     "w" '(:ignore t :which-key "window")
