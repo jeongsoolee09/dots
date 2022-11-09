@@ -79,7 +79,7 @@
   (general-create-definer local-leader
     :keymaps 'override
     :states '(emacs normal hybrid motion visual operator)
-    :prefix "SPC m"
+    :prefix ","
     "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
   (general-create-definer agnostic-key
     :keymaps 'override
