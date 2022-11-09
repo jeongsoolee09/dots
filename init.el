@@ -3,19 +3,16 @@
 ;; packages =========================================
 ;; ==================================================
 
-(require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
 
 ;; use-package config ===============================
 ;; ==================================================
 
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
+  ;; (package-refresh-contents)
   (package-install 'use-package))
 
-(require 'use-package)
 (require 'bind-key)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
@@ -105,7 +102,9 @@
 ;; Esup config ======================================
 ;; ==================================================
 
-(use-package esup)
+(use-package esup
+  :config
+  (setq esup-depth 0))
 
 ;; Transient config =================================
 ;; ==================================================
@@ -167,7 +166,8 @@
 ;; Lisp config ======================================
 ;; ==================================================
 
-(use-package lispy)
+(use-package lispy
+  :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'")
 (electric-pair-mode)
 (use-package paren
   :ensure nil
@@ -179,17 +179,17 @@
 ;; kbd-mode config ==================================
 ;; ==================================================
 
-(use-package kbd-mode
-  :quelpa (kbd-mode :stable nil :fetcher github :repo "kmonad/kbd-mode")
-  :mode "\\.kbd\\'"
-  :commands kbd-mode)
+;; (use-package kbd-mode
+;;   :quelpa (kbd-mode :stable nil :fetcher github :repo "kmonad/kbd-mode")
+;;   :mode "\\.kbd\\'"
+;;   :commands kbd-mode)
 
 ;; Elisp config =====================================
 ;; ==================================================
 
 (use-package elisp-mode
   :ensure nil
-  ;; :mode ("\\.el\\'" . emacs-lisp-mode)
+  :mode ("\\.el\\'" . emacs-lisp-mode)
   :general
   (local-leader
     :major-modes
@@ -222,6 +222,7 @@
 ;; ==================================================
 
 (use-package racket-mode
+  :mode "\\.rkt\\'"
   :general
   (local-leader
     :major-modes
@@ -405,11 +406,13 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
+  :ensure nil
   :init
   (savehist-mode))
 
 ;; A few more useful configurations...
 (use-package emacs
+  :ensure nil
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -628,11 +631,6 @@
   (global-undo-tree-mode)
   (setq undo-tree-auto-save-history nil))
 
-;; centered-window-mode config =====================
-;; =================================================
-
-(use-package centered-window)
-
 ;; winum configs ===================================
 ;; =================================================
 
@@ -667,9 +665,9 @@
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
 	TeX-source-correlate-start-server t))
+
 (use-package auctex-lua)
-;; currently broken:
-;; (use-package auctex-latexmk)
+
 (use-package company-auctex :after (company))
 
 ;; clipetty config ==================================
@@ -693,8 +691,9 @@
 ;; ==================================================
 
 ;; fix macOS Trash
-(setq delete-by-moving-to-trash t)
-(setq trash-directory "~/.Trash")
+(when (memq window-system '(mac ns))
+  (setq delete-by-moving-to-trash t)
+  (setq trash-directory "~/.Trash"))
 
 ;; Fix for dired in TRAMP environment
 (add-hook 'dired-mode-hook
@@ -775,6 +774,7 @@
 ;; ==================================================
 
 (use-package magit
+  :defer t
   :general
   (global-leader
     "g" '(:ignore t :which-key "magit")
@@ -801,7 +801,7 @@
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-;; comment the current line =========================
+;; comments =========================================
 ;; ==================================================
 
 (global-set-key (kbd "M-;") 'comment-dwim)
@@ -809,10 +809,10 @@
 ;; save-place configs ===============================
 ;; ==================================================
 
-(use-package saveplace
-  :config
-  (setq-default save-place t)
-  (setq save-place-file (concat user-emacs-directory "places")))
+;; (use-package saveplace
+;;   :config
+;;   (setq-default save-place t)
+;;   (setq save-place-file (concat user-emacs-directory "places")))
 
 ;; winner-mode configs ==============================
 ;; ==================================================
@@ -863,6 +863,7 @@
 ;; ==================================================
 
 (use-package recentf
+  :ensure nil
   :init
   (setq recentf-keep '(file-remote-p file-readable-p))
   (setq recentf-save-file (concat user-emacs-directory ".recentf"))
@@ -896,7 +897,6 @@
 ;; visuals ==========================================
 ;; ==================================================
 
-(tool-bar-mode -1)
 (tab-bar-mode 1)
 
 (when (fboundp 'scroll-bar-mode)
@@ -1262,13 +1262,6 @@
     (let ((current-filename (buffer-file-name)))
       (w3m-find-file current-filename))))
 
-;; all-the-icons config =============================
-;; ==================================================
-
-(when window-system
-  (use-package all-the-icons
-    :config (setq all-the-icons-scale-factor 1.0)))
-
 ;; hy config ========================================
 ;; ==================================================
 
@@ -1333,12 +1326,8 @@
       apropos-do-all t
       mouse-yank-at-point t)
 
-(set-face-attribute 'default nil :height 140)
-
 (evil-define-key 'insert 'global-map (kbd "C-h") 'backward-delete-char)
 (evil-define-key 'insert 'company-mode-map (kbd "C-h") 'backward-delete-char)
-;; 
-
 
 ;; Misc =============================================
 ;; ==================================================
@@ -1362,7 +1351,7 @@
    '("a8950f7287870cd993d7e56991a45e1414a09d97e4fbf08f48973a1381bc7aaf" "92d350334df87fe61a682518ff214c773625c6d5ace8060d128adc550bc60c9b" default))
  '(package-selected-packages
    '(no-littering multi-vterm minions xwidget lispy git-gutter clipetty zones yasnippet-classic-snippets treemacs-evil which-key evil-commentary anzu json-mode evil-surround tuareg flycheck tagedit cider))
- '(recentf-auto-cleanup 'never))
+ '(recentf-auto-cleanup 'never t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
