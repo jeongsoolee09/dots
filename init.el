@@ -10,7 +10,7 @@
 ;; ==================================================
 
 (unless (package-installed-p 'use-package)
-  ;; (package-refresh-contents)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (require 'bind-key)
@@ -49,9 +49,6 @@
 
 (use-package no-littering
   :config
-  (require 'recentf)
-  (add-to-list 'recentf-exclude no-littering-var-directory)
-  (add-to-list 'recentf-exclude no-littering-etc-directory)
   (setq auto-save-file-name-transforms
 	`((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
   (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
@@ -864,6 +861,7 @@
 
 (use-package recentf
   :ensure nil
+  :commands (consult-recent-file)
   :init
   (setq recentf-keep '(file-remote-p file-readable-p))
   (setq recentf-save-file (concat user-emacs-directory ".recentf"))
