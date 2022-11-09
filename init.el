@@ -703,9 +703,9 @@
 ;; xwidget config ===================================
 ;; ==================================================
 
-(when (featurep 'xwidget)
-  (use-package xwwp)
   (use-package xwidget
+    :ensure nil
+    :commands xwidget-new-window
     :config
     (setq xwidget-webkit-enable-plugins t)
     (defun xwidget-new-window ()
@@ -729,7 +729,9 @@
 		(local-unset-key (kbd "<backspace>"))))
     (defun xwidget-webkit-find-file (file)
       (interactive "fFilename: ")
-      (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))))
+      (xwidget-webkit-new-session (w3m-expand-file-name-as-url file))))
+
+  (use-package xwwp :after (xwidget))
 
 ;; json config =====================================
 ;; =================================================
