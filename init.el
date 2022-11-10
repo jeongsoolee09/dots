@@ -897,7 +897,7 @@
 ;; ==================================================
 
 (tab-bar-mode 1)
-(tool-bar-mode -1)
+(tool-bar-mode 1)
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 (blink-cursor-mode 0)
@@ -1090,7 +1090,7 @@
   "s-g" 'magit
   "s-r" 'winner-redo
   "s-i" 'comment-dwim
-  "s-t" 'transpose-frame
+  "s-t" 'tool-bar-mode
   "s-a" 'org-agenda
   "s-y" 'mu4e-update-mail-and-index
   "s-/" 'flycheck-next-error
