@@ -897,22 +897,32 @@
 ;; ==================================================
 
 (tab-bar-mode 1)
-
+(tool-bar-mode -1)
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 (blink-cursor-mode 0)
-
 (setq ring-bell-function 'ignore)
 (menu-bar-mode -1)
+(when (memq window-system '(mac ns))
+  (add-hook 'after-init-hook
+	    (lambda ()
+	      (set-face-attribute 'fringe nil
+				  :foreground "mac:textColor"
+				  :background "mac:textBackgroundColor"))))
 
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 180)
 
-(if window-system
-    ;; load modus themes
-    (use-package modus-themes
-      :config
-      (load-theme 'modus-operandi t))
-  ;; make terminal transparent
+;; (use-package modus-themes
+;;   :ensure nil
+;;   :config
+;;   (load-theme 'modus-operandi t)
+;;   (add-hook 'modus-themes-after-load-theme-hook
+;; 	    (lambda ()
+;; 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
+;; 		(set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
+
+;; make terminal transparent
+(unless (window-system)
   (defun on-after-init ()
     (unless (display-graphic-p (selected-frame))
       (set-face-background 'default "unspecified-bg" (selected-frame))))
@@ -1102,9 +1112,10 @@
   "C-s-;" 'flycheck-previous-error
   "C-s-'" 'flycheck-next-error
   "C-s-e" 'eww
-  "C-s-p" 'previous-buffer		;
+  "C-s-p" 'previous-buffer
   "C-s-n" 'next-buffer
-  "C-s-t" 'modus-themes-toggle)
+  ;; "C-s-t" 'modus-themes-toggle
+  )
 
 ;; leader bindings
 (defun visit-init-dot-el ()
