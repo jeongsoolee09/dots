@@ -121,9 +121,9 @@
 ;; ==================================================
 
 (when (memq window-system '(mac ns))
-  (setq mac-function-modifier 'hyper)
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'super))
+  (setq mac-function-modifier 'hyper
+	mac-option-modifier 'meta
+	mac-command-modifier 'super))
 
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-c") 'evil-yank)
@@ -213,9 +213,150 @@
 ;; Clojure config ===================================
 ;; ==================================================
 
-(use-package clojure-mode)
+(use-package clojure-mode
+  :mode "\\.clj(s|c)?\\'"
+  :init
+  (setq clojure-indent-style 'align-arguments
+	clojure-align-forms-automatically t
+	clojure-toplevel-inside-comment-form t))
+
 (use-package cider
-  :mode "\\.clj(s|c)?\\'")
+  :mode "\\.clj(s|c)?\\'"
+  :config
+  (setq cider-repl-display-help-banner nil
+	cider-repl-buffer-size-limit 100
+	cider-pprint-fn 'fipp
+	cider-result-overlay-position 'at-point
+	cider-overlays-use-font-lock t)
+  :general
+  (local-leader
+    :major-modes
+    '(clojure-mode t)
+    :keymaps
+    '(clojure-mode-map)
+    "'" 'sesman-start
+    "d" '(:ignore t :which-key "debug")
+    "db" 'cider-debug-defun-at-point
+    "de" 'spacemacs/cider-display-error-buffer
+    "dv" '(:ignore t :which-key "inspect values")
+    "dve" 'cider-inspect-last-sexp
+    "dvf" 'cider-inspect-defun-at-point
+    "dvi" 'cider-inspect
+    "dvl" 'cider-inspect-last-result
+    "dvv" 'cider-inspect-expr
+    "e" '(:ignore t :which-key "evaluation")
+    "e;" 'cider-eval-defun-to-comment
+    "e$" 'spacemacs/cider-eval-sexp-end-of-line
+    "e(" 'cider-eval-list-at-point
+    "eb" 'cider-eval-buffer
+    "ee" 'cider-eval-last-sexp
+    "ef" 'cider-eval-defun-at-point
+    "ei" 'cider-interrupt
+    "el" 'spacemacs/cider-eval-sexp-end-of-line
+    "em" 'cider-macroexpand-1
+    "eM" 'cider-macroexpand-all
+    "ena" 'cider-ns-reload-all
+    "enn" 'cider-eval-ns-form
+    "enr" 'cider-ns-refresh
+    "enl" 'cider-ns-reload
+    "ep;" 'cider-pprint-eval-defun-to-comment
+    "ep:" 'cider-pprint-eval-last-sexp-to-comment
+    "epf" 'cider-pprint-eval-defun-at-point
+    "epe" 'cider-pprint-eval-last-sexp
+    "er" 'cider-eval-region
+    "eu" 'cider-undef
+    "ev" 'cider-eval-sexp-at-point
+    "eV" 'cider-eval-sexp-up-to-point
+    "ew" 'cider-eval-last-sexp-and-replace
+    "en" '(:ignore t :which-key "namespace")
+    "ena" 'cider-ns-reload-all
+    "enn" 'cider-eval-ns-form
+    "enr" 'cider-ns-refresh
+    "enl" 'cider-ns-reload  ;; SPC u for cider-ns-reload-all
+    "ep" '(:ignore t :which-key "pretty print")
+    "ep;" 'cider-pprint-eval-defun-to-comment
+    "ep:" 'cider-pprint-eval-last-sexp-to-comment
+    "epf" 'cider-pprint-eval-defun-at-point
+    "epe" 'cider-pprint-eval-last-sexp
+    "m" '(:ignore t :which-key "manage repls")
+    "mb" 'sesman-browser
+    "mi" 'sesman-info
+    "mg" 'sesman-goto
+    "ms" 'sesman-start
+    "ml" '(:ignore t :which-key "link session")
+    "mlp" 'sesman-link-with-project
+    "mlb" 'sesman-link-with-buffer
+    "mld" 'sesman-link-with-directory
+    "mlu" 'sesman-unlink
+    "mS" '(:ignore t :which-key "sibling sessions")
+    "mSj" 'cider-connect-sibling-clj
+    "mSs" 'cider-connect-sibling-cljs
+    "mq" '(:ignore t :which-key "quit/restart")
+    "mqq" 'sesman-quit
+    "mqr" 'sesman-restart
+    "p" '(:ignore t :which-key "profile")
+    "p+" 'cider-profile-samples
+    "pc" 'cider-profile-clear
+    "pn" 'cider-profile-ns-toggle
+    "ps" 'cider-profile-var-summary
+    "pS" 'cider-profile-summary
+    "pt" 'cider-profile-toggle
+    "pv" 'cider-profile-var-profiled-p
+    "s" '(:ignore t :which-key "send to repl")
+    "sb" 'cider-load-buffer
+    "sB" 'spacemacs/cider-send-buffer-in-repl-and-focus
+    "se" 'spacemacs/cider-send-last-sexp-to-repl
+    "sE" 'spacemacs/cider-send-last-sexp-to-repl-focus
+    "sf" 'spacemacs/cider-send-function-to-repl
+    "sF" 'spacemacs/cider-send-function-to-repl-focus
+    "si" 'sesman-start
+    "sc" '(:ignore t :which-key "connect external repl")
+    "scj" 'cider-connect-clj
+    "scm" 'cider-connect-clj&cljs
+    "scs" 'cider-connect-cljs
+    "sj" '(:ignore t :which-key "jack-in")
+    "sjj" 'cider-jack-in-clj
+    "sjm" 'cider-jack-in-clj&cljs
+    "sjs" 'cider-jack-in-cljs
+    "sq" '(:ignore t :which-key "quit/restart repl")
+    "sqq" 'cider-quit
+    "sqr" 'cider-restart
+    "sqn" 'cider-ns-reload
+    "sqN" 'cider-ns-reload-all
+    "t" '(:ignore t :which-key "test")
+    "ta" 'spacemacs/cider-test-run-all-tests
+    "tb" 'cider-test-show-report
+    "tl" 'spacemacs/cider-test-run-loaded-tests
+    "tn" 'spacemacs/cider-test-run-ns-tests
+    "tp" 'spacemacs/cider-test-run-project-tests
+    "tr" 'spacemacs/cider-test-rerun-failed-tests
+    "tt" 'spacemacs/cider-test-run-focused-test
+    "=" '(:ignore t :which-key "format")
+    "==" 'cider-format-buffer
+    "=eb" 'cider-format-edn-buffer
+    "=ee" 'cider-format-edn-last-sexp
+    "=er" 'cider-format-edn-region
+    "=f" 'cider-format-defun
+    "g" '(:ignore t :which-key "goto")
+    "gb" 'cider-pop-back
+    "gc" 'cider-classpath
+    "gg" 'spacemacs/clj-find-var
+    "gn" 'cider-find-ns
+    "h" '(:ignore t :which-key "documentation")
+    "ha" 'cider-apropos
+    "hc" 'cider-cheatsheet
+    "hd" 'cider-clojuredocs
+    "hj" 'cider-javadoc
+    "hn" 'cider-browse-ns
+    "hN" 'cider-browse-ns-all
+    "hs" 'cider-browse-spec
+    "hS" 'cider-browse-spec-all
+
+    "T" '(:ignore t :which-key "toggle")
+    "Te" 'cider-enlighten-mode
+    "Tf" 'spacemacs/cider-toggle-repl-font-locking
+    "Tp" 'spacemacs/cider-toggle-repl-pretty-printing
+    "Tt" 'cider-auto-test-mode))
 
 ;; Racket config ====================================
 ;; ==================================================
@@ -317,8 +458,8 @@
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :config
-  (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI"))
-  (setq exec-path-from-shell-arguments '("-l"))
+  (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI")
+	exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
 ;; evil-mode config =================================
@@ -327,28 +468,28 @@
 (setq evil-undo-system 'undo-tree)
 (use-package evil
   :init
-  (setq evil-disable-insert-state-bindings t)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
-  (setq evil-want-keybinding nil)
+  (setq evil-disable-insert-state-bindings t
+	evil-want-C-u-scroll t
+	evil-want-integration t ;; This is optional since it's already set to t by default.
+	evil-want-keybinding nil)
   :config
   (evil-mode 1)
   ;; set leader key in normal state
   ;; (evil-set-leader 'normal (kbd "SPC"))
   ;; set local leader
   ;; (evil-set-leader 'normal "," t)
-  (setq evil-motion-state-cursor 'box)
-  (setq evil-visual-state-cursor 'box)
-  (setq evil-normal-state-cursor 'box)
-  (setq evil-insert-state-cursor 'bar)
+  (setq evil-motion-state-cursor 'box
+	evil-visual-state-cursor 'box
+	evil-normal-state-cursor 'box
+	evil-insert-state-cursor 'bar)
   (evil-ex-define-cmd "q" 'kill-this-buffer)
   (evil-ex-define-cmd "Q" 'kill-this-buffer)
   (evil-ex-define-cmd "W" 'save-buffer)
   (evil-ex-define-cmd "Wq" 'evil-save-and-close)
   (evil-ex-define-cmd "WQ" 'evil-save-and-close)
   (evil-ex-define-cmd "E" 'evil-edit)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
+  (setq evil-vsplit-window-right t
+	evil-split-window-below t)
   (evil-define-key 'normal 'global (kbd "C-w DEL") 'evil-window-left)
   (evil-define-key 'normal 'global (kbd "C-w C-j") 'evil-window-down)
   (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
@@ -634,8 +775,8 @@
 ;; scratch buffer configs ==========================
 ;; =================================================
 
-(setq initial-scratch-message "")
-(setq initial-major-mode 'fundamental-mode)
+(setq initial-scratch-message ""
+      initial-major-mode 'fundamental-mode)
 
 ;; dash configs =====================================
 ;; ==================================================
@@ -688,8 +829,8 @@
 
 ;; fix macOS Trash
 (when (memq window-system '(mac ns))
-  (setq delete-by-moving-to-trash t)
-  (setq trash-directory "~/.Trash"))
+  (setq delete-by-moving-to-trash t
+	trash-directory "~/.Trash"))
 
 ;; Fix for dired in TRAMP environment
 (add-hook 'dired-mode-hook
@@ -703,35 +844,35 @@
 ;; xwidget config ===================================
 ;; ==================================================
 
-  (use-package xwidget
-    :ensure nil
-    :commands xwidget-new-window
-    :config
-    (setq xwidget-webkit-enable-plugins t)
-    (defun xwidget-new-window ()
-      (interactive)
-      (let ((url (read-from-minibuffer "URL: " "https://")))
-	(require 's)
-	(if (or (s-starts-with-p "https://https://" url)
-		(s-starts-with-p "https://http://" url)
-		(s-starts-with-p "http://http://" url)
-		(s-starts-with-p "http://https://" url))
-	    (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
-	      (message (concat "opening " trimmed))
-	      (xwidget-webkit-new-session trimmed))
-	  (xwidget-webkit-new-session url))))
-    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
-    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
-    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
-    (evil-define-key 'normal xwidget-webkit-mode-map (kbd "q") 'kill-this-buffer)
-    (add-hook 'xwidget-webkit-mode-hook
-	      (lambda ()
-		(local-unset-key (kbd "<backspace>"))))
-    (defun xwidget-webkit-find-file (file)
-      (interactive "fFilename: ")
-      (xwidget-webkit-new-session (w3m-expand-file-name-as-url file))))
+(use-package xwidget
+  :ensure nil
+  :commands xwidget-new-window
+  :config
+  (setq xwidget-webkit-enable-plugins t)
+  (defun xwidget-new-window ()
+    (interactive)
+    (let ((url (read-from-minibuffer "URL: " "https://")))
+      (require 's)
+      (if (or (s-starts-with-p "https://https://" url)
+	      (s-starts-with-p "https://http://" url)
+	      (s-starts-with-p "http://http://" url)
+	      (s-starts-with-p "http://https://" url))
+	  (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
+	    (message (concat "opening " trimmed))
+	    (xwidget-webkit-new-session trimmed))
+	(xwidget-webkit-new-session url))))
+  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
+  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
+  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
+  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "q") 'kill-this-buffer)
+  (add-hook 'xwidget-webkit-mode-hook
+	    (lambda ()
+	      (local-unset-key (kbd "<backspace>"))))
+  (defun xwidget-webkit-find-file (file)
+    (interactive "fFilename: ")
+    (xwidget-webkit-new-session (w3m-expand-file-name-as-url file))))
 
-  (use-package xwwp :after (xwidget))
+(use-package xwwp :after (xwidget))
 
 ;; json config =====================================
 ;; =================================================
@@ -864,9 +1005,9 @@
   :ensure nil
   :commands (consult-recent-file)
   :init
-  (setq recentf-keep '(file-remote-p file-readable-p))
-  (setq recentf-save-file (concat user-emacs-directory ".recentf"))
-  (setq recentf-auto-cleanup 'never)
+  (setq recentf-keep '(file-remote-p file-readable-p)
+	recentf-save-file (concat user-emacs-directory ".recentf")
+	recentf-auto-cleanup 'never)
   :config
   (recentf-mode 1)
   (setq recentf-max-menu-items 40)
@@ -913,14 +1054,15 @@
 
 (set-face-attribute 'default nil :height 180)
 
-(use-package modus-themes
-  :ensure nil
-  :config
-  (load-theme 'modus-operandi t)
-  (add-hook 'modus-themes-after-load-theme-hook
-	    (lambda ()
-	      (when (string= (modus-themes--current-theme) "modus-vivendi")
-		(set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
+(when window-system
+  (use-package modus-themes
+    :ensure nil
+    :config
+    (load-theme 'modus-operandi t)
+    (add-hook 'modus-themes-after-load-theme-hook
+	      (lambda ()
+		(when (string= (modus-themes--current-theme) "modus-vivendi")
+		  (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000"))))))
 
 ;; make terminal transparent
 (unless (window-system)
@@ -1229,8 +1371,8 @@
 (unless window-system
   (global-set-key (kbd "<mouse-4>") 'mwheel-scroll)
   (global-set-key (kbd "<mouse-5>") 'mwheel-scroll)
-  (setq mouse-wheel-up-event 'mouse-5)
-  (setq mouse-wheel-down-event 'mouse-4))
+  (setq mouse-wheel-up-event 'mouse-5
+	mouse-wheel-down-event 'mouse-4))
 
 ;; graphviz-dot-mode ================================
 ;; ==================================================
@@ -1244,8 +1386,8 @@
 
 (use-package w3m
   :config
-  (setq w3m-default-display-inline-images t)
-  (setq w3m-session-load-crashed-sessions 'never)
+  (setq w3m-default-display-inline-images t
+	w3m-session-load-crashed-sessions 'never)
   (defun xwidget-webkit-open-w3m-current-url ()
     (interactive)
     (require 'xwidget)
@@ -1310,8 +1452,8 @@
 ;; TRAMP config =====================================
 ;; ==================================================
 
-(setq tramp-copy-size-limit 10000000)
-(setq tramp-inline-compress-start-size 10000000)
+(setq tramp-copy-size-limit 10000000
+      tramp-inline-compress-start-size 10000000)
 
 (with-eval-after-load 'git-gutter+
   (defun git-gutter+-remote-default-directory (dir file)
@@ -1343,10 +1485,10 @@
 ;; ==================================================
 
 (use-package sicp :defer t)
-(setq inhibit-splash-screen t)
-(setq inhibit-startup-echo-area-message "")
-(setq inhibit-startup-message t)
-(setq inhibit-splash-screen t)
+(setq inhibit-splash-screen t
+      inhibit-startup-echo-area-message ""
+      inhibit-startup-message t
+      inhibit-splash-screen t)
 (advice-add 'delete-window :after #'balance-windows)
 
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
