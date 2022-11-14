@@ -919,7 +919,8 @@
     "gs" 'magit
     "ga" 'magit-stage-file
     "gc" 'magit-commit-create
-    "gp" 'magit-push)
+    "gp" 'magit-push
+    "gd" 'magit-diff-dwim)
   :config
   (add-hook 'magit-mode-hook
 	    (lambda ()
@@ -1040,6 +1041,14 @@
 (tab-bar-mode 1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+
+(defun disable-tab-bar-if-unnecessary (_)
+  "Hide the tab bar if there is only one tab left."
+  (when (= (length (tab-bar-tabs)) 1)
+    (tab-bar-mode -1)))
+
+(advice-add 'tab-close :after #'disable-tab-bar-if-unnecessary)
+
 (fringe-mode '(0 . 0))
 (blink-cursor-mode 0)
 (when (fboundp 'scroll-bar-mode)
