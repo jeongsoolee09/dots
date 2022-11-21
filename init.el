@@ -161,7 +161,7 @@
 ;; ==================================================
 
 (use-package lispy
-  :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'")
+  :mode "\\.(hy|clj|cljs|cljc|edn|lisp|el|scm|rkt|kbd|fnl)\\'")
 (electric-pair-mode)
 (use-package paren
   :ensure nil
