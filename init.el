@@ -431,6 +431,11 @@
 
 (use-package tagedit :mode "\\.html\\'")
 
+;; Markdown config ==================================
+;; ==================================================
+
+(use-package markdown-mode :mode "\\.md\\'")
+
 ;; CSharp config ====================================
 ;; ==================================================
 
@@ -1043,7 +1048,6 @@
 ;; visuals ==========================================
 ;; ==================================================
 
-(tab-bar-mode 1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
@@ -1364,7 +1368,8 @@
   "p/" 'projectile-ripgrep
   "pf" 'projectile-find-file
   "pp" 'projectile-switch-project
-  "pP" 'projectile-switch-open-project)
+  "pP" 'projectile-switch-open-project
+  "pc" 'projectile-compile-project)
 
 (global-leader
   "q" '(:ignore t :which-key "quit")
