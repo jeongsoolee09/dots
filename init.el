@@ -447,6 +447,8 @@
 (use-package pdf-tools
   :mode "\\.pdf\\'"
   :config
+  (pdf-view-mode)
+  (pdf-annot-minor-mode)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000")))
 
 ;; auto-indent on RET ===============================
