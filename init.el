@@ -462,6 +462,11 @@
 	exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
+;; hide-mode-line config ============================
+;; ==================================================
+
+(use-package hide-mode-line)
+
 ;; evil-mode config =================================
 ;; ==================================================
 
@@ -1219,7 +1224,7 @@
 
 (agnostic-key
   "s-p" 'projectile-find-file-dwim
-  "s-P" 'consult-find-file
+  "s-P" 'consult-recent-file
   "s-o" 'find-file
   "s-f" 'projectile-find-file-dwim
   "s-b" 'switch-to-buffer
