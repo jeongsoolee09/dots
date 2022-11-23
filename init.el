@@ -180,6 +180,41 @@
 ;;   :mode "\\.kbd\\'"
 ;;   :commands kbd-mode)
 
+;; hy config ========================================
+;; ==================================================
+
+(use-package smartparens
+  :config (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
+(evil-define-key 'normal hy-mode-map (kbd "<leader>ks") 'paredit-forward-slurp-sexp)
+(evil-define-key 'normal hy-mode-map (kbd "<leader>kb") 'paredit-forward-barf-sexp)
+(evil-define-key 'normal inferior-hy-mode-map (kbd "<leader>ks") 'paredit-forward-slurp-sexp)
+(evil-define-key 'normal inferior-hy-mode-map (kbd "<leader>kb") 'paredit-forward-barf-sexp)
+
+(defun my-hy-shell-eval-current-form ()
+  (interactive)
+  (progn
+    (hy-shell-eval-current-form)
+    (previous-buffer)))
+
+(defun my-hy-shell-eval-region ()
+  (interactive)
+  (progn
+    (hy-shell-eval-region)
+    (previous-buffer)))
+
+(defun my-hy-shell-eval-buffer ()
+  (interactive)
+  (progn
+    (hy-shell-eval-buffer)
+    (previous-buffer)))
+
+(evil-define-key 'normal hy-mode-map (kbd "<localleader>ec") 'hy-shell-eval-current-form)
+(evil-define-key 'normal hy-mode-map (kbd "<localleader>er") 'hy-shell-eval-region)
+(evil-define-key 'normal hy-mode-map (kbd "<localleader>eb") 'hy-shell-eval-buffer)
+
+(add-hook 'hy-mode-hook 'paredit-mode)
+(add-hook 'inferior-hy-mode-hook 'paredit-mode)
+
 ;; Elisp config =====================================
 ;; ==================================================
 
@@ -456,6 +491,11 @@
     (kbd "<M-down-mouse-1>") 'pdf-view-mouse-set-region-rectangle
     (kbd "<down-mouse-1>")  'pdf-view-mouse-set-region)
   (evil-define-key 'normal pdf-view-mode-map
+    (kbd "<magnify-down>")  'image-decrease-size
+    (kbd "<magnify-up>")  'image-decrease-size
+    "-"  'image-decrease-size
+    "-"  'image-decrease-size
+    "="  'image-increase-size
     "0"  'image-bol
     "$"  'image-eol
     "j"  'pdf-view-next-line-or-next-page
@@ -517,7 +557,7 @@
     "q"                'tablist-quit
     "g"                'pdf-occur-revert-buffer-with-args
     "r"                'pdf-occur-revert-buffer-with-args
-    "*"                'spacemacs/enter-ahs-forward
+    ; "*"                'spacemacs/enter-ahs-forward
     "?"                'evil-search-backward)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
   :general
@@ -1541,41 +1581,6 @@
     (interactive)
     (let ((current-filename (buffer-file-name)))
       (w3m-find-file current-filename))))
-
-;; hy config ========================================
-;; ==================================================
-
-(use-package smartparens
-  :config (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
-(evil-define-key 'normal hy-mode-map (kbd "<leader>ks") 'paredit-forward-slurp-sexp)
-(evil-define-key 'normal hy-mode-map (kbd "<leader>kb") 'paredit-forward-barf-sexp)
-(evil-define-key 'normal inferior-hy-mode-map (kbd "<leader>ks") 'paredit-forward-slurp-sexp)
-(evil-define-key 'normal inferior-hy-mode-map (kbd "<leader>kb") 'paredit-forward-barf-sexp)
-
-(defun my-hy-shell-eval-current-form ()
-  (interactive)
-  (progn
-    (hy-shell-eval-current-form)
-    (previous-buffer)))
-
-(defun my-hy-shell-eval-region ()
-  (interactive)
-  (progn
-    (hy-shell-eval-region)
-    (previous-buffer)))
-
-(defun my-hy-shell-eval-buffer ()
-  (interactive)
-  (progn
-    (hy-shell-eval-buffer)
-    (previous-buffer)))
-
-(evil-define-key 'normal hy-mode-map (kbd "<localleader>ec") 'hy-shell-eval-current-form)
-(evil-define-key 'normal hy-mode-map (kbd "<localleader>er") 'hy-shell-eval-region)
-(evil-define-key 'normal hy-mode-map (kbd "<localleader>eb") 'hy-shell-eval-buffer)
-
-(add-hook 'hy-mode-hook 'paredit-mode)
-(add-hook 'inferior-hy-mode-hook 'paredit-mode)
 
 ;; TRAMP config =====================================
 ;; ==================================================
