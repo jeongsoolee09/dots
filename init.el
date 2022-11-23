@@ -111,11 +111,16 @@
 ;; Useful Elisp Libraries ===========================
 ;; ==================================================
 
-(use-package dash :defer t)
+(use-package dash
+  :defer t
+  :config
+  (function-put '-> 'lisp-indent-function nil)
+  (function-put '->> 'lisp-indent-function nil)
+  (function-put 'if 'lisp-indent-function nil))
 (use-package s :defer t)
 (use-package ts :defer t)
 (defun declare-label (label)
-  '(:ignore t :which-key "label"))
+  (list :ignore t :which-key label))
 (defmacro plaintext (&rest body)
   (string-join
    (-interpose " "
@@ -125,10 +130,6 @@
 			  ((symbolp elem) (symbol-name elem)))) body))))
 
 (defmacro comment (&body))
-(with-eval-after-load 'dash
-    (function-put '-> 'lisp-indent-function nil)
-    (function-put '->> 'lisp-indent-function nil)
-    (function-put 'if 'lisp-indent-function nil))
 
 ;; macOS Key Settings ===============================
 ;; ==================================================
@@ -191,24 +192,30 @@
     (if (not current-input-method)
 	(if (not (string= evil-state "insert"))
 	    (evil-insert-state))
-      (if (string= evil-state "insert")
-	  (evil-normal-state)))
-    (toggle-input-method))
+	(if (string= evil-state "insert")
+	    (evil-normal-state)))
+    (toggle-input-method)))
 
-  (use-package evil-collection
-    :after evil
-    :config (evil-collection-init))
-  
-  (use-package evil-surround
-    :config
-    (global-evil-surround-mode 1))
+(use-package evil-collection
+  :after (evil)
+  :config
+  (evil-collection-init)
+  (setq evil-collection-calendar-want-org-bindings t))
 
-  (use-package evil-anzu)
+(use-package evil-surround
+  :after (evil)
+  :config
+  (global-evil-surround-mode 1))
 
-  (use-package evil-commentary
-    :config (evil-commentary-mode)))
+(use-package evil-anzu
+  :after (evil))
 
-(use-package evil-terminal-cursor-changer)
+(use-package evil-commentary
+  :after (evil)
+  :config (evil-commentary-mode))
+
+(use-package evil-org
+  :after (evil))
 
 ;; Yasnippet config  ================================
 ;; ==================================================
@@ -347,12 +354,12 @@
     (interactive)
     (if (executable-find "bb")
 	(comint-run "bb" '())
-      (message "babashka not installed")))
+	(message "babashka not installed")))
   (defun run-nbb ()
     (interactive)
     (if (executable-find "nbb")
 	(comint-run "nbb" '())
-      (message "nbb not installed")))
+	(message "nbb not installed")))
   (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
   (defun mm/cider-connected-hook ()
     (when (eq 'nbb cider-cljs-repl-type)
@@ -632,8 +639,8 @@
     (kbd "C-u") 'pdf-view-scroll-down-or-previous-page
     (kbd "C-d") 'pdf-view-scroll-up-or-next-page
     (kbd "``")  'pdf-history-backward
-    "["  'pdf-history-backward
-    "]"  'pdf-history-forward
+    ;;"["  'pdf-history-backward
+    ;;"]"  'pdf-history-forward
     "'" 'pdf-view-jump-to-register
     ;; Search
     "/" 'isearch-forward
@@ -651,7 +658,7 @@
     "gj"               'outline-forward-same-level
     (kbd "<backtab>")  (if (version< emacs-version "28.0")
 			   'outline-show-all
-			 'outline-cycle-buffer)
+			   'outline-cycle-buffer)
     "gh"               'pdf-outline-up-heading
     "gg"               'beginning-of-buffer
     "G"                'pdf-outline-end-of-buffer
@@ -1013,12 +1020,16 @@
   (require 'pdf-sync)
   (define-key TeX-mode-map (kbd "s-\\") #'TeX-previous-error)
   (define-key TeX-mode-map (kbd "s-/") #'TeX-next-error)
+  ;; to use pdfview with auctex
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-	TeX-source-correlate-start-server t))
+	TeX-source-correlate-start-server t)
+  ;; to have the buffer refresh after compilation
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  (setq pdf-sync-backward-display-action t
+	pdf-sync-forward-display-action t))
 
 (use-package auctex-lua :after (tex))
-
 (use-package company-auctex :after (company))
 
 ;; clipetty config ==================================
@@ -1075,7 +1086,7 @@
 	  (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
 	    (message (concat "opening " trimmed))
 	    (xwidget-webkit-new-session trimmed))
-	(xwidget-webkit-new-session url))))
+	  (xwidget-webkit-new-session url))))
   (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
   (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
   (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
@@ -1215,7 +1226,8 @@
 
 (use-package flycheck
   :config
-  (global-flycheck-mode))
+  (global-flycheck-mode)
+  (setq flycheck-checker-error-threshold 1000))
 
 ;; recentf configs ==================================
 ;; ==================================================
@@ -1233,6 +1245,14 @@
   (add-to-list 'recentf-exclude "/private/var/folders/.*")
   (add-to-list 'recentf-exclude "/var/folders/.*"))
 
+(defun cleanup-emacs ()
+    (interactive)
+    (garbage-collect)
+    (when (featurep 'helpful)
+      (helpful-kill-buffers))
+    (recentf-cleanup)
+    (message "no more garbage! yay!"))
+
 ;; ibuffer configs ==================================
 ;; ==================================================
 
@@ -1242,8 +1262,19 @@
 ;; ==================================================
 
 (use-package projectile
+  :general
+  (global-leader
+    "p" '(:ignore t :which-key "project")
+    "p/" 'projectile-ripgrep
+    "pf" 'projectile-find-file
+    "pp" 'projectile-switch-project
+    "pP" 'projectile-switch-open-project
+    "pc" 'projectile-compile-project)
   :config
-  (projectile-mode))
+  (projectile-mode)
+  (setq projectile-mode-line "Projectile"
+	projectile-enable-caching t
+	anaconda-mode-localhost-address "localhost"))
 
 ;; minions config ===================================
 ;; ==================================================
@@ -1303,6 +1334,30 @@
     (unless (display-graphic-p (selected-frame))
       (set-face-background 'default "unspecified-bg" (selected-frame))))
   (add-hook 'window-setup-hook 'on-after-init))
+
+;; hl-todo config ==================================
+;; =================================================
+
+(use-package hl-todo
+  :config
+  (setq hl-todo-keyword-faces
+          '(("HOLD" . "#d0bf8f")
+            ("TODO" . "#cc9393")
+            ("NEXT" . "#dca3a3")
+            ("THEM" . "#dc8cc3")
+            ("WORKING" . "#7cb8bb")
+            ("PROG" . "#7cb8bb")
+            ("OKAY" . "#7cb8bb")
+            ("DONT" . "#5f7f5f")
+            ("FAIL" . "#8c5353")
+            ("DONE" . "#afd8af")
+            ("NOTE"   . "#d0bf8f")
+            ("KLUDGE" . "#d0bf8f")
+            ("HACK"   . "#d0bf8f")
+            ("TEMP"   . "#d0bf8f")
+            ("FIXME"  . "#cc9393")
+            ("UNSURE"  . "#cc9393")
+            ("XXX+"   . "#cc9393"))))
 
 ;; line numbers ====================================
 ;; =================================================
@@ -1397,8 +1452,29 @@
 ;; org config =======================================
 ;; ==================================================
 
-(setq org-todo-keywords
-      '((sequence "TODO" "WORKING" "|" "DONE" "ABORTED")))
+(use-package org
+  :ensure nil
+  :mode ("\\.org\\'" . org-mode)
+  :config
+  (setq org-return-follows-link t)
+  (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
+  (setq org-todo-keywords
+	'((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))))
+
+;; world clock config ===============================
+;; ==================================================
+
+(use-package time
+  :ensure nil
+  :config
+  (setq world-clock-list t
+	zoneinfo-style-world-list '(("America/Los_Angeles" "Los Angeles")
+				    ("America/New_York" "New York")
+				    ("Asia/Seoul" "Seoul")))
+  :general
+  (global-leader
+    "aC" (declare-label "clock")
+    "aCw" 'world-clock))
 
 ;; custom functions =================================
 ;; ==================================================
@@ -1469,7 +1545,7 @@
   "s-a" 'org-agenda
   "s-y" 'mu4e-update-mail-and-index
   "s-/" 'flycheck-next-error
-  "s-\\" 'flycHeck-previous-error
+  "s-\\" 'flycheck-previous-error
   "s-?" 'yas-next-field
   "s->" 'yas-prev-field)
 
@@ -1571,8 +1647,8 @@
 
 ;; (evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
 
-; (global-leader
-;  "it" 'org-insert-current-time)
+					; (global-leader
+					;  "it" 'org-insert-current-time)
 
 (global-leader
   "a" '(:ignore t :which-key "utilities")
@@ -1580,14 +1656,6 @@
   "ab" 'battery
   "awm" 'w3m
   "aww" 'eww)
-
-(global-leader
-  "p" '(:ignore t :which-key "project")
-  "p/" 'projectile-ripgrep
-  "pf" 'projectile-find-file
-  "pp" 'projectile-switch-project
-  "pP" 'projectile-switch-open-project
-  "pc" 'projectile-compile-project)
 
 (global-leader
   "q" '(:ignore t :which-key "quit")
@@ -1642,14 +1710,19 @@
     (interactive)
     (kill-new w3m-current-url)
     (message "Copied current URL."))
-  (eval-after-load 'w3m
-    '(progn
-       (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
-       (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil)))
+  (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
+  (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil)
   (defun w3m-open-this-file ()
     (interactive)
     (let ((current-filename (buffer-file-name)))
       (w3m-find-file current-filename))))
+
+;; eww config =======================================
+;; ==================================================
+
+(use-package eww
+  :ensure nil
+  )
 
 ;; reddigg config ===================================
 ;; ==================================================
@@ -1657,15 +1730,31 @@
 (use-package reddigg
   :general
   (global-leader
-    "awr" (declare-label "reddit")
+    "awr" '(:ignore t :which-key "reddit")
     "awrm" 'reddigg-view-main
     "awrs" 'reddigg-view-sub)
   :config
   (setq reddigg-subs '(emacs clojure orgmode lisp commandline
-                             mechkeyboard scala haskell HHKB clojure
-                             vim kotlin programmerhumor orgmode
-                             commandline CityPorn OrgRoam))
+			     mechkeyboard scala haskell HHKB clojure
+			     vim kotlin programmerhumor orgmode
+			     commandline CityPorn OrgRoam))
   (setq org-confirm-elisp-link-function nil))
+
+;; hnreader config ==================================
+;; ==================================================
+
+(use-package hnreader
+  :general
+  (global-leader
+    "awh" (declare-label "hackernews")
+    "awhn" 'hnreader-news
+    "awhp" 'hnreader-past
+    "awhN" 'hnreader-newest
+    "awha" 'hnreader-ask
+    "awhs" 'hnreader-show
+    "awhj" 'hnreader-jobs
+    "awhb" 'hnreader-best
+    "awhm" 'hnreader-more))
 
 ;; eradio config ====================================
 ;; ==================================================
@@ -1673,22 +1762,22 @@
 (use-package eradio
   :general
   (global-leader
-   "aR" (declare-label "Radio")
-   "aRp" 'eradio-play
-   "aRs" 'eradio-stop
-   "aRR" 'eradio-toggle)
+    "aR" (declare-label "Radio")
+    "aRp" 'eradio-play
+    "aRs" 'eradio-stop
+    "aRR" 'eradio-toggle)
   :config
   (setq eradio-player '("mpv" "--no-video" "--no-terminal" "--really-quiet")
-        eradio-channels '(("MBC FM4U" . "http://serpent0.duckdns.org:8088/mbcfm.pls")
-                          ("MBC 표준FM" . "http://serpent0.duckdns.org:8088/mbcsfm.pls")
-                          ("KBS 쿨FM" . "http://serpent0.duckdns.org:8088/kbs2fm.pls")
-                          ("KBS 해피FM" . "http://serpent0.duckdns.org:8088/kbs2radio.pls")
-                          ("KBS 클래식 FM" . "http://serpent0.duckdns.org:8088/kbsfm.pls")
-                          ("SBS 파워FM" . "http://serpent0.duckdns.org:8088/sbsfm.pls")
-                          ("SBS 러브FM" . "http://serpent0.duckdns.org:8088/sbs2fm.pls")
-                          ("TBS 교통방송" . "http://tbs.hscdn.com/tbsradio/fm/playlist.m3u8")
-                          ("TBS eFM" . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
-                          ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
+	eradio-channels '(("MBC FM4U" . "http://serpent0.duckdns.org:8088/mbcfm.pls")
+			  ("MBC 표준FM" . "http://serpent0.duckdns.org:8088/mbcsfm.pls")
+			  ("KBS 쿨FM" . "http://serpent0.duckdns.org:8088/kbs2fm.pls")
+			  ("KBS 해피FM" . "http://serpent0.duckdns.org:8088/kbs2radio.pls")
+			  ("KBS 클래식 FM" . "http://serpent0.duckdns.org:8088/kbsfm.pls")
+			  ("SBS 파워FM" . "http://serpent0.duckdns.org:8088/sbsfm.pls")
+			  ("SBS 러브FM" . "http://serpent0.duckdns.org:8088/sbs2fm.pls")
+			  ("TBS 교통방송" . "http://tbs.hscdn.com/tbsradio/fm/playlist.m3u8")
+			  ("TBS eFM" . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
+			  ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
 
 ;; TRAMP config =====================================
 ;; ==================================================
