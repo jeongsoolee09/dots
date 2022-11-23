@@ -6,6 +6,11 @@
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")))
 
+;; Custom Lisp files ================================
+;; ==================================================
+
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
 ;; use-package config ===============================
 ;; ==================================================
 
@@ -90,13 +95,6 @@
     :states '(normal visual operator motion)
     :prefix ""))
 
-;; Korean environment ===============================
-;; ==================================================
-
-(set-language-environment "Korean")
-(prefer-coding-system 'utf-8)
-(global-set-key (kbd "<f6>") 'toggle-korean-input-method)
-
 ;; Esup config ======================================
 ;; ==================================================
 
@@ -118,6 +116,19 @@
 (use-package ts :defer t)
 (defun declare-label (label)
   '(:ignore t :which-key "label"))
+(defmacro plaintext (&rest body)
+  (string-join
+   (-interpose " "
+	       (mapcar (lambda (elem)
+			 (cond
+			  ((stringp elem) elem)
+			  ((symbolp elem) (symbol-name elem)))) body))))
+
+(defmacro comment (&body))
+(with-eval-after-load 'dash
+    (function-put '-> 'lisp-indent-function nil)
+    (function-put '->> 'lisp-indent-function nil)
+    (function-put 'if 'lisp-indent-function nil))
 
 ;; macOS Key Settings ===============================
 ;; ==================================================
@@ -135,6 +146,69 @@
 (global-set-key (kbd "s-`") 'other-frame)
 (global-set-key (kbd "s-z") 'undo-tree-undo)
 (global-set-key (kbd "s-s") 'save-buffer)
+
+;; evil-mode config =================================
+;; ==================================================
+
+(setq evil-undo-system 'undo-tree)
+(use-package evil
+  :init
+  (setq evil-want-keybinding nil
+	evil-disable-insert-state-bindings t
+	evil-want-C-u-scroll t
+	evil-want-integration t)
+  :config
+  (evil-mode 1)
+  ;; set leader key in normal state
+  ;; (evil-set-leader 'normal (kbd "SPC"))
+  ;; set local leader
+  ;; (evil-set-leader 'normal "," t)
+  (setq evil-motion-state-cursor 'box
+	evil-visual-state-cursor 'box
+	evil-normal-state-cursor 'box
+	evil-insert-state-cursor 'bar)
+  (evil-ex-define-cmd "q" 'kill-this-buffer)
+  (evil-ex-define-cmd "Q" 'kill-this-buffer)
+  (evil-ex-define-cmd "W" 'save-buffer)
+  (evil-ex-define-cmd "Wq" 'evil-save-and-close)
+  (evil-ex-define-cmd "WQ" 'evil-save-and-close)
+  (evil-ex-define-cmd "E" 'evil-edit)
+  (setq evil-vsplit-window-right t
+	evil-split-window-below t)
+  (evil-define-key 'normal 'global (kbd "C-w DEL") 'evil-window-left)
+  (evil-define-key 'normal 'global (kbd "C-w C-j") 'evil-window-down)
+  (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
+  (evil-define-key 'normal 'global (kbd "C-w C-l") 'evil-window-right)
+  (unbind-key (kbd "C-@"))
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; make evil-search-word look for symbol rather than word boundaries
+  (setq-default evil-symbol-word-search t)
+
+  (defun evil-toggle-input-method ()
+    "when toggle on input method, switch to evil-insert-state if possible.
+  when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
+    (interactive)
+    (if (not current-input-method)
+	(if (not (string= evil-state "insert"))
+	    (evil-insert-state))
+      (if (string= evil-state "insert")
+	  (evil-normal-state)))
+    (toggle-input-method))
+
+  (use-package evil-collection
+    :after evil
+    :config (evil-collection-init))
+  
+  (use-package evil-surround
+    :config
+    (global-evil-surround-mode 1))
+
+  (use-package evil-anzu)
+
+  (use-package evil-commentary
+    :config (evil-commentary-mode)))
+
+(use-package evil-terminal-cursor-changer)
 
 ;; Yasnippet config  ================================
 ;; ==================================================
@@ -164,13 +238,29 @@
 
 (use-package lispy
   :mode "\\.(hy|clj|cljs|cljc|edn|lisp|el|scm|rkt|kbd|fnl)\\'")
+
 (electric-pair-mode)
+
 (use-package paren
   :ensure nil
   :init
   (setq show-paren-delay 0)
   :config
   (show-paren-mode 1))
+
+(use-package smartparens
+  :config (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
+
+(use-package evil-cleverparens
+  :after (evil smartparens)
+  :init
+  (setq evil-cleverparens-use-additional-bindings nil)
+  :config
+  (setq evil-cleverparens-use-additional-bindings t)
+  (unless window-system
+    (setq evil-cp-additional-bindings (assoc-delete-all "M-[" evil-cp-additional-bindings))
+    (setq evil-cp-additional-bindings (assoc-delete-all "M-]" evil-cp-additional-bindings)))
+  (evil-cp-set-additional-bindings))
 
 ;; kbd-mode config ==================================
 ;; ==================================================
@@ -182,13 +272,6 @@
 
 ;; hy config ========================================
 ;; ==================================================
-
-(use-package smartparens
-  :config (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
-(evil-define-key 'normal hy-mode-map (kbd "<leader>ks") 'paredit-forward-slurp-sexp)
-(evil-define-key 'normal hy-mode-map (kbd "<leader>kb") 'paredit-forward-barf-sexp)
-(evil-define-key 'normal inferior-hy-mode-map (kbd "<leader>ks") 'paredit-forward-slurp-sexp)
-(evil-define-key 'normal inferior-hy-mode-map (kbd "<leader>kb") 'paredit-forward-barf-sexp)
 
 (defun my-hy-shell-eval-current-form ()
   (interactive)
@@ -260,6 +343,39 @@
 	cider-pprint-fn 'fipp
 	cider-result-overlay-position 'at-point
 	cider-overlays-use-font-lock t)
+  (defun run-bb ()
+    (interactive)
+    (if (executable-find "bb")
+	(comint-run "bb" '())
+      (message "babashka not installed")))
+  (defun run-nbb ()
+    (interactive)
+    (if (executable-find "nbb")
+	(comint-run "nbb" '())
+      (message "nbb not installed")))
+  (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
+  (defun mm/cider-connected-hook ()
+    (when (eq 'nbb cider-cljs-repl-type)
+      (setq-local cider-show-error-buffer nil)
+      (cider-set-repl-type 'cljs)))
+  (add-hook 'cider-connected-hook #'mm/cider-connected-hook)
+  (setq cider-check-cljs-repl-requirements nil)
+  (define-clojure-indent
+    (defroutes 'defun)
+    (GET 2)
+    (POST 2)
+    (PUT 2)
+    (DELETE 2)
+    (HEAD 2)
+    (ANY 2)
+    (OPTIONS 2)
+    (PATCH 2)
+    (rfn 2)
+    (let-routes 1)
+    (context 2)
+    (use-like-this 'defun)
+    (match 'defun)
+    (comment 'defun))
   :general
   (local-leader
     :major-modes
@@ -388,7 +504,10 @@
     "Te" 'cider-enlighten-mode
     "Tf" 'spacemacs/cider-toggle-repl-font-locking
     "Tp" 'spacemacs/cider-toggle-repl-pretty-printing
-    "Tt" 'cider-auto-test-mode))
+    "Tt" 'cider-auto-test-mode)
+  (global-leader
+    "atsb" 'run-bb
+    "atsn" 'run-nbb))
 
 ;; Racket config ====================================
 ;; ==================================================
@@ -557,7 +676,7 @@
     "q"                'tablist-quit
     "g"                'pdf-occur-revert-buffer-with-args
     "r"                'pdf-occur-revert-buffer-with-args
-    ; "*"                'spacemacs/enter-ahs-forward
+					; "*"                'spacemacs/enter-ahs-forward
     "?"                'evil-search-backward)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
   :general
@@ -620,69 +739,6 @@
 ;; ==================================================
 
 (use-package hide-mode-line)
-
-;; evil-mode config =================================
-;; ==================================================
-
-(setq evil-undo-system 'undo-tree)
-(use-package evil
-  :init
-  (setq evil-disable-insert-state-bindings t
-	evil-want-C-u-scroll t
-	evil-want-integration t ;; This is optional since it's already set to t by default.
-	evil-want-keybinding nil)
-  :config
-  (evil-mode 1)
-  ;; set leader key in normal state
-  ;; (evil-set-leader 'normal (kbd "SPC"))
-  ;; set local leader
-  ;; (evil-set-leader 'normal "," t)
-  (setq evil-motion-state-cursor 'box
-	evil-visual-state-cursor 'box
-	evil-normal-state-cursor 'box
-	evil-insert-state-cursor 'bar)
-  (evil-ex-define-cmd "q" 'kill-this-buffer)
-  (evil-ex-define-cmd "Q" 'kill-this-buffer)
-  (evil-ex-define-cmd "W" 'save-buffer)
-  (evil-ex-define-cmd "Wq" 'evil-save-and-close)
-  (evil-ex-define-cmd "WQ" 'evil-save-and-close)
-  (evil-ex-define-cmd "E" 'evil-edit)
-  (setq evil-vsplit-window-right t
-	evil-split-window-below t)
-  (evil-define-key 'normal 'global (kbd "C-w DEL") 'evil-window-left)
-  (evil-define-key 'normal 'global (kbd "C-w C-j") 'evil-window-down)
-  (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
-  (evil-define-key 'normal 'global (kbd "C-w C-l") 'evil-window-right)
-  (unbind-key (kbd "C-@"))
-  (defalias #'forward-evil-word #'forward-evil-symbol)
-  ;; make evil-search-word look for symbol rather than word boundaries
-  (setq-default evil-symbol-word-search t)
-
-  (defun evil-toggle-input-method ()
-    "when toggle on input method, switch to evil-insert-state if possible.
-  when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
-    (interactive)
-    (if (not current-input-method)
-	(if (not (string= evil-state "insert"))
-	    (evil-insert-state))
-      (if (string= evil-state "insert")
-	  (evil-normal-state)))
-    (toggle-input-method))
-
-  (use-package evil-collection
-    :after evil
-    :config (evil-collection-init))
-  
-  (use-package evil-surround
-    :config
-    (global-evil-surround-mode 1))
-
-  (use-package evil-anzu)
-
-  (use-package evil-commentary
-    :config (evil-commentary-mode)))
-
-(use-package evil-terminal-cursor-changer)
 
 ;; vertico config ===================================
 ;; ==================================================
@@ -1041,7 +1097,17 @@
 ;; kotlin config ===================================
 ;; =================================================
 
-(use-package kotlin-mode :mode "\\.kt\\'")
+(use-package kotlin-mode :mode "\\.kt\\'"
+  :config
+  (defun run-kotlin ()
+    (interactive)
+    (comint-run "kotlin" '()))
+  (local-leader
+    :major-modes
+    '(kotlin-mode t)
+    :keymaps
+    '(kotlin-mode-map)
+    "'" 'run-kotlin))
 
 ;; scala config ====================================
 ;; =================================================
@@ -1084,13 +1150,6 @@
   (add-hook 'magit-mode-hook
 	    (lambda ()
 	      (evil-define-key 'normal magit-mode-map (kbd "SPC") nil))))
-
-;; custom lisp scripts, misc configs ================
-;; ==================================================
-
-(add-to-list 'load-path "~/.emacs.d/custom-lisp")
-(fset 'yes-or-no-p 'y-or-n-p)
-(setq create-lockfiles nil)
 
 ;; eldoc-mode config ================================
 ;; ==================================================
@@ -1231,6 +1290,13 @@
 		(when (string= (modus-themes--current-theme) "modus-vivendi")
 		  (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000"))))))
 
+(use-package auto-dark
+  :config
+  (setq auto-dark--light-theme 'modus-operandi)
+  (setq auto-dark--dark-theme 'modus-vivendi))
+
+(global-visual-line-mode t)
+
 ;; make terminal transparent
 (unless (window-system)
   (defun on-after-init ()
@@ -1241,7 +1307,6 @@
 ;; line numbers ====================================
 ;; =================================================
 
-(global-visual-line-mode t)
 (let ((hooks '(doc-view-mode-hook
 	       pdf-view-mode-hook
 	       w3m-mode-hook
@@ -1486,6 +1551,7 @@
   "feR" 'eval-init-dot-el
   "fr" 'consult-recent-file
   "fj" 'dired-jump
+  "fF" 'find-name-dired
   "o" 'find-file)
 
 (global-leader
@@ -1503,7 +1569,10 @@
   "/" 'flycheck-next-error
   "\\" 'flycheck-previous-error)
 
-(evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
+;; (evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
+
+; (global-leader
+;  "it" 'org-insert-current-time)
 
 (global-leader
   "a" '(:ignore t :which-key "utilities")
@@ -1568,7 +1637,7 @@
   (setq w3m-search-word-at-point nil)
   (if window-system
       (setq browse-url-browser-function 'browse-url-default-browser)
-    (setq browse-url-browser-function 'w3m-browse-url))
+      (setq browse-url-browser-function 'w3m-browse-url))
   (defun w3m-copy-current-url ()
     (interactive)
     (kill-new w3m-current-url)
@@ -1581,6 +1650,45 @@
     (interactive)
     (let ((current-filename (buffer-file-name)))
       (w3m-find-file current-filename))))
+
+;; reddigg config ===================================
+;; ==================================================
+
+(use-package reddigg
+  :general
+  (global-leader
+    "awr" (declare-label "reddit")
+    "awrm" 'reddigg-view-main
+    "awrs" 'reddigg-view-sub)
+  :config
+  (setq reddigg-subs '(emacs clojure orgmode lisp commandline
+                             mechkeyboard scala haskell HHKB clojure
+                             vim kotlin programmerhumor orgmode
+                             commandline CityPorn OrgRoam))
+  (setq org-confirm-elisp-link-function nil))
+
+;; eradio config ====================================
+;; ==================================================
+
+(use-package eradio
+  :general
+  (global-leader
+   "aR" (declare-label "Radio")
+   "aRp" 'eradio-play
+   "aRs" 'eradio-stop
+   "aRR" 'eradio-toggle)
+  :config
+  (setq eradio-player '("mpv" "--no-video" "--no-terminal" "--really-quiet")
+        eradio-channels '(("MBC FM4U" . "http://serpent0.duckdns.org:8088/mbcfm.pls")
+                          ("MBC 표준FM" . "http://serpent0.duckdns.org:8088/mbcsfm.pls")
+                          ("KBS 쿨FM" . "http://serpent0.duckdns.org:8088/kbs2fm.pls")
+                          ("KBS 해피FM" . "http://serpent0.duckdns.org:8088/kbs2radio.pls")
+                          ("KBS 클래식 FM" . "http://serpent0.duckdns.org:8088/kbsfm.pls")
+                          ("SBS 파워FM" . "http://serpent0.duckdns.org:8088/sbsfm.pls")
+                          ("SBS 러브FM" . "http://serpent0.duckdns.org:8088/sbs2fm.pls")
+                          ("TBS 교통방송" . "http://tbs.hscdn.com/tbsradio/fm/playlist.m3u8")
+                          ("TBS eFM" . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
+                          ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
 
 ;; TRAMP config =====================================
 ;; ==================================================
@@ -1622,7 +1730,12 @@
       inhibit-startup-echo-area-message ""
       inhibit-startup-message t
       inhibit-splash-screen t)
+(setq-default quelpa-build-tar-executable (executable-find "gtar"))
+
 (advice-add 'delete-window :after #'balance-windows)
+
+(fset 'yes-or-no-p 'y-or-n-p)
+(setq create-lockfiles nil)
 
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 (message "config loaded!")
