@@ -3,12 +3,12 @@ local wezterm = require "wezterm"
 
 return {
     font = wezterm.font 'D2Coding Ligature',
-    font_size = 18.0,
+    font_size = 20.0,
     enable_tab_bar = false,
     disable_default_mouse_bindings = true,
     audible_bell = "Disabled",
     window_close_confirmation = "NeverPrompt",
-    color_scheme = "Cupertino (base16)",
+    -- color_scheme = "Cupertino (base16)",
     keys = {
         {
           key = 'f',

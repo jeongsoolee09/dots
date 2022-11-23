@@ -1754,7 +1754,9 @@
     "awhs" 'hnreader-show
     "awhj" 'hnreader-jobs
     "awhb" 'hnreader-best
-    "awhm" 'hnreader-more))
+    "awhm" 'hnreader-more)
+  :config
+  (setq org-confirm-elisp-link-function nil))
 
 ;; eradio config ====================================
 ;; ==================================================
