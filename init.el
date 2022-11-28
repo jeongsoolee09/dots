@@ -5,7 +5,7 @@
 
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")))
-; (package-initialize)
+					; (package-initialize)
 
 ;; Custom Lisp files ================================
 ;; ==================================================
@@ -31,7 +31,8 @@
   :config
   (unless (package-installed-p 'quelpa)
     (with-temp-buffer
-      (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+      (url-insert-file-contents
+       "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
       (eval-buffer)
       (quelpa-self-upgrade))))
 
@@ -81,7 +82,11 @@
     :keymaps 'override
     :states '(emacs normal hybrid motion visual operator)
     :prefix ","
-    "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+    "" '(:ignore t :which-key
+		 (lambda (arg)
+		   `(,(cadr (split-string (car arg) " ")) .
+		     ,(replace-regexp-in-string "-mode$" ""
+						(symbol-name major-mode))))))
   (general-create-definer agnostic-key
     :keymaps 'override
     :states '(insert emacs normal hybrid motion visual operator)
@@ -132,7 +137,7 @@
 
 (defmacro comment (&body))
 
-;; macOS Key Settings ===============================
+;; macOS Settings ===================================
 ;; ==================================================
 
 (when (memq window-system '(mac ns))
@@ -141,14 +146,24 @@
 	mac-command-modifier 'super))
 
 (agnostic-key
- "s-v" 'yank
- "s-c" 'evil-yank
- "s-x" 'kill-region
- "s-w" 'delete-window
- "s-W" 'delete-frame
- "s-`" 'other-frame
- "s-z" 'undo-tree-undo
- "s-s" 'save-buffer)
+  "s-v" 'yank
+  "s-c" 'evil-yank
+  "s-x" 'kill-region
+  "s-w" 'delete-window
+  "s-W" 'delete-frame
+  "s-`" 'other-frame
+  "s-z" 'undo-tree-undo
+  "s-s" 'save-buffer)
+
+;; fix macOS Trash
+(when (memq window-system '(mac ns))
+  (setq delete-by-moving-to-trash t
+	trash-directory "~/.Trash"))
+
+;; Linux Settings ===================================
+;; ==================================================
+
+
 
 ;; evil-mode config =================================
 ;; ==================================================
@@ -572,8 +587,8 @@
 
     "T" '(:ignore t :which-key "toggle")
     "Te" 'cider-enlighten-mode
-    ;"Tf" 'spacemacs/cider-toggle-repl-font-locking
-    ;"Tp" 'spacemacs/cider-toggle-repl-pretty-printing
+					;"Tf" 'spacemacs/cider-toggle-repl-font-locking
+					;"Tp" 'spacemacs/cider-toggle-repl-pretty-printing
     "Tt" 'cider-auto-test-mode)
   (global-leader
     "atsb" 'run-bb
@@ -756,7 +771,7 @@
     "q"                'tablist-quit
     "g"                'pdf-occur-revert-buffer-with-args
     "r"                'pdf-occur-revert-buffer-with-args
-    ; "*"              'spacemacs/enter-ahs-forward
+					; "*"              'spacemacs/enter-ahs-forward
     "?"                'evil-search-backward)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
   :general
@@ -1131,11 +1146,6 @@
 ;; dired configs ====================================
 ;; ==================================================
 
-;; fix macOS Trash
-(when (memq window-system '(mac ns))
-  (setq delete-by-moving-to-trash t
-	trash-directory "~/.Trash"))
-
 ;; Fix for dired in TRAMP environment
 (add-hook 'dired-mode-hook
 	  (lambda ()
@@ -1233,6 +1243,7 @@
     "gs" 'magit
     "ga" 'magit-stage-file
     "gc" 'magit-commit-create
+    "gC" 'magit-clone
     "gp" 'magit-push
     "gd" 'magit-diff-dwim)
   :config
@@ -1272,7 +1283,20 @@
 (use-package which-key
   :config
   (which-key-mode)
-  (setq which-key-idle-delay 0.3))
+  (setq which-key-add-column-padding 1
+        which-key-allow-multiple-replacements t
+        which-key-echo-keystrokes 0.02
+        which-key-idle-delay 0.2
+        which-key-idle-secondary-delay 0.01
+        which-key-max-description-length 32
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-prevent-C-h-from-cycling t
+        which-key-sort-order 'which-key-prefix-then-key-order
+        which-key-sort-uppercase-first nil
+        which-key-special-keys nil
+        which-key-use-C-h-for-paging t
+        which-key-allow-evil-operators t))
 
 ;; isearch configs ==================================
 ;; ==================================================
@@ -1545,8 +1569,17 @@
     (interactive)
     (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
 
-  (setq org-return-follows-link t)
+  (setq org-return-follows-link t
+	org-mouse-1-follows-link t
+	org-link-descriptive t
+	org-hide-emphasis-markers t)
   (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
+  (add-hook 'org-mode-hook 'org-appear-mode)
+  ;; disable auto-pairing of "<" in org-mode
+  (add-hook 'org-mode-hook (lambda ()
+			     (setq-local electric-pair-inhibit-predicate
+					 `(lambda (c)
+					    (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
   (setq org-todo-keywords
 	'((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))))
 
@@ -1621,6 +1654,7 @@
   "s-l" 'evil-window-right
   "s-u" 'winner-undo
   "s-d" 'kill-this-buffer
+  "s-D" 'kill-buffer-and-window
   "s-m" 'helm-filtered-bookmarks
   "s-g" 'magit
   "s-r" 'winner-redo
