@@ -84,7 +84,7 @@
     "" '(:ignore t :which-key (lambda (arg) `(,(cadr (split-string (car arg) " ")) . ,(replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
   (general-create-definer agnostic-key
     :keymaps 'override
-    :states '(normal visual operator motion hybrid emacs)
+    :states '(insert emacs normal hybrid motion visual operator)
     :prefix ""
     "" '(:ignore t))
   (general-create-definer insert-mode-major-mode
@@ -140,14 +140,15 @@
 	mac-option-modifier 'meta
 	mac-command-modifier 'super))
 
-(global-set-key (kbd "s-v") 'yank)
-(global-set-key (kbd "s-c") 'evil-yank)
-(global-set-key (kbd "s-x") 'kill-region)
-(global-set-key (kbd "s-w") 'delete-window)
-(global-set-key (kbd "s-W") 'delete-frame)
-(global-set-key (kbd "s-`") 'other-frame)
-(global-set-key (kbd "s-z") 'undo-tree-undo)
-(global-set-key (kbd "s-s") 'save-buffer)
+(agnostic-key
+ "s-v" 'yank
+ "s-c" 'evil-yank
+ "s-x" 'kill-region
+ "s-w" 'delete-window
+ "s-W" 'delete-frame
+ "s-`" 'other-frame
+ "s-z" 'undo-tree-undo
+ "s-s" 'save-buffer)
 
 ;; evil-mode config =================================
 ;; ==================================================
@@ -415,12 +416,12 @@
   (defun run-bb ()
     (interactive)
     (if (executable-find "bb")
-	(comint-run "bb" '())
+	(make-comint "babashka" "bb")
 	(message "bb not installed")))
   (defun run-nbb ()
     (interactive)
     (if (executable-find "nbb")
-	(comint-run "nbb" '())
+	(make-comint "node-babashka" "nbb")
 	(message "nbb not installed")))
   (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
   (defun mm/cider-connected-hook ()
@@ -571,8 +572,8 @@
 
     "T" '(:ignore t :which-key "toggle")
     "Te" 'cider-enlighten-mode
-    "Tf" 'spacemacs/cider-toggle-repl-font-locking
-    "Tp" 'spacemacs/cider-toggle-repl-pretty-printing
+    ;"Tf" 'spacemacs/cider-toggle-repl-font-locking
+    ;"Tp" 'spacemacs/cider-toggle-repl-pretty-printing
     "Tt" 'cider-auto-test-mode)
   (global-leader
     "atsb" 'run-bb
@@ -755,7 +756,7 @@
     "q"                'tablist-quit
     "g"                'pdf-occur-revert-buffer-with-args
     "r"                'pdf-occur-revert-buffer-with-args
-					; "*"                'spacemacs/enter-ahs-forward
+    ; "*"              'spacemacs/enter-ahs-forward
     "?"                'evil-search-backward)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
   :general
@@ -1532,7 +1533,18 @@
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
+  :general
+  (local-leader
+    :keymaps
+    '(org-mode-map)
+    "i" '(declare-label "insert")
+    "it" 'org-insert-current-time)
   :config
+  (defun org-insert-current-time ()
+    "insert the curren time at the cursor position."
+    (interactive)
+    (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
+
   (setq org-return-follows-link t)
   (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
   (setq org-todo-keywords
@@ -1562,14 +1574,9 @@
   (message (format-time-string "%Y-%m-%d %H:%M:%S")))
 
 (defun insert-current-time ()
-  "insert the curren time at the cursor position."
+  "insert the current time at point."
   (interactive)
   (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
-
-(defun org-insert-current-time ()
-  "insert the curren time at the cursor position."
-  (interactive)
-  (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
 
 ;; emacs key remappings =============================
 ;; ==================================================
@@ -1722,11 +1729,6 @@
   "/" 'flycheck-next-error
   "\\" 'flycheck-previous-error)
 
-;; (evil-define-key 'normal 'global (kbd "<leader>it") 'org-insert-current-time)
-
-					; (global-leader
-					;  "it" 'org-insert-current-time)
-
 (global-leader
   "a" '(:ignore t :which-key "utilities")
   "ai" 'display-current-time
@@ -1798,8 +1800,7 @@
 ;; ==================================================
 
 (use-package eww
-  :ensure nil
-  )
+  :ensure nil)
 
 ;; reddigg config ===================================
 ;; ==================================================
