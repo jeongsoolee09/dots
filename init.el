@@ -5,6 +5,7 @@
 
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")))
+; (package-initialize)
 
 ;; Custom Lisp files ================================
 ;; ==================================================
@@ -240,6 +241,66 @@
 (use-package tree-sitter-langs
   :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'")
 
+;; Eglot config =====================================
+;; ==================================================
+
+(use-package eglot
+  :hook
+  ((rust-mode . eglot-ensure)
+   (clojure-mode . eglot-ensure)
+   (python-mode . eglot-ensure))
+  :general
+  (local-leader
+    :keymaps
+    '(eglot-mode-map)
+    "a" '(:ignore t :which-key "LSP")
+    "aa" 'eglot-code-actions
+    "r" 'eglot-rename)
+  :config
+  (defvar-local flycheck-eglot-current-errors nil)
+
+  ;; use flycheck instead of flymake.
+  (defun flycheck-eglot-report-fn (diags &rest _)
+    (setq flycheck-eglot-current-errors
+	  (mapcar (lambda (diag)
+		    (save-excursion
+		      (goto-char (flymake--diag-beg diag))
+		      (flycheck-error-new-at (line-number-at-pos)
+					     (1+ (- (point) (line-beginning-position)))
+					     (pcase (flymake--diag-type diag)
+					       ('eglot-error 'error)
+					       ('eglot-warning 'warning)
+					       ('eglot-note 'info)
+					       (_ (error "Unknown diag type, %S" diag)))
+					     (flymake--diag-text diag)
+					     :checker 'eglot)))
+		  diags))
+    (flycheck-buffer))
+
+  (defun flycheck-eglot--start (checker callback)
+    (funcall callback 'finished flycheck-eglot-current-errors))
+
+  (defun flycheck-eglot--available-p ()
+    (bound-and-true-p eglot--managed-mode))
+
+  (flycheck-define-generic-checker 'eglot
+    "Report `eglot' diagnostics using `flycheck'."
+    :start #'flycheck-eglot--start
+    :predicate #'flycheck-eglot--available-p
+    :modes '(prog-mode text-mode))
+
+  (push 'eglot flycheck-checkers)
+
+  (defun sanityinc/eglot-prefer-flycheck ()
+    (when eglot--managed-mode
+      (flycheck-add-mode 'eglot major-mode)
+      (flycheck-select-checker 'eglot)
+      (flycheck-mode)
+      (flymake-mode -1)
+      (setq eglot--current-flymake-report-fn 'flycheck-eglot-report-fn)))
+
+  (add-hook 'eglot--managed-mode-hook 'sanityinc/eglot-prefer-flycheck))
+
 ;; Lisp config ======================================
 ;; ==================================================
 
@@ -345,6 +406,7 @@
 (use-package cider
   :mode "\\.clj(s|c)?\\'"
   :config
+  (setq cider-use-xref nil)
   (setq cider-repl-display-help-banner nil
 	cider-repl-buffer-size-limit 100
 	cider-pprint-fn 'fipp
@@ -354,7 +416,7 @@
     (interactive)
     (if (executable-find "bb")
 	(comint-run "bb" '())
-	(message "babashka not installed")))
+	(message "bb not installed")))
   (defun run-nbb ()
     (interactive)
     (if (executable-find "nbb")
@@ -592,7 +654,17 @@
 ;; HTML config ======================================
 ;; ==================================================
 
-(use-package tagedit :mode "\\.html\\'")
+(use-package web-mode
+  :mode ("\\.html\\'" . web-mode))
+
+(use-package company-web
+  :after (web-mode))
+
+(use-package tagedit
+  :after (web-mode))
+
+(use-package emmet-mode
+  :after (web-mode))
 
 ;; Markdown config ==================================
 ;; ==================================================
@@ -1042,9 +1114,14 @@
 ;; ==================================================
 
 (use-package company
-  :hook prog-mode
+  :hook (prog-mode . global-company-mode)
+  :commands (company-mode)
   :config
-  (global-company-mode)
+  ;; (global-company-mode)
+  (setq company-idle-delay 0)
+  (setq company-echo-delay 0)
+  (setq company-tooltip-idle-delay 0)
+  (setq company-async-redisplay-delay 0)
   (define-key company-active-map (kbd "<return>") nil)
   (define-key company-active-map (kbd "RET") nil)
   (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
@@ -1246,12 +1323,12 @@
   (add-to-list 'recentf-exclude "/var/folders/.*"))
 
 (defun cleanup-emacs ()
-    (interactive)
-    (garbage-collect)
-    (when (featurep 'helpful)
-      (helpful-kill-buffers))
-    (recentf-cleanup)
-    (message "no more garbage! yay!"))
+  (interactive)
+  (garbage-collect)
+  (when (featurep 'helpful)
+    (helpful-kill-buffers))
+  (recentf-cleanup)
+  (message "no more garbage! yay!"))
 
 ;; ibuffer configs ==================================
 ;; ==================================================
@@ -1313,7 +1390,7 @@
 
 (when window-system
   (use-package modus-themes
-    :ensure nil
+					; :ensure nil
     :config
     (load-theme 'modus-operandi t)
     (add-hook 'modus-themes-after-load-theme-hook
@@ -1341,23 +1418,23 @@
 (use-package hl-todo
   :config
   (setq hl-todo-keyword-faces
-          '(("HOLD" . "#d0bf8f")
-            ("TODO" . "#cc9393")
-            ("NEXT" . "#dca3a3")
-            ("THEM" . "#dc8cc3")
-            ("WORKING" . "#7cb8bb")
-            ("PROG" . "#7cb8bb")
-            ("OKAY" . "#7cb8bb")
-            ("DONT" . "#5f7f5f")
-            ("FAIL" . "#8c5353")
-            ("DONE" . "#afd8af")
-            ("NOTE"   . "#d0bf8f")
-            ("KLUDGE" . "#d0bf8f")
-            ("HACK"   . "#d0bf8f")
-            ("TEMP"   . "#d0bf8f")
-            ("FIXME"  . "#cc9393")
-            ("UNSURE"  . "#cc9393")
-            ("XXX+"   . "#cc9393"))))
+	'(("HOLD" . "#d0bf8f")
+	  ("TODO" . "#cc9393")
+	  ("NEXT" . "#dca3a3")
+	  ("THEM" . "#dc8cc3")
+	  ("WORKING" . "#7cb8bb")
+	  ("PROG" . "#7cb8bb")
+	  ("OKAY" . "#7cb8bb")
+	  ("DONT" . "#5f7f5f")
+	  ("FAIL" . "#8c5353")
+	  ("DONE" . "#afd8af")
+	  ("NOTE"   . "#d0bf8f")
+	  ("KLUDGE" . "#d0bf8f")
+	  ("HACK"   . "#d0bf8f")
+	  ("TEMP"   . "#d0bf8f")
+	  ("FIXME"  . "#cc9393")
+	  ("UNSURE"  . "#cc9393")
+	  ("XXX+"   . "#cc9393"))))
 
 ;; line numbers ====================================
 ;; =================================================
