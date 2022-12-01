@@ -5,7 +5,6 @@
 
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")))
-;; (package-initialize)
 
 ;; Custom Lisp files ================================
 ;; ==================================================
@@ -321,9 +320,7 @@
 ;; ==================================================
 
 (use-package lispy
-  :mode "\\.(hy|clj|cljs|cljc|edn|lisp|el|scm|rkt|kbd|fnl)\\'")
-
-(electric-pair-mode)
+  :hook (hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode))
 
 (use-package paren
   :ensure nil
@@ -333,9 +330,12 @@
   (show-paren-mode 1))
 
 (use-package smartparens
-  :config (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
+  :config
+  (smartparens-global-mode)
+  (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
 
 (use-package evil-cleverparens
+  :hook (hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode)
   :after (evil smartparens)
   :init
   (setq evil-cleverparens-use-additional-bindings nil)
@@ -769,9 +769,8 @@
     "q"                'tablist-quit)
   (evil-define-key 'normal pdf-occur-buffer-mode-map
     "q"                'tablist-quit
-    "g"                'pdf-occur-revert-buffer-with-args
     "r"                'pdf-occur-revert-buffer-with-args
-					; "*"              'spacemacs/enter-ahs-forward
+    ;; "*"              'spacemacs/enter-ahs-forward
     "?"                'evil-search-backward)
   (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
   :general
