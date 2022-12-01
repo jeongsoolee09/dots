@@ -10,9 +10,13 @@ Plug 'tpope/vim-commentary'
 
 Plug 'tpope/vim-fugitive'
 
-Plug 'tpope/vim-surround'
-
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
+
+Plug 'guns/vim-sexp'
+
+Plug 'tpope/vim-repeat'
+
+Plug 'tpope/vim-surround'
 
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -30,13 +34,11 @@ Plug 'hylang/vim-hy'
 
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'rescript-lang/vim-rescript'
-
-Plug 'guns/vim-sexp'
-
 Plug 'sbdchd/neoformat'
 
 Plug 'farmergreg/vim-lastplace'
+
+Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!']  }
 
 call plug#end()
 
@@ -148,18 +150,16 @@ if has('syntax') && !exists('g:syntax_on')
     syntax enable
 endif
 
-" Use :help 'option' to see the documentation for the given option.
-
 " vim-sexp config
-let g:sexp_filetypes = "clojure,scheme,lisp,timl,hy"
-map <leader>kw <Plug>(sexp_round_tail_wrap_element)
-map <leader>kW <Plug>(sexp_round_tail_wrap_list)
-map <leader>ks <Plug>(sexp_capture_next_element)
-map <leader>kS <Plug>(sexp_capture_prev_element)
-map <leader>kb <Plug>(sexp_capture_tail_element)
-map <leader>kB <Plug>(sexp_capture_head_element)
-map <leader>k[ <Plug>(sexp_square_tail_wrap_list)
-map <leader>k{ <Plug>(sexp_curly_tail_wrap_list)
+" let g:sexp_filetypes = "clojure,scheme,lisp,timl,hy,fennel"
+" map <leader>kw <Plug>(sexp_round_tail_wrap_element)
+" map <leader>kW <Plug>(sexp_round_tail_wrap_list)
+" map <leader>ks <Plug>(sexp_capture_next_element)
+" map <leader>kS <Plug>(sexp_capture_prev_element)
+" map <leader>kb <Plug>(sexp_capture_tail_element)
+" map <leader>kB <Plug>(sexp_capture_head_element)
+" map <leader>k[ <Plug>(sexp_square_tail_wrap_list)
+" map <leader>k{ <Plug>(sexp_curly_tail_wrap_list)
 
 set autoindent
 set backspace=indent,eol,start
