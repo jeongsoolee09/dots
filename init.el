@@ -319,9 +319,6 @@
 ;; Lisp config ======================================
 ;; ==================================================
 
-(use-package lispy
-  :hook (hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode))
-
 (use-package paren
   :ensure nil
   :init
@@ -1253,14 +1250,14 @@
 ;; eldoc-mode config ================================
 ;; ==================================================
 
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+(use-package eldoc
+  :ensure nil
+  :hook ((emacs-lisp-mode lisp-interaction-mode ielm-mode) . turn-on-eldoc-mode))
 
 ;; comments =========================================
 ;; ==================================================
 
-(global-set-key (kbd "M-;") 'comment-dwim)
+(agnostic-key "M-;" 'comment-dwim)
 
 ;; save-place configs ===============================
 ;; ==================================================
