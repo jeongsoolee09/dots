@@ -22,11 +22,14 @@
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
+;; NOTE call package-initialize manually, since it's
+;; only used when emacs is first installed and pulling
+;; the packages the first time.
+
 ;; Quelpa config ====================================
 ;; ==================================================
 
 (use-package quelpa
-  :defer t
   :config
   (unless (package-installed-p 'quelpa)
     (with-temp-buffer
@@ -35,8 +38,11 @@
       (eval-buffer)
       (quelpa-self-upgrade))))
 
-(use-package quelpa-use-package
-  :after (quelpa))
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
 
 ;; Korean environment ===============================
 ;; ==================================================
@@ -135,6 +141,10 @@
 			  ((symbolp elem) (symbol-name elem)))) body))))
 
 (defmacro comment (&body))
+(defun minor-mode-activated-p (minor-mode)
+  "Is the given `minor-mode` activated?"
+  (let ((activated-minor-modes (mapcar #'car minor-mode-alist)))
+    (memq minor-mode activated-minor-modes)))
 
 ;; macOS Settings ===================================
 ;; ==================================================
@@ -219,24 +229,24 @@
   (setq evil-collection-calendar-want-org-bindings t))
 
 (use-package evil-surround
-  :after (evil)
-  :config
-  (global-evil-surround-mode 1))
+  :after evil
+  :config (global-evil-surround-mode 1))
 
 (use-package evil-anzu
-  :after (evil))
+  :after evil)
 
 (use-package evil-commentary
-  :after (evil)
+  :after evil
   :config (evil-commentary-mode))
 
 (use-package evil-org
-  :after (evil))
+  :after evil)
 
 ;; Yasnippet config  ================================
 ;; ==================================================
 
-(use-package yasnippet :defer t)
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode))
 
 ;; Ripgrep config ===================================
 ;; ==================================================
@@ -247,14 +257,13 @@
 ;; ==================================================
 
 (use-package tree-sitter
-  ;; :after (tree-sitter-langs)
-  :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'"
+  :hook prog-mode
   :config
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 (use-package tree-sitter-langs
-  :mode "\\.(hy|clj|lisp|el|scm|rkt)\\'")
+  :after tree-sitter)
 
 ;; Eglot config =====================================
 ;; ==================================================
@@ -319,6 +328,13 @@
 ;; Guix config ======================================
 ;; ==================================================
 
+(use-package guix :defer t)
+
+;; Notify config ====================================
+;; ==================================================
+
+; (use-package notify
+;   :quelpa (notify :stable nil :fetcher github :repo "tkhoa2711/notify.el"))
 
 ;; REPL config ======================================
 ;; ==================================================
@@ -343,7 +359,9 @@
 (use-package smartparens
   :config
   (smartparens-global-mode)
-  (sp-local-pair '(hy-mode) "'" "'" :actions nil)) ; disable single quote auto-closing
+  ;; disable single quote auto-closing
+  (sp-local-pair '(hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode lisp-interaction-mode ielm-mode)
+		 "'" "'" :actions nil))
 
 (use-package evil-cleverparens
   :hook (hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode)
@@ -365,34 +383,6 @@
 ;;   :mode "\\.kbd\\'"
 ;;   :commands kbd-mode)
 
-;; hy config ========================================
-;; ==================================================
-
-(defun my-hy-shell-eval-current-form ()
-  (interactive)
-  (progn
-    (hy-shell-eval-current-form)
-    (previous-buffer)))
-
-(defun my-hy-shell-eval-region ()
-  (interactive)
-  (progn
-    (hy-shell-eval-region)
-    (previous-buffer)))
-
-(defun my-hy-shell-eval-buffer ()
-  (interactive)
-  (progn
-    (hy-shell-eval-buffer)
-    (previous-buffer)))
-
-(evil-define-key 'normal hy-mode-map (kbd "<localleader>ec") 'hy-shell-eval-current-form)
-(evil-define-key 'normal hy-mode-map (kbd "<localleader>er") 'hy-shell-eval-region)
-(evil-define-key 'normal hy-mode-map (kbd "<localleader>eb") 'hy-shell-eval-buffer)
-
-(add-hook 'hy-mode-hook 'paredit-mode)
-(add-hook 'inferior-hy-mode-hook 'paredit-mode)
-
 ;; Elisp config =====================================
 ;; ==================================================
 
@@ -413,12 +403,6 @@
     "ep" 'pp-eval-last-sexp
     "es" 'eval-last-sexp
     "i" 'elisp-index-search))
-
-;; Hy-mode config ===================================
-;; ==================================================
-
-(use-package hy-mode
-  :mode "\\.hy\\'")
 
 ;; Clojure config ===================================
 ;; ==================================================
@@ -605,6 +589,40 @@
     "atsb" 'run-bb
     "atsn" 'run-nbb))
 
+;; Hy config ========================================
+;; ==================================================
+
+(use-package hy-mode
+  :mode ("\\.hy\\'" . hy-mode)
+  :general
+  (local-leader
+    :major-modes
+    '(hy-mode inferior-hy-mode t)
+    :keymaps
+    '(hy-mode-map inferior-hy-mode-map)
+    "e" (declare-label "eval")
+    "ec" 'hy-shell-eval-current-form
+    "er" 'hy-shell-eval-region
+    "eb" 'hy-shell-eval-buffer)
+  :config
+  (defun my-hy-shell-eval-current-form ()
+    (interactive)
+    (progn
+      (hy-shell-eval-current-form)
+      (previous-buffer)))
+
+  (defun my-hy-shell-eval-region ()
+    (interactive)
+    (progn
+      (hy-shell-eval-region)
+      (previous-buffer)))
+
+  (defun my-hy-shell-eval-buffer ()
+    (interactive)
+    (progn
+      (hy-shell-eval-buffer)
+      (previous-buffer))))
+
 ;; Racket config ====================================
 ;; ==================================================
 
@@ -657,13 +675,194 @@
 ;; ==================================================
 
 (use-package geiser :mode "\\.scm\\'")
-(use-package geiser-chicken :after (geiser) :defer t)
-(use-package geiser-chez :after (geiser) :defer t)
-(use-package geiser-gambit :after (geiser) :defer t)
-(use-package geiser-guile :after (geiser) :defer t)
+(use-package geiser-chicken :after geiser :defer t)
+(use-package geiser-chez :after geiser :defer t)
+(use-package geiser-gambit :after geiser :defer t)
+(use-package geiser-guile :after geiser :defer t)
 
 ;; Haskell config ===================================
 ;; ==================================================
+
+(use-package haskell-mode
+  :mode "\\.(hs|lhs|cabal)"
+  :init
+  ;; Haskell cabal files interact badly with electric-indent-mode
+  (add-hook 'haskell-cabal-mode-hook (lambda ()
+				       (when (fboundp 'electric-indent-local-mode)
+					 (electric-indent-local-mode -1))))
+
+  (setq
+   ;; Use notify.el (if you have it installed) at the end of running
+   ;; Cabal commands or generally things worth notifying.
+   haskell-notify-p t
+   ;; Remove annoying error popups
+   haskell-interactive-popup-errors nil
+   ;; Better import handling
+   haskell-process-suggest-remove-import-lines t
+   haskell-process-auto-import-loaded-modules t)
+  :config
+  (defun spacemacs/haskell-interactive-bring ()
+    "Bring up the interactive mode for this session without
+	 switching to it."
+    (interactive)
+    (let* ((session (haskell-session))
+	   (buffer (haskell-session-interactive-buffer session)))
+      (display-buffer buffer)))
+
+  ;; hooks
+  (add-hook 'haskell-mode-hook #'spacemacs-haskell//disable-electric-indent)
+
+  ;; prefixes
+  (dolist (mode haskell-modes)
+    (spacemacs/declare-prefix-for-mode mode "mg" "haskell/navigation")
+    (spacemacs/declare-prefix-for-mode mode "ms" "haskell/repl")
+    (spacemacs/declare-prefix-for-mode mode "mc" "haskell/cabal")
+    (spacemacs/declare-prefix-for-mode mode "mh" "haskell/documentation")
+    (spacemacs/declare-prefix-for-mode mode "md" "haskell/debug")
+    (spacemacs/declare-prefix-for-mode mode "mr" "haskell/refactor"))
+  (spacemacs/declare-prefix-for-mode 'haskell-interactive-mode "ms" "haskell/repl")
+  (spacemacs/declare-prefix-for-mode 'haskell-cabal-mode "ms" "haskell/repl")
+
+  ;; key bindings
+  (defun spacemacs/haskell-process-do-type-on-prev-line ()
+    (interactive)
+    (haskell-process-do-type 1))
+
+  ;; repl key bindings
+  (evil-define-key 'insert haskell-interactive-mode-map
+    (kbd "C-j") 'haskell-interactive-mode-history-next
+    (kbd "C-k") 'haskell-interactive-mode-history-previous
+    (kbd "C-l") 'haskell-interactive-mode-clear)
+
+  ;; Bind repl
+  (spacemacs/register-repl 'haskell
+			   'haskell-interactive-switch "haskell")
+
+  (dolist (mode haskell-modes)
+    (spacemacs/set-leader-keys-for-major-mode mode
+					      "sb"  'haskell-process-load-file
+					      "sc"  'haskell-interactive-mode-clear
+					      "sS"  'spacemacs/haskell-interactive-bring
+					      "ss"  'haskell-interactive-switch
+					      "st"  'haskell-session-change-target
+					      "'"   'haskell-interactive-switch
+
+					      "ca"  'haskell-process-cabal
+					      "cb"  'haskell-process-cabal-build
+					      "cc"  'haskell-compile
+					      "cv"  'haskell-cabal-visit-file
+
+					      "hd"  'inferior-haskell-find-haddock
+					      "hi"  'haskell-process-do-info
+					      "ht"  'haskell-process-do-type
+					      "hT"  'spacemacs/haskell-process-do-type-on-prev-line
+
+					      "da"  'haskell-debug/abandon
+					      "db"  'haskell-debug/break-on-function
+					      "dB"  'haskell-debug/delete
+					      "dc"  'haskell-debug/continue
+					      "dd"  'haskell-debug
+					      "dn"  'haskell-debug/next
+					      "dN"  'haskell-debug/previous
+					      "dp"  'haskell-debug/previous
+					      "dr"  'haskell-debug/refresh
+					      "ds"  'haskell-debug/step
+					      "dt"  'haskell-debug/trace
+
+					      "ri"  'spacemacs/haskell-format-imports)
+    (if (eq haskell-completion-backend 'lsp)
+	(spacemacs/set-leader-keys-for-major-mode mode
+						  "gl"  'haskell-navigate-imports
+						  "S"   'haskell-mode-stylish-buffer
+
+						  "hg"  'hoogle
+						  "hG"  'haskell-hoogle-lookup-from-local)
+	(spacemacs/set-leader-keys-for-major-mode mode
+						  "gi"  'haskell-navigate-imports
+						  "F"   'haskell-mode-stylish-buffer
+
+						  "hh"  'hoogle
+						  "hG"  'haskell-hoogle-lookup-from-local)))
+
+  (evilified-state-evilify-map haskell-debug-mode-map
+			       :mode haskell-debug-mode
+			       :bindings
+			       "RET" 'haskell-debug/select
+			       "a" 'haskell-debug/abandon
+			       "b" 'haskell-debug/break-on-function
+			       "c" 'haskell-debug/continue
+			       "d" 'haskell-debug/delete
+			       "i" 'haskell-debug/step
+			       "s" 'haskell-debug/next
+			       "S" 'haskell-debug/previous
+			       "r" 'haskell-debug/refresh
+			       "t" 'haskell-debug/trace)
+
+  ;; configure C-c C-l so it doesn't throw any errors
+  (bind-key "C-c C-l" 'haskell-process-load-file haskell-mode-map)
+  (bind-key "C-c C-z" 'haskell-interactive-switch haskell-mode-map)
+
+  ;; Switch back to editor from REPL
+  (spacemacs/set-leader-keys-for-major-mode 'haskell-interactive-mode
+					    "ss"  'haskell-interactive-switch-back)
+
+  ;; Compile
+  (spacemacs/set-leader-keys-for-major-mode 'haskell-cabal
+					    "C"  'haskell-compile)
+
+  ;; Cabal-file bindings
+  (spacemacs/set-leader-keys-for-major-mode 'haskell-cabal-mode
+					    ;; "="   'haskell-cabal-subsection-arrange-lines ;; Does a bad job, 'gg=G' works better
+					    "d"   'haskell-cabal-add-dependency
+					    "b"   'haskell-cabal-goto-benchmark-section
+					    "e"   'haskell-cabal-goto-executable-section
+					    "t"   'haskell-cabal-goto-test-suite-section
+					    "m"   'haskell-cabal-goto-exposed-modules
+					    "l"   'haskell-cabal-goto-library-section
+					    "n"   'haskell-cabal-next-subsection
+					    "p"   'haskell-cabal-previous-subsection
+					    "sc"  'haskell-interactive-mode-clear
+					    "sS"  'spacemacs/haskell-interactive-bring
+					    "ss"  'haskell-interactive-switch
+					    "N"   'haskell-cabal-next-section
+					    "P"   'haskell-cabal-previous-section
+					    "f"   'haskell-cabal-find-or-create-source-file)
+
+  ;; Make "RET" behaviour in REPL saner
+  (evil-define-key 'insert haskell-interactive-mode-map
+    (kbd "RET") 'haskell-interactive-mode-return)
+  (evil-define-key 'normal haskell-interactive-mode-map
+    (kbd "RET") 'haskell-interactive-mode-return)
+
+  ;; align rules for Haskell
+  (with-eval-after-load 'align
+    (add-to-list 'align-rules-list
+		 '(haskell-types
+		   (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+		   (modes . haskell-modes)))
+    (add-to-list 'align-rules-list
+		 '(haskell-assignment
+		   (regexp . "\\(\\s-+\\)=\\s-+")
+		   (modes . haskell-modes)))
+    (add-to-list 'align-rules-list
+		 '(haskell-arrows
+		   (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+		   (modes . haskell-modes)))
+    (add-to-list 'align-rules-list
+		 '(haskell-left-arrows
+		   (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+		   (modes . haskell-modes)))))
+(use-package cmm-mode
+  :defer t
+  :config
+  'TODO)
+
+(use-package lsp-haskell
+  :after (haskell-mode literate-haskell-mode haskell-literate-mode))
+
+(use-package haskell-snippets
+  :when (and (eq major-mode 'haskell-mode)
+	     (minor-mode-activated-p 'yas-minor-mode)))
 
 ;; Nix config =======================================
 ;; ==================================================
@@ -687,21 +886,21 @@
 ;; ==================================================
 
 (use-package tuareg
-    :bind (:map tuareg-mode-map
-                ;; Workaround to preserve vim backspace in normal mode
-                ([backspace] . nil))
-    :mode (("\\.ml[ily]?$" . tuareg-mode)
-           ("\\.topml$" . tuareg-mode))
-    :defer t
-    :init
-    (progn
-      (spacemacs//init-ocaml-opam)
-      (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
-        "ga" 'tuareg-find-alternate-file
-        "cc" 'compile)
-      ;; Make OCaml-generated files invisible to filename completion
-      (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
-        (add-to-list 'completion-ignored-extensions ext))))
+  :bind (:map tuareg-mode-map
+	      ;; Workaround to preserve vim backspace in normal mode
+	      ([backspace] . nil))
+  :mode (("\\.ml[ily]?$" . tuareg-mode)
+	 ("\\.topml$" . tuareg-mode))
+  :defer t
+  :init
+  (progn
+    (spacemacs//init-ocaml-opam)
+    (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+					      "ga" 'tuareg-find-alternate-file
+					      "cc" 'compile)
+    ;; Make OCaml-generated files invisible to filename completion
+    (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
+      (add-to-list 'completion-ignored-extensions ext))))
 
 (defun ocaml/init-dune ()
   (use-package dune
@@ -709,29 +908,29 @@
     :init
     (progn
       (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
-        "tP" 'dune-promote
-        "tp" 'dune-runtest-and-promote)
+						"tP" 'dune-promote
+						"tp" 'dune-runtest-and-promote)
       (spacemacs/declare-prefix-for-mode 'tuareg-mode "mt" "test")
       (spacemacs/declare-prefix-for-mode 'dune-mode "mc" "compile/check")
       (spacemacs/declare-prefix-for-mode 'dune-mode "mi" "insert-form")
       (spacemacs/declare-prefix-for-mode 'dune-mode "mt" "test")
       (spacemacs/set-leader-keys-for-major-mode 'dune-mode
-        "cc" 'compile
-        "ia" 'dune-insert-alias-form
-        "ic" 'dune-insert-copyfiles-form
-        "id" 'dune-insert-ignored-subdirs-form
-        "ie" 'dune-insert-executable-form
-        "ii" 'dune-insert-install-form
-        "il" 'dune-insert-library-form
-        "im" 'dune-insert-menhir-form
-        "ip" 'dune-insert-ocamllex-form
-        "ir" 'dune-insert-rule-form
-        "it" 'dune-insert-tests-form
-        "iv" 'dune-insert-env-form
-        "ix" 'dune-insert-executables-form
-        "iy" 'dune-insert-ocamlyacc-form
-        "tP" 'dune-promote
-        "tp" 'dune-runtest-and-promote))))
+						"cc" 'compile
+						"ia" 'dune-insert-alias-form
+						"ic" 'dune-insert-copyfiles-form
+						"id" 'dune-insert-ignored-subdirs-form
+						"ie" 'dune-insert-executable-form
+						"ii" 'dune-insert-install-form
+						"il" 'dune-insert-library-form
+						"im" 'dune-insert-menhir-form
+						"ip" 'dune-insert-ocamllex-form
+						"ir" 'dune-insert-rule-form
+						"it" 'dune-insert-tests-form
+						"iv" 'dune-insert-env-form
+						"ix" 'dune-insert-executables-form
+						"iy" 'dune-insert-ocamlyacc-form
+						"tP" 'dune-promote
+						"tp" 'dune-runtest-and-promote))))
 
 (use-package utop
   :defer t
@@ -742,8 +941,8 @@
   :config
   (progn
     (if (executable-find "opam")
-        (setq utop-command "opam config exec -- utop -emacs")
-        (spacemacs-buffer/warning "Cannot find \"opam\" executable."))
+	(setq utop-command "opam config exec -- utop -emacs")
+	(spacemacs-buffer/warning "Cannot find \"opam\" executable."))
 
     (defun spacemacs/utop-eval-phrase-and-go ()
       "Send phrase to REPL and evaluate it and switch to the REPL in
