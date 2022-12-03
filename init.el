@@ -89,6 +89,38 @@
     :states '(normal visual operator motion)
     :prefix ""))
 
+;; Org config =======================================
+;; ==================================================
+
+(use-package org
+  :straight nil
+  :mode ("\\.org\\'" . org-mode)
+  :general
+  (local-leader
+    :keymaps
+    '(org-mode-map)
+    "i" '(declare-label "insert")
+    "it" 'org-insert-current-time)
+  :config
+  (defun org-insert-current-time ()
+    "insert the curren time at the cursor position."
+    (interactive)
+    (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
+
+  (setq org-return-follows-link t
+	org-mouse-1-follows-link t
+	org-link-descriptive t
+	org-hide-emphasis-markers t)
+  (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
+  (add-hook 'org-mode-hook 'org-appear-mode)
+  ;; disable auto-pairing of "<" in org-mode
+  (add-hook 'org-mode-hook (lambda ()
+			     (setq-local electric-pair-inhibit-predicate
+					 `(lambda (c)
+					    (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+  (setq org-todo-keywords
+	'((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))))
+
 ;; Esup config ======================================
 ;; ==================================================
 
@@ -1860,38 +1892,6 @@
 (add-hook 'inferior-hy-mode
 	  (lambda ()
 	    (display-line-numbers-mode -1)))
-
-;; org config =======================================
-;; ==================================================
-
-(use-package org
-  :straight nil
-  :mode ("\\.org\\'" . org-mode)
-  :general
-  (local-leader
-    :keymaps
-    '(org-mode-map)
-    "i" '(declare-label "insert")
-    "it" 'org-insert-current-time)
-  :config
-  (defun org-insert-current-time ()
-    "insert the curren time at the cursor position."
-    (interactive)
-    (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
-
-  (setq org-return-follows-link t
-	org-mouse-1-follows-link t
-	org-link-descriptive t
-	org-hide-emphasis-markers t)
-  (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
-  (add-hook 'org-mode-hook 'org-appear-mode)
-  ;; disable auto-pairing of "<" in org-mode
-  (add-hook 'org-mode-hook (lambda ()
-			     (setq-local electric-pair-inhibit-predicate
-					 `(lambda (c)
-					    (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
-  (setq org-todo-keywords
-	'((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))))
 
 ;; world clock config ===============================
 ;; ==================================================
