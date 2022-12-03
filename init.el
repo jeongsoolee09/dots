@@ -1779,17 +1779,6 @@
 
 (set-face-attribute 'default nil :height 180)
 
-<<<<<<< Updated upstream
-(when window-system
-  (use-package modus-themes
-					; :straight nil
-    :config
-    (load-theme 'modus-operandi t)
-    (add-hook 'modus-themes-after-load-theme-hook
-	      (lambda ()
-		(when (string= (modus-themes--current-theme) "modus-vivendi")
-		  (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000"))))))
-=======
 (use-package modus-themes
   :if (window-system)
   :config
@@ -1798,7 +1787,6 @@
       (lambda ()
   (when (string= (modus-themes--current-theme) "modus-vivendi")
     (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
->>>>>>> Stashed changes
 
 (use-package auto-dark
   :if (memq window-system '(mac ns))
