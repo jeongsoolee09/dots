@@ -1,48 +1,31 @@
 (setq-default gc-cons-threshold 100000000)
 
-;; packages =========================================
+;; straight =========================================
 ;; ==================================================
 
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-			 ("melpa" . "https://melpa.org/packages/")))
+(defvar bootstrap-version)
+
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+	(url-retrieve-synchronously
+	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+	 'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+
+(setq straight-use-package-by-default t)
 
 ;; Custom Lisp files ================================
 ;; ==================================================
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-
-;; use-package config ===============================
-;; ==================================================
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'bind-key)
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
-
-;; NOTE call package-initialize manually, since it's
-;; only used when emacs is first installed and pulling
-;; the packages the first time.
-
-;; Quelpa config ====================================
-;; ==================================================
-
-(use-package quelpa
-  :config
-  (unless (package-installed-p 'quelpa)
-    (with-temp-buffer
-      (url-insert-file-contents
-       "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-      (eval-buffer)
-      (quelpa-self-upgrade))))
-
-(quelpa
- '(quelpa-use-package
-   :fetcher git
-   :url "https://github.com/quelpa/quelpa-use-package.git"))
-(require 'quelpa-use-package)
+(add-to-list 'load-path "~/.emacs.d/straight/repos/vertico/extensions")
 
 ;; Korean environment ===============================
 ;; ==================================================
@@ -333,14 +316,14 @@
 ;; Notify config ====================================
 ;; ==================================================
 
-; (use-package notify
-;   :quelpa (notify :stable nil :fetcher github :repo "tkhoa2711/notify.el"))
+(use-package notify
+  :straight (notify :type git :host github :repo "tkhoa2711/notify.el"))
 
 ;; REPL config ======================================
 ;; ==================================================
 
 (use-package comint
-  :ensure nil
+  :straight nil
   :config
   (normal-mode-major-mode
     "C-j" 'comint-next-input
@@ -350,7 +333,7 @@
 ;; ==================================================
 
 (use-package paren
-  :ensure nil
+  :straight nil
   :init
   (setq show-paren-delay 0)
   :config
@@ -378,16 +361,16 @@
 ;; kbd-mode config ==================================
 ;; ==================================================
 
-;; (use-package kbd-mode
-;;   :quelpa (kbd-mode :stable nil :fetcher github :repo "kmonad/kbd-mode")
-;;   :mode "\\.kbd\\'"
-;;   :commands kbd-mode)
+(use-package kbd-mode
+  :straight (kbd-mode :type git :host github :repo "kmonad/kbd-mode")
+  :mode "\\.kbd\\'"
+  :commands kbd-mode)
 
 ;; Elisp config =====================================
 ;; ==================================================
 
 (use-package elisp-mode
-  :ensure nil
+  :straight nil
   :mode ("\\.el\\'" . emacs-lisp-mode)
   :general
   (local-leader
@@ -852,13 +835,11 @@
 		 '(haskell-left-arrows
 		   (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
 		   (modes . haskell-modes)))))
+
 (use-package cmm-mode
   :defer t
   :config
   'TODO)
-
-(use-package lsp-haskell
-  :after (haskell-mode literate-haskell-mode haskell-literate-mode))
 
 (use-package haskell-snippets
   :when (and (eq major-mode 'haskell-mode)
@@ -1186,13 +1167,13 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :ensure nil
+  :straight nil
   :init
   (savehist-mode))
 
 ;; A few more useful configurations...
 (use-package emacs
-  :ensure nil
+  :straight nil
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -1233,8 +1214,8 @@
 
 ;; Configure directory extension.
 (use-package vertico-directory
+  :straight nil
   :after vertico
-  :ensure nil
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
 	      ("RET" . vertico-directory-enter)
@@ -1432,7 +1413,7 @@
 
 (use-package tex
   :mode "\\.tex\\'"
-  :ensure auctex
+  :straight auctex
   :config
   (require 'pdf-sync)
   (define-key TeX-mode-map (kbd "s-\\") #'TeX-previous-error)
@@ -1488,7 +1469,7 @@
 ;; ==================================================
 
 (use-package xwidget
-  :ensure nil
+  :straight nil
   :commands xwidget-new-window
   :config
   (setq xwidget-webkit-enable-plugins t)
@@ -1584,7 +1565,7 @@
 ;; ==================================================
 
 (use-package eldoc
-  :ensure nil
+  :straight nil
   :hook ((emacs-lisp-mode lisp-interaction-mode ielm-mode) . turn-on-eldoc-mode))
 
 ;; comments =========================================
@@ -1596,7 +1577,7 @@
 ;; ==================================================
 
 (use-package saveplace
-  :ensure nil
+  :straight nil
   :config
   (setq-default save-place t)
   (setq save-place-file (concat user-emacs-directory "places")))
@@ -1664,7 +1645,7 @@
 ;; ==================================================
 
 (use-package recentf
-  :ensure nil
+  :straight nil
   :commands (consult-recent-file)
   :init
   (setq recentf-keep '(file-remote-p file-readable-p)
@@ -1744,7 +1725,7 @@
 
 (when window-system
   (use-package modus-themes
-					; :ensure nil
+					; :straight nil
     :config
     (load-theme 'modus-operandi t)
     (add-hook 'modus-themes-after-load-theme-hook
@@ -1884,7 +1865,7 @@
 ;; ==================================================
 
 (use-package org
-  :ensure nil
+  :straight nil
   :mode ("\\.org\\'" . org-mode)
   :general
   (local-leader
@@ -1916,7 +1897,7 @@
 ;; ==================================================
 
 (use-package time
-  :ensure nil
+  :straight nil
   :config
   (setq world-clock-list t
 	zoneinfo-style-world-list '(("America/Los_Angeles" "Los Angeles")
@@ -2163,7 +2144,7 @@
 ;; ==================================================
 
 (use-package eww
-  :ensure nil)
+  :straight nil)
 
 ;; reddigg config ===================================
 ;; ==================================================
@@ -2262,12 +2243,9 @@
       inhibit-startup-echo-area-message ""
       inhibit-startup-message t
       inhibit-splash-screen t)
-(setq-default quelpa-build-tar-executable (executable-find "gtar"))
 
 (advice-add 'delete-window :after #'balance-windows)
-
 (fset 'yes-or-no-p 'y-or-n-p)
-(setq create-lockfiles nil)
 
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 (message "config loaded!")
