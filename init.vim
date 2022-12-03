@@ -50,8 +50,6 @@ lua << EOF
 
         use 'sbdchd/neoformat'
 
-        use 'rescript-lang/vim-rescript'
-
         use 'nvim-orgmode/orgmode'
 
         use 'guns/vim-sexp'
@@ -266,17 +264,6 @@ lua << EOF
     vim.cmd([[set shm+=I]]) -- disables startup message
 EOF
 
-
-" coc.nvim config DEPRECATED
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-nnoremap <silent> gd :call CocAction('jumpDefinition')<CR>
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
 
 " Keybindings FLEX
 lua << EOF
