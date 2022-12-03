@@ -1,4 +1,5 @@
 (setq-default gc-cons-threshold 100000000)
+(setq warning-suppress-types '((emacs) (emacs)))
 
 ;; straight =========================================
 ;; ==================================================
@@ -160,6 +161,9 @@
   "Is the given `minor-mode` activated?"
   (let ((activated-minor-modes (mapcar #'car minor-mode-alist)))
     (memq minor-mode activated-minor-modes)))
+(defun straight-from-github (package repo)
+  ;; TODO: cannot directly invoke in use-package form
+  (list package :type 'git :host 'github :repo repo))
 
 ;; macOS Settings ===================================
 ;; ==================================================
@@ -1567,6 +1571,31 @@
    minibuffer-local-completion-map)
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
   (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+;; CodeQL config ====================================
+;; ==================================================
+
+;; TODO
+
+;; (use-package emacs-codeql
+;;   :straight
+;;   (emacs-codeql :type git
+;; 		:host github
+;; 		:repo "anticomputer/emacs-codeql"
+;; 		:branch "main")
+;;   :after tree-sitter-langs
+;;   :demand
+;;   :init
+;;   (setq codeql-transient-binding "C-c q")
+;;   (setq codeql-configure-eglot-lsp t)
+;;   (setq codeql-configure-projectile t)
+;;   :config
+;;   ;; you should configure your standard search paths through a ~/.config/codeql/config entry
+;;   ;; e.g. "--search-path /full/path/codeql:/full/path/codeql-go"
+;;   ;; see: https://codeql.github.com/docs/codeql-cli/specifying-command-options-in-a-codeql-configuration-file/
+;;   ;; this option is here to provide you with load/search precedence control
+;;   ;; these paths will have precedence over the config file search paths
+;;   (setq codeql-search-paths '("./")))
 
 ;; git-gutter config ================================
 ;; ==================================================
