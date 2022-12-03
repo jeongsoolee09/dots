@@ -292,7 +292,8 @@
   :hook
   ((rust-mode . eglot-ensure)
    (clojure-mode . eglot-ensure)
-   (python-mode . eglot-ensure))
+   (python-mode . eglot-ensure)
+   (tuareg-mode . eglot-ensure))
   :general
   (local-leader
     :keymaps
