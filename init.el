@@ -1,5 +1,6 @@
 (setq-default gc-cons-threshold 100000000)
-(setq warning-suppress-types '((emacs) (emacs)))
+(setq warning-minimum-level :emergency
+      warning-minimum-log-level :warning)
 
 ;; straight =========================================
 ;; ==================================================
@@ -1039,126 +1040,6 @@
 
 (use-package csharp-mode :mode "\\.cs\\'")
 
-;; PDF-tools config =================================
-;; ==================================================
-
-(use-package pdf-tools
-  :when (window-system)
-  :mode (("\\.pdf\\'" . pdf-view-mode))
-  :config
-  (pdf-tools-install)
-  (evil-define-key 'visual pdf-view-mode-map
-    "y" 'pdf-view-kill-ring-save
-    (kbd "<C-down-mouse-1>") 'pdf-view-mouse-extend-region
-    (kbd "<M-down-mouse-1>") 'pdf-view-mouse-set-region-rectangle
-    (kbd "<down-mouse-1>")  'pdf-view-mouse-set-region)
-  (evil-define-key 'normal pdf-view-mode-map
-    (kbd "<magnify-down>")  'image-decrease-size
-    (kbd "<magnify-up>")  'image-decrease-size
-    "-"  'image-decrease-size
-    "-"  'image-decrease-size
-    "="  'image-increase-size
-    "0"  'image-bol
-    "$"  'image-eol
-    "j"  'pdf-view-next-line-or-next-page
-    "k"  'pdf-view-previous-line-or-previous-page
-    "l"  'image-forward-hscroll
-    "h"  'image-backward-hscroll
-    "J"  'pdf-view-next-page
-    "K"  'pdf-view-previous-page
-    "gg"  'pdf-view-first-page
-    "G"  'pdf-view-last-page
-    "gt"  'pdf-view-goto-page
-    "gl"  'pdf-view-goto-label
-    "u" 'pdf-view-scroll-down-or-previous-page
-    "d" 'pdf-view-scroll-up-or-next-page
-    (kbd "C-u") 'pdf-view-scroll-down-or-previous-page
-    (kbd "C-d") 'pdf-view-scroll-up-or-next-page
-    (kbd "``")  'pdf-history-backward
-    ;;"["  'pdf-history-backward
-    ;;"]"  'pdf-history-forward
-    "'" 'pdf-view-jump-to-register
-    ;; Search
-    "/" 'isearch-forward
-    "?" 'isearch-backward
-    ;; Actions
-    "r"   'pdf-view-revert-buffer
-    "o"   'pdf-links-action-perform
-    "O"   'pdf-outline
-    "zr"  'pdf-view-scale-reset)
-  (evil-define-key 'normal pdf-outline-buffer-mode-map
-    "-"                'negative-argument
-    "j"                'next-line
-    "k"                'previous-line
-    "gk"               'outline-backward-same-level
-    "gj"               'outline-forward-same-level
-    (kbd "<backtab>")  (if (version< emacs-version "28.0")
-			   'outline-show-all
-			   'outline-cycle-buffer)
-    "gh"               'pdf-outline-up-heading
-    "gg"               'beginning-of-buffer
-    "G"                'pdf-outline-end-of-buffer
-    (kbd "<tab>")      'outline-toggle-children
-    "RET"              'pdf-outline-follow-link
-    (kbd "M-RET")      'pdf-outline-follow-link-and-quit
-    "f"                'pdf-outline-display-link
-    [mouse-1]          'pdf-outline-mouse-display-link
-    "o"                'pdf-outline-select-pdf-window
-    "``"               'pdf-outline-move-to-current-page
-    "''"               'pdf-outline-move-to-current-page
-    "Q"                'pdf-outline-quit-and-kill
-    "q"                'quit-window
-    "F"                'pdf-outline-follow-mode)
-  (evil-define-key 'normal pdf-annot-list-mode-map
-    "f"                'pdf-annot-list-display-annotation-from-id
-    "d"                'tablist-flag-forward
-    "x"                'tablist-do-flagged-delete
-    "u"                'tablist-unmark-forward
-    "q"                'tablist-quit)
-  (evil-define-key 'normal pdf-occur-buffer-mode-map
-    "q"                'tablist-quit
-    "r"                'pdf-occur-revert-buffer-with-args
-    ;; "*"              'spacemacs/enter-ahs-forward
-    "?"                'evil-search-backward)
-  (setq pdf-view-midnight-colors '("#B0CCDC" . "#000000"))
-  :general
-  (local-leader
-    :major-modes
-    '(pdf-view-mode t)
-    :keymaps
-    '(pdf-view-mode-map)
-    "s" '(:ignore t :which-key "slice/search")
-    "sm" 'pdf-view-set-slice-using-mouse
-    "sb" 'pdf-view-set-slice-from-bounding-box
-    "sr" 'pdf-view-reset-slice
-    "ss" 'pdf-occur
-    "f" '(:ignore t :which-key "fit")
-    "fw" 'pdf-view-fit-width-to-window
-    "fh" 'pdf-view-fit-height-to-window
-    "fp" 'pdf-view-fit-page-to-window
-    "a" '(:ignore t :which-key "annotations")
-    "aD"  'pdf-annot-delete
-    "at"  'pdf-annot-attachment-dired
-    "ah"  'pdf-annot-add-highlight-markup-annotation
-    "al"  'pdf-annot-list-annotations
-    "am"  'pdf-annot-add-markup-annotation
-    "ao"  'pdf-annot-add-strikeout-markup-annotation
-    "as"  'pdf-annot-add-squiggly-markup-annotation
-    "at"  'pdf-annot-add-text-annotation
-    "au"  'pdf-annot-add-underline-markup-annotation
-    ;; misc
-    "p" 'pdf-misc-print-document
-    "O" 'pdf-outline
-    "n" 'pdf-view-midnight-minor-mode)
-  (local-leader
-    :major-modes
-    '(pdf-occur-buffer-mode t)
-    :keymaps
-    '(pdf-occur-buffer-mode-map)
-    "t" '(:ignore t :which-key "toggles")
-    "tf" 'next-error-follow-minor-mode))
-
-
 ;; auto-indent on RET ===============================
 ;; ==================================================
 
@@ -1452,17 +1333,10 @@
   :mode "\\.tex\\'"
   :straight auctex
   :config
-  (require 'pdf-sync)
   (define-key TeX-mode-map (kbd "s-\\") #'TeX-previous-error)
   (define-key TeX-mode-map (kbd "s-/") #'TeX-next-error)
-  ;; to use pdfview with auctex
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-	TeX-source-correlate-start-server t)
   ;; to have the buffer refresh after compilation
-  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-  (setq pdf-sync-backward-display-action t
-	pdf-sync-forward-display-action t))
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer))
 
 (use-package auctex-lua :after (tex))
 (use-package company-auctex :after (company))
@@ -1780,13 +1654,14 @@
 (set-face-attribute 'default nil :height 180)
 
 (use-package modus-themes
-  :if (window-system)
   :config
-  (load-theme 'modus-operandi t)
+  (if (window-system)
+      (load-theme 'modus-operandi t)
+      (load-theme 'modus-vivendi t))
   (add-hook 'modus-themes-after-load-theme-hook
-      (lambda ()
-  (when (string= (modus-themes--current-theme) "modus-vivendi")
-    (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
+	    (lambda ()
+	      (when (string= (modus-themes--current-theme) "modus-vivendi")
+		(set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
 
 (use-package auto-dark
   :if (memq window-system '(mac ns))
