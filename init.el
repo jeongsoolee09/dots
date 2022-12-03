@@ -1043,6 +1043,7 @@
 ;; ==================================================
 
 (use-package pdf-tools
+  :when (window-system)
   :mode (("\\.pdf\\'" . pdf-view-mode))
   :config
   (pdf-tools-install)
@@ -1775,15 +1776,10 @@
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 (setq ring-bell-function 'ignore)
-;; (when (memq window-system '(mac ns))
-;;   (add-hook 'after-init-hook
-;; 	    (lambda ()
-;; 	      (set-face-attribute 'fringe nil
-;; 				  :foreground "mac:textColor"
-;; 				  :background "mac:textBackgroundColor"))))
 
 (set-face-attribute 'default nil :height 180)
 
+<<<<<<< Updated upstream
 (when window-system
   (use-package modus-themes
 					; :straight nil
@@ -1793,8 +1789,19 @@
 	      (lambda ()
 		(when (string= (modus-themes--current-theme) "modus-vivendi")
 		  (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000"))))))
+=======
+(use-package modus-themes
+  :if (window-system)
+  :config
+  (load-theme 'modus-operandi t)
+  (add-hook 'modus-themes-after-load-theme-hook
+      (lambda ()
+  (when (string= (modus-themes--current-theme) "modus-vivendi")
+    (set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
+>>>>>>> Stashed changes
 
 (use-package auto-dark
+  :if (memq window-system '(mac ns))
   :config
   (setq auto-dark--light-theme 'modus-operandi)
   (setq auto-dark--dark-theme 'modus-vivendi))
