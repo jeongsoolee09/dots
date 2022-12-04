@@ -95,7 +95,7 @@
 ;; ==================================================
 
 (use-package org
-  :straight nil
+  :straight (:type built-in)
   :mode ("\\.org\\'" . org-mode)
   :general
   (local-leader
@@ -114,12 +114,8 @@
 	org-link-descriptive t
 	org-hide-emphasis-markers t)
   (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
-  (add-hook 'org-mode-hook 'org-appear-mode)
-  ;; disable auto-pairing of "<" in org-mode
-  (add-hook 'org-mode-hook (lambda ()
-			     (setq-local electric-pair-inhibit-predicate
-					 `(lambda (c)
-					    (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+  (when (fboundp 'org-appear-mode)
+    (add-hook 'org-mode-hook 'org-appear-mode))
   (setq org-todo-keywords
 	'((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))))
 
@@ -145,10 +141,14 @@
   (function-put '-> 'lisp-indent-function nil)
   (function-put '->> 'lisp-indent-function nil)
   (function-put 'if 'lisp-indent-function nil))
+
 (use-package s :defer t)
+
 (use-package ts :defer t)
+
 (defun declare-label (label)
   (list :ignore t :which-key label))
+
 (defmacro plaintext (&rest body)
   (string-join
    (-interpose " "
@@ -158,13 +158,21 @@
 			  ((symbolp elem) (symbol-name elem)))) body))))
 
 (defmacro comment (&body))
+
 (defun minor-mode-activated-p (minor-mode)
   "Is the given `minor-mode` activated?"
   (let ((activated-minor-modes (mapcar #'car minor-mode-alist)))
     (memq minor-mode activated-minor-modes)))
+
 (defun straight-from-github (package repo)
   ;; TODO: cannot directly invoke in use-package form
   (list package :type 'git :host 'github :repo repo))
+
+(defvar macOS-p (equal system-type 'darwin))
+
+(defvar linux-p (equal system-type 'gnu/linux))
+
+(defvar chromeOS-p (string= system-name "penguin"))
 
 ;; macOS Settings ===================================
 ;; ==================================================
@@ -192,7 +200,14 @@
 ;; Linux Settings ===================================
 ;; ==================================================
 
+(when linux-p 'TODO)
 
+;; ChromeOS Settings ================================
+;; ==================================================
+
+(when chromeOS-p
+  (setq x-super-keysym 'meta
+	x-meta-keysym 'super))
 
 ;; evil-mode config =================================
 ;; ==================================================
@@ -276,14 +291,14 @@
 ;; Tree-sitter config ===============================
 ;; ==================================================
 
+(use-package tree-sitter-langs)
+
 (use-package tree-sitter
+  :after tree-sitter-langs
   :hook prog-mode
   :config
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs
-  :after tree-sitter)
 
 ;; Eglot config =====================================
 ;; ==================================================
@@ -1053,9 +1068,11 @@
 
 (setq explicit-shell-file-name "/bin/zsh")
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns))
+  :if (or (memq window-system '(mac ns)) (string= system-name "penguin"))
   :config
-  (setq exec-path-from-shell-variables '("JAVA_HOME" "BROWSER" "OPAMCLI")
+  (setq exec-path-from-shell-variables (if (string= system-name "penguin")
+					   '("PATH" "JAVA_HOME" "BROWSER" "OPAMCLI")
+					   '("JAVA_HOME" "BROWSER" "OPAMCLI"))
 	exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
@@ -1652,7 +1669,10 @@
   (scroll-bar-mode -1))
 (setq ring-bell-function 'ignore)
 
-(set-face-attribute 'default nil :height 180)
+(set-face-attribute 'default nil
+		    :weight 'light
+		    :height
+		    (if chromeOS-p 150 180))
 
 (use-package modus-themes
   :config
@@ -1721,7 +1741,9 @@
 ;; vterm config =====================================
 ;; ==================================================
 
-(use-package vterm)
+(use-package vterm
+  :when (not (string= system-name "penguin")))
+
 (use-package multi-vterm
   :after (vterm projectile)
   :config
