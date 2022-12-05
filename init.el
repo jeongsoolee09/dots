@@ -222,9 +222,9 @@
   :config
   (evil-mode 1)
   ;; set leader key in normal state
-  ;; (evil-set-leader 'normal (kbd "SPC"))
+  (evil-set-leader 'normal (kbd "SPC"))
   ;; set local leader
-  ;; (evil-set-leader 'normal "," t)
+  (evil-set-leader 'normal "," t)
   (setq evil-motion-state-cursor 'box
 	evil-visual-state-cursor 'box
 	evil-normal-state-cursor 'box
@@ -382,6 +382,15 @@
     "C-j" 'comint-next-input
     "C-k" 'comint-previous-input))
 
+;; imenu config ======================================
+;; ==================================================
+
+(use-package imenu
+  :straight nil)
+
+(use-package imenu-list
+  :after imenu)
+
 ;; Lisp config ======================================
 ;; ==================================================
 
@@ -424,21 +433,21 @@
 
 (use-package elisp-mode
   :straight nil
-  :mode ("\\.el\\'" . emacs-lisp-mode)
+  :defer t
   :general
   (local-leader
     :major-modes
-    '(emacs-lisp-mode lisp-interaction-mode t)
+    '(emacs-lisp-mode t)
     :keymaps
-    '(emacs-lisp-mode-map lisp-interaction-mode-map)
-    "e" '(:ignore t :which-key "eval")
+    '(emacs-lisp-mode-map)
+    "e"  (declare-label "eval")
     "eb" 'eval-buffer
     "ef" 'eval-defun
     "er" 'eval-region
     "ep" 'pp-eval-last-sexp
     "es" 'eval-last-sexp
     "ec" 'eval-expression-at-point
-    "i" 'elisp-index-search)
+    "i"  'elisp-index-search)
   :config
   (defun eval-expression-at-point ()
     (interactive)
@@ -638,7 +647,7 @@
 ;; ==================================================
 
 (use-package hy-mode
-  :mode ("\\.hy\\'" . hy-mode)
+  :defer t
   :general
   (local-leader
     :major-modes
@@ -668,6 +677,53 @@
       (hy-shell-eval-buffer)
       (previous-buffer))))
 
+;; Fennel config ====================================
+;; ==================================================
+
+(use-package fennel-mode
+  ;; WIP
+  :defer t
+  :general
+  (local-leader
+    :major-modes
+    '(fennel-mode fennel-repl-mode t)
+    :keymaps
+    '(fennel-mode-map fennel-repl-mode-map)
+    "e" (declare-label "eval")
+    "ep" 'lisp-eval-paragraph
+    "er" 'lisp-eval-region
+    "ef" 'lisp-eval-defun
+    "ee" 'lisp-eval-last-sexp
+    "eE" 'lisp-eval-form-and-next
+    "d" (declare-label "documentation")
+    "dd" 'fennel-show-documentation
+    "dv"'fennel-show-variable-documentation
+    "df" (declare-label "find")
+    "dff" 'fennel-find-definition
+    "dfm" 'fennel-find-module-definition
+    "dfp" 'fennel-find-definition-pop
+    "h" (declare-label "help")
+    "ha" 'fennel-show-arglist-at-point
+    "hA" 'fennel-show-arglist
+    "hc" 'fennel-view-compilation
+    "m" 'fennel-macroexpand
+    "=" 'fennel-format
+    "r" (declare-label "repl")
+    "'" 'fennel-repl
+    "r" 'fennel-reload
+    :config
+    (defun fennel-show-arglist-at-point ()
+      (interactive)
+      (fennel-show-arglist (thing-at-point 'symbol))))
+  (local-leader
+    :major-modes
+    '(fennel-repl-mode t)
+    :keymaps
+    '(fennel-repl-mode-map)
+    "'" 'fennel-repl
+    "rq" 'fennel-repl-quit
+    "r0" 'fennel-repl-move-beginning-of-line))
+
 ;; Racket config ====================================
 ;; ==================================================
 
@@ -679,11 +735,9 @@
     '(racket-mode racket-repl-mode racket-xp-mode t)
     :keymaps
     '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
-    ;; errors
     "E" '(:ignore t :which-key "error")
     "En" 'racket-xp-next-error
     "EN" 'racket-xp-previous-error
-    ;; navigation
     "g" '(:ignore t :which-key "goto")
     "g`" 'racket-unvisit
     "gg" 'racket-xp-visit-definition
@@ -693,18 +747,14 @@
     "gr" 'racket-open-require-path
     "gu" 'racket-xp-next-use
     "gU" 'racket-xp-previous-use
-    ;; doc
     "h" '(:ignore t :which-key "help")
     "ha" 'racket-xp-annotate
     "hd" 'racket-xp-describe
     "hh" 'racket-xp-documentation
-    ;; insert
     "i" '(:ignore t :which-key "insert")
     "il" 'racket-insert-lambda
-    ;; refactor
     "m" '(:ignore t :which-key "refactor")
     "mr" 'racket-xp-rename
-    ;; REPL
     "e" '(:ignore t :which-key "eval")
     "'"  'racket-repl
     "eb" 'racket-run
@@ -712,7 +762,6 @@
     "ef" 'racket-send-definition
     "ei" 'racket-repl
     "er" 'racket-send-region
-    ;; Tests
     "t" '(:ignore t :which-key "test")
     "tb" 'racket-test))
 
@@ -1565,9 +1614,9 @@
 ;; ==================================================
 
 (use-package which-key
-  :init
+  :config
   (setq which-key-add-column-padding 1
-	which-key-allow-multiple-replacements t
+	;; which-key-allow-multiple-replacements t
 	which-key-echo-keystrokes 0.02
 	which-key-idle-delay 0.2
 	which-key-idle-secondary-delay 0.01
@@ -1580,11 +1629,7 @@
 	which-key-special-keys nil
 	which-key-use-C-h-for-paging t
 	which-key-allow-evil-operators t)
-  :config
   (which-key-mode))
-
-(use-package which-key-posframe
-  :after which-key)
 
 ;; isearch configs ==================================
 ;; ==================================================
@@ -1677,22 +1722,44 @@
 ;; visuals ==========================================
 ;; ==================================================
 
-(tool-bar-mode -1)
-(menu-bar-mode -1)
+(use-package menu-bar
+  :straight nil
+  :config
+  (menu-bar-mode -1))
 
-(defun disable-tab-bar-if-unnecessary (_)
-  "Hide the tab bar if there is only one tab left."
-  (when (= (length (tab-bar-tabs)) 1)
-    (tab-bar-mode -1)))
+(use-package tool-bar
+  :straight nil
+  :config
+  (tool-bar-mode -1))
 
-(advice-add 'tab-close :after #'disable-tab-bar-if-unnecessary)
+(use-package tab-bar
+  :straight nil
+  :config
+  (defun disable-tab-bar-if-unnecessary (_)
+    "Hide the tab bar if there is only one tab left."
+    (when (= (length (tab-bar-tabs)) 1)
+      (tab-bar-mode -1)))
+  (advice-add 'tab-close :after #'disable-tab-bar-if-unnecessary)
+  (defun tab-move-previous ()
+    (interactive)
+    (tab-move -1))
+  (agnostic-key
+    "s-{" 'tab-move-previous
+    "s-}" 'tab-move
+    "s-[" 'tab-previous
+    "s-]" 'tab-next
+    "s-." 'tab-new
+    "s-," 'tab-close))
 
 (fringe-mode '(0 . 0))
 (blink-cursor-mode 0)
+(global-visual-line-mode t)
+
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 (setq ring-bell-function 'ignore)
 
+;; font
 (set-face-attribute 'default nil
 		    :weight 'light
 		    :height
@@ -1710,8 +1777,6 @@
 	    (lambda ()
 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
 		(set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
-
-(global-visual-line-mode t)
 
 ;; make terminal transparent
 (unless (window-system)
@@ -1893,12 +1958,6 @@
   "s-f" 'projectile-find-file-dwim
   "s-b" 'switch-to-buffer
   "s-e" 'eshell
-  "s-{" 'tab-previous
-  "s-}" 'tab-next
-  "s-[" 'tab-previous
-  "s-]" 'tab-next
-  "s-." 'tab-new
-  "s-," 'tab-close
   "s-;" 'evil-window-vsplit
   "s-'" 'evil-window-split
   "s-h" 'evil-window-left
@@ -2034,7 +2093,8 @@
   "hdf" 'describe-function
   "hdk" 'describe-key
   "hdv" 'describe-variable
-  "hdm" 'describe-mode)
+  "hdm" 'describe-mode
+  "hdp" 'describe-package)
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
