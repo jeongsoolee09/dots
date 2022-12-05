@@ -1690,7 +1690,10 @@
 (use-package modus-themes
   :config
   (if (window-system)
-      (load-theme 'modus-operandi t)
+      (let ((current-time (read (format-time-string "%H"))))
+	(if (<= 7 current-time 17)
+	    (load-theme 'modus-operandi t)  ; light mode!
+	    (load-theme 'modus-vivendi t))) ; dark mode!
       (load-theme 'modus-vivendi t))
   (add-hook 'modus-themes-after-load-theme-hook
 	    (lambda ()
