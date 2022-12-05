@@ -139,8 +139,7 @@
   :defer t
   :config
   (function-put '-> 'lisp-indent-function nil)
-  (function-put '->> 'lisp-indent-function nil)
-  (function-put 'if 'lisp-indent-function nil))
+  (function-put '->> 'lisp-indent-function nil))
 
 (use-package s :defer t)
 
@@ -1633,10 +1632,12 @@
 ;; isearch configs ==================================
 ;; ==================================================
 
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
+(use-package isearch
+  :straight nil
+  :general
+  (agnostic-key
+    "C-s" 'isearch-forward-regexp
+    "C-r" 'isearch-backward-regexp))
 
 ;; hippie-expand configs ============================
 ;; ==================================================
@@ -1997,6 +1998,17 @@
   "C-s-t" 'modus-themes-toggle)
 
 ;; leader bindings
+;; ==================================================
+
+(defun toggle-debug-on-error ()
+  (interactive)
+  (if debug-on-error
+      (progn
+	(setq debug-on-error nil)
+	(message "%s" "Now disabling stacktrace on error."))
+      (setq debug-on-error t)
+      (message "%s" "Now showing stacktrace on error.")))
+
 (defun visit-init-dot-el ()
   "visit `~/.emacs.d/init.el'."
   (interactive)
@@ -2094,6 +2106,10 @@
   "hdv" 'describe-variable
   "hdm" 'describe-mode
   "hdp" 'describe-package)
+
+(global-leader
+  "t"  (declare-label "toggle")
+  "tD" 'toggle-debug-on-error)
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
