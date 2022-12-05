@@ -672,7 +672,7 @@
 ;; ==================================================
 
 (use-package racket-mode
-  :mode "\\.rkt\\'"
+  :defer t
   :general
   (local-leader
     :major-modes
@@ -719,11 +719,22 @@
 ;; Scheme config ====================================
 ;; ==================================================
 
-(use-package geiser :mode "\\.scm\\'")
+(use-package geiser :defer t)
 (use-package geiser-chicken :after geiser :defer t)
 (use-package geiser-chez :after geiser :defer t)
 (use-package geiser-gambit :after geiser :defer t)
 (use-package geiser-guile :after geiser :defer t)
+
+;; PicoLisp config ==================================
+;; ==================================================
+
+(use-package picolisp :defer t)
+(use-package picolisp-wiki-mode :defer t)
+
+;; newLISP config ===================================
+;; ==================================================
+
+(use-package newlisp-mode :defer t)
 
 ;; Haskell config ===================================
 ;; ==================================================
