@@ -1704,10 +1704,10 @@
 
 ;; make terminal transparent
 (unless (window-system)
-  (defun on-after-init ()
+  (defun make-terminal-transparent ()
     (unless (display-graphic-p (selected-frame))
       (set-face-background 'default "unspecified-bg" (selected-frame))))
-  (add-hook 'window-setup-hook 'on-after-init))
+  (add-hook 'window-setup-hook 'make-terminal-transparent))
 
 ;; hl-todo config ==================================
 ;; =================================================
@@ -1752,7 +1752,7 @@
 ;; ==================================================
 
 (use-package vterm
-  :when (not (string= system-name "penguin")))
+  :when (not chromeOS-p))
 
 (use-package multi-vterm
   :after (vterm projectile)
