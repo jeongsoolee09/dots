@@ -1616,7 +1616,6 @@
 (use-package which-key
   :config
   (setq which-key-add-column-padding 1
-	;; which-key-allow-multiple-replacements t
 	which-key-echo-keystrokes 0.02
 	which-key-idle-delay 0.2
 	which-key-idle-secondary-delay 0.01
