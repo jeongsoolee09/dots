@@ -1700,12 +1700,6 @@
 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
 		(set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
 
-(use-package auto-dark
-  :if (memq window-system '(mac ns))
-  :config
-  (setq auto-dark--light-theme 'modus-operandi)
-  (setq auto-dark--dark-theme 'modus-vivendi))
-
 (global-visual-line-mode t)
 
 ;; make terminal transparent
