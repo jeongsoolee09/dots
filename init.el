@@ -435,16 +435,25 @@
     "eb" 'eval-buffer
     "ef" 'eval-defun
     "er" 'eval-region
-    "ee" 'eval-expression
     "ep" 'pp-eval-last-sexp
     "es" 'eval-last-sexp
-    "i" 'elisp-index-search))
+    "ec" 'eval-expression-at-point
+    "i" 'elisp-index-search)
+  :config
+  (defun eval-expression-at-point ()
+    (interactive)
+    (let ((expr (read (thing-at-point 'sexp))))
+      (if (and (symbolp expr) (fboundp expr))
+	  (describe-function expr)
+	  (eval-expression (read (thing-at-point 'sexp)))))))
 
 ;; Clojure config ===================================
 ;; ==================================================
 
 (use-package clojure-mode
-  :mode "\\.clj(s|c)?\\'"
+  :mode (("\\.clj\\'" . clojure-mode)
+	 ("\\.cljs\\'" . clojurescript-mode)
+	 ("\\.cljc\\'" . clojurec-mode))
   :init
   (setq clojure-indent-style 'align-arguments
 	clojure-align-forms-automatically t
@@ -1545,8 +1554,7 @@
 ;; ==================================================
 
 (use-package which-key
-  :config
-  (which-key-mode)
+  :init
   (setq which-key-add-column-padding 1
 	which-key-allow-multiple-replacements t
 	which-key-echo-keystrokes 0.02
@@ -1560,7 +1568,12 @@
 	which-key-sort-uppercase-first nil
 	which-key-special-keys nil
 	which-key-use-C-h-for-paging t
-	which-key-allow-evil-operators t))
+	which-key-allow-evil-operators t)
+  :config
+  (which-key-mode))
+
+(use-package which-key-posframe
+  :after which-key)
 
 ;; isearch configs ==================================
 ;; ==================================================
@@ -2166,7 +2179,6 @@
       inhibit-startup-message t
       inhibit-splash-screen t)
 
-(advice-add 'delete-window :after #'balance-windows)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
