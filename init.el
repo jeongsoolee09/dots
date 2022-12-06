@@ -136,12 +136,11 @@
 ;; ==================================================
 
 (use-package dash
-  :defer t
   :config
   (function-put '-> 'lisp-indent-function nil)
   (function-put '->> 'lisp-indent-function nil))
 
-(use-package s :defer t)
+(use-package s)
 
 (use-package ts :defer t)
 
@@ -252,8 +251,8 @@
     (if (not current-input-method)
 	(if (not (string= evil-state "insert"))
 	    (evil-insert-state))
-	(if (string= evil-state "insert")
-	    (evil-normal-state)))
+      (if (string= evil-state "insert")
+	  (evil-normal-state)))
     (toggle-input-method)))
 
 (use-package evil-collection
@@ -453,7 +452,7 @@
     (let ((expr (read (thing-at-point 'sexp))))
       (if (and (symbolp expr) (fboundp expr))
 	  (describe-function expr)
-	  (eval-expression (read (thing-at-point 'sexp)))))))
+	(eval-expression (read (thing-at-point 'sexp)))))))
 
 ;; Clojure config ===================================
 ;; ==================================================
@@ -480,12 +479,12 @@
     (interactive)
     (if (executable-find "bb")
 	(make-comint "babashka" "bb")
-	(message "bb not installed")))
+      (message "bb not installed")))
   (defun run-nbb ()
     (interactive)
     (if (executable-find "nbb")
 	(make-comint "node-babashka" "nbb")
-	(message "nbb not installed")))
+      (message "nbb not installed")))
   (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
   (defun mm/cider-connected-hook ()
     (when (eq 'nbb cider-cljs-repl-type)
@@ -881,12 +880,12 @@
 
 						  "hg"  'hoogle
 						  "hG"  'haskell-hoogle-lookup-from-local)
-	(spacemacs/set-leader-keys-for-major-mode mode
-						  "gi"  'haskell-navigate-imports
-						  "F"   'haskell-mode-stylish-buffer
+      (spacemacs/set-leader-keys-for-major-mode mode
+						"gi"  'haskell-navigate-imports
+						"F"   'haskell-mode-stylish-buffer
 
-						  "hh"  'hoogle
-						  "hG"  'haskell-hoogle-lookup-from-local)))
+						"hh"  'hoogle
+						"hG"  'haskell-hoogle-lookup-from-local)))
 
   (evilified-state-evilify-map haskell-debug-mode-map
 			       :mode haskell-debug-mode
@@ -1044,7 +1043,7 @@
   (progn
     (if (executable-find "opam")
 	(setq utop-command "opam config exec -- utop -emacs")
-	(spacemacs-buffer/warning "Cannot find \"opam\" executable."))
+      (spacemacs-buffer/warning "Cannot find \"opam\" executable."))
 
     (defun spacemacs/utop-eval-phrase-and-go ()
       "Send phrase to REPL and evaluate it and switch to the REPL in
@@ -1140,7 +1139,7 @@
   :config
   (setq exec-path-from-shell-variables (if (string= system-name "penguin")
 					   '("PATH" "JAVA_HOME" "BROWSER" "OPAMCLI")
-					   '("JAVA_HOME" "BROWSER" "OPAMCLI"))
+					 '("JAVA_HOME" "BROWSER" "OPAMCLI"))
 	exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
@@ -1481,7 +1480,7 @@
 	  (let ((trimmed (s-chop-prefixes '("https://" "http://") url)))
 	    (message (concat "opening " trimmed))
 	    (xwidget-webkit-new-session trimmed))
-	  (xwidget-webkit-new-session url))))
+	(xwidget-webkit-new-session url))))
   (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
   (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
   (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
@@ -1765,14 +1764,25 @@
 		    :height
 		    (if chromeOS-p 150 180))
 
+(defun mac-dark-mode-p ()
+  (s-contains? "Dark" (plist-get
+		       (mac-application-state) :appearance)))
+
+(defun general-dark-mode-p ()
+  (let ((current-time (read (format-time-string "%H"))))
+    (<= 7 current-time 17)))
+
 (use-package modus-themes
   :config
   (if (window-system)
-      (let ((current-time (read (format-time-string "%H"))))
-	(if (<= 7 current-time 17)
-	    (load-theme 'modus-operandi t)  ; light mode!
-	    (load-theme 'modus-vivendi t))) ; dark mode!
-      (load-theme 'modus-vivendi t))
+      (let ((dark-mode-p
+	     (if macOS-p
+		 (mac-dark-mode-p)
+	       (general-dark-mode-p)))))
+    (if dark-mode-p
+	(load-theme 'modus-operandi t)  ; light mode!
+      (load-theme 'modus-vivendi t))) ; dark mode!
+  (load-theme 'modus-vivendi t)
   (add-hook 'modus-themes-after-load-theme-hook
 	    (lambda ()
 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
@@ -2006,8 +2016,8 @@
       (progn
 	(setq debug-on-error nil)
 	(message "%s" "Now disabling stacktrace on error."))
-      (setq debug-on-error t)
-      (message "%s" "Now showing stacktrace on error.")))
+    (setq debug-on-error t)
+    (message "%s" "Now showing stacktrace on error.")))
 
 (defun visit-init-dot-el ()
   "visit `~/.emacs.d/init.el'."
@@ -2146,7 +2156,7 @@
   (setq w3m-search-word-at-point nil)
   (if window-system
       (setq browse-url-browser-function 'browse-url-default-browser)
-      (setq browse-url-browser-function 'w3m-browse-url))
+    (setq browse-url-browser-function 'w3m-browse-url))
   (defun w3m-copy-current-url ()
     (interactive)
     (kill-new w3m-current-url)
