@@ -1099,6 +1099,12 @@
   (with-eval-after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
+;; VimScript config =================================
+;; ==================================================
+
+(use-package vimrc-mode
+  :defer t)
+
 ;; HTML config ======================================
 ;; ==================================================
 
