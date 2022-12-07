@@ -1641,7 +1641,8 @@
   :straight nil
   :general
   (agnostic-key
-    "C-s" 'isearch-forward-regexp
+    "C-s" 'isearch-forward-regexp)
+  (normal-mode-major-mode
     "C-r" 'isearch-backward-regexp))
 
 ;; hippie-expand configs ============================
