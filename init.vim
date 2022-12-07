@@ -54,6 +54,8 @@ lua << EOF
 
         use 'guns/vim-sexp'
 
+        use 'jiangmiao/auto-pairs'
+
         use 'farmergreg/vim-lastplace'
 
         use 'rafcamlet/nvim-luapad'
