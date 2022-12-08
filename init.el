@@ -1722,6 +1722,13 @@
 (fringe-mode '(0 . 0))
 (blink-cursor-mode 0)
 (global-visual-line-mode t)
+(dolist (hook '(doc-view-mode-hook
+		pdf-view-mode-hook
+		w3m-mode-hook
+		eww-mode-hook
+		comint-mode-hook))
+  (add-hook hook (lambda () (display-line-numbers-mode -1))))
+
 
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
@@ -1861,17 +1868,6 @@
     "o" 'evil-insert-resume
     (kbd "<return>") #'evil-insert-resume))
 
-;; custom functions =================================
-;; ==================================================
-
-(global-visual-line-mode t)
-(dolist (hook '(doc-view-mode-hook
-		pdf-view-mode-hook
-		w3m-mode-hook
-		eww-mode-hook
-		comint-mode-hook))
-  (add-hook hook (lambda () (display-line-numbers-mode -1))))
-
 ;; world clock config ===============================
 ;; ==================================================
 
@@ -1884,7 +1880,7 @@
 				    ("Asia/Seoul" "Seoul")))
   :general
   (global-leader
-    "aC" (declare-label "clock")
+    "aC"  (declare-label "clock")
     "aCw" 'world-clock))
 
 ;; custom functions =================================
