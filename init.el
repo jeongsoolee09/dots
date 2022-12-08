@@ -1709,6 +1709,7 @@
 
 ;; font
 (set-face-attribute 'default nil
+		    :font "Fira Code"
 		    :weight 'light
 		    :height
 		    (if chromeOS-p 150 180))
@@ -1903,7 +1904,8 @@
   "s-p" 'projectile-find-file-dwim
   "s-P" 'consult-recent-file
   "s-o" 'find-file
-  "s-f" 'projectile-find-file-dwim
+  "s-f" 'toggle-frame-fullscreen
+  "s-m" 'toggle-frame-maximized
   "s-b" 'switch-to-buffer
   "s-e" 'eshell
   "s-;" 'evil-window-vsplit
@@ -1918,8 +1920,8 @@
   "s-m" 'helm-filtered-bookmarks
   "s-g" 'magit
   "s-r" 'winner-redo
-  "s-i" 'comment-dwim
   "s-t" 'tool-bar-mode
+  "s-i" 'comment-dwim
   "s-a" 'org-agenda
   "s-y" 'mu4e-update-mail-and-index
   "s-/" 'flycheck-next-error
@@ -1929,7 +1931,11 @@
 
 ;; control-super-shortcuts
 (agnostic-key
+  "C-s-e" 'eww
+  "C-s-t" 'modus-themes-toggle
+  "C-s-r" 'eradio-toggle
   "C-s-f" 'toggle-frame-fullscreen
+  "C-s-g" 'ag-dired-regexp
   "C-s-v" 'multi-vterm
   "C-s-b" 'ibuffer
   "C-s-/" 'next-error
@@ -1940,10 +1946,9 @@
   "C-s-." 'hl-todo-occur
   "C-s-;" 'flycheck-previous-error
   "C-s-'" 'flycheck-next-error
-  "C-s-e" 'eww
   "C-s-p" 'previous-buffer
   "C-s-n" 'next-buffer
-  "C-s-t" 'modus-themes-toggle)
+  )
 
 ;; SPC-Leader bindings ==============================
 ;; ==================================================
@@ -2035,20 +2040,18 @@
   "\\" 'flycheck-previous-error)
 
 (global-leader
-  "a" '(:ignore t :which-key "utilities")
+  "a"  (declare-label "utilities")
   "ai" 'display-current-time
-  "ab" 'battery
-  "awm" 'w3m
-  "aww" 'eww)
+  "ab" 'battery)
 
 (global-leader
-  "q" '(:ignore t :which-key "quit")
+  "q"  (declare-label "quit")
   "qq" 'kill-emacs
   "qf" 'delete-frame)
 
 (global-leader
-  "h" '(:ignore t :which-key "help")
-  "hd" '(:ignore t :which-key "describe")
+  "h"   (declare-label "help")
+  "hd"  (declare-label "describe")
   "hdf" 'describe-function
   "hdk" 'describe-key
   "hdv" 'describe-variable
@@ -2079,32 +2082,41 @@
 ;; ==================================================
 
 (use-package w3m
-  :config
-  (setq w3m-default-display-inline-images t
-	w3m-session-load-crashed-sessions 'never)
+  :init
   (defun xwidget-webkit-open-w3m-current-url ()
     (interactive)
     (require 'xwidget)
     (xwidget-webkit-new-session w3m-current-url))
+
   (defun eww-open-w3m-current-url ()
     (interactive)
     (eww-browse-url w3m-current-url))
-  (evil-define-key 'normal 'global (kbd "<leader>awx") 'xwidget-webkit-open-w3m-current-url)
-  (evil-define-key 'normal 'global (kbd "<leader>awW") 'eww-open-w3m-current-url)
-  (setq w3m-search-word-at-point nil)
-  (if window-system
-      (setq browse-url-browser-function 'browse-url-default-browser)
-    (setq browse-url-browser-function 'w3m-browse-url))
+
   (defun w3m-copy-current-url ()
     (interactive)
     (kill-new w3m-current-url)
     (message "Copied current URL."))
-  (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
-  (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil)
+
   (defun w3m-open-this-file ()
     (interactive)
     (let ((current-filename (buffer-file-name)))
-      (w3m-find-file current-filename))))
+      (w3m-find-file current-filename)))
+
+  :general
+  (global-leader
+    "aw"  (declare-label "web")
+    "awx" 'xwidget-webkit-open-w3m-current-url
+    "awW" 'eww-open-w3m-current-url)
+
+  :config
+  (setq w3m-default-display-inline-images t
+	w3m-session-load-crashed-sessions 'never)
+  (setq w3m-search-word-at-point nil)
+  (if window-system
+      (setq browse-url-browser-function 'browse-url-default-browser)
+    (setq browse-url-browser-function 'w3m-browse-url))
+  (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
+  (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil))
 
 ;; eww config =======================================
 ;; ==================================================
@@ -2121,12 +2133,13 @@
     "awr" '(:ignore t :which-key "reddit")
     "awrm" 'reddigg-view-main
     "awrs" 'reddigg-view-sub)
+
   :config
   (setq reddigg-subs '(emacs clojure orgmode lisp commandline
 			     mechkeyboard scala haskell HHKB clojure
 			     vim kotlin programmerhumor orgmode
-			     commandline CityPorn OrgRoam))
-  (setq org-confirm-elisp-link-function nil))
+			     commandline CityPorn OrgRoam)
+	org-confirm-elisp-link-function nil))
 
 ;; hnreader config ==================================
 ;; ==================================================
@@ -2143,6 +2156,7 @@
     "awhj" 'hnreader-jobs
     "awhb" 'hnreader-best
     "awhm" 'hnreader-more)
+
   :config
   (setq org-confirm-elisp-link-function nil))
 
@@ -2156,6 +2170,7 @@
     "aRp" 'eradio-play
     "aRs" 'eradio-stop
     "aRR" 'eradio-toggle)
+
   :config
   (setq eradio-player '("mpv" "--no-video" "--no-terminal" "--really-quiet")
 	eradio-channels '(("MBC FM4U" . "http://serpent0.duckdns.org:8088/mbcfm.pls")
@@ -2169,13 +2184,56 @@
 			  ("TBS eFM" . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
 			  ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
 
+;; Emms config ======================================
+;; ==================================================
+
+(use-package emms
+  :defer t
+
+  :init
+  (defun emms-mode-line-only-filename ()
+    "Format the currently playing song."
+    (let* ((fullname (emms-track-description
+		      (emms-playlist-current-selected-track)))
+	   (splitted (s-split "/" fullname))
+	   (filename (car (last splitted))))
+      (concat " " (car (s-split "\\.[mp3|wma|m4a]" filename)))))
+
+  :general
+  (global-leader
+    "am" (declare-label "emms")
+    "amee" 'emms
+    "ames" 'emms-pause
+    "amep" 'emms-previous
+    "amen" 'emms-next
+    "amed" 'emms-play-directory
+    "amef" 'emms-play-file
+    "ameu" 'emms-play-url)
+
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-default-players)
+  (setq emms-player-mpv-parameters '("--really-quiet" "--no-audio-display" "--no-video"))
+  (setq emms-source-file-default-directory "~/Music/"
+	emms-playlist-buffer-name "*Music*"
+	emms-info-asynchronously t)
+  (require 'emms-mode-line)
+  (emms-mode-line-enable)
+  (emms-mode-line 1)
+  (setq emms-mode-line-mode-line-function #'emms-mode-line-only-filename)
+  (require 'emms-playing-time)
+  (emms-playing-time nil))
+
 ;; TRAMP config =====================================
 ;; ==================================================
 
 (setq tramp-copy-size-limit 10000000
       tramp-inline-compress-start-size 10000000)
 
-(with-eval-after-load 'git-gutter+
+(use-package git-gutter+
+  :defer t
+  :config
   (defun git-gutter+-remote-default-directory (dir file)
     (let* ((vec (tramp-dissect-file-name file))
 	   (method (tramp-file-name-method vec))
