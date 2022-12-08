@@ -1,5 +1,5 @@
 (setq-default gc-cons-threshold 100000000)
-(setq warning-minimum-level :emergency
+(setq warning-minimum-level     :emergency
       warning-minimum-log-level :warning)
 
 ;; straight =========================================
@@ -350,7 +350,7 @@
 
   (push 'eglot flycheck-checkers)
 
-  (defun sanityinc/eglot-prefer-flycheck ()
+  (defun eglot-prefer-flycheck ()
     (when eglot--managed-mode
       (flycheck-add-mode 'eglot major-mode)
       (flycheck-select-checker 'eglot)
@@ -358,7 +358,7 @@
       (flymake-mode -1)
       (setq eglot--current-flymake-report-fn 'flycheck-eglot-report-fn)))
 
-  (add-hook 'eglot--managed-mode-hook 'sanityinc/eglot-prefer-flycheck))
+  (add-hook 'eglot--managed-mode-hook 'eglot-prefer-flycheck))
 
 ;; Guix config ======================================
 ;; ==================================================
@@ -401,23 +401,28 @@
   (show-paren-mode 1))
 
 (use-package smartparens
+  :hook prog-mode
+  :bind (:map smartparens-mode-map
+	      ("M-p" . sp-previous-sexp)
+	      ("M-n" . sp-next-sexp))
   :config
   (smartparens-global-mode)
-  ;; disable single quote auto-closing
-  (sp-local-pair '(hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode lisp-interaction-mode ielm-mode)
-		 "'" "'" :actions nil))
+  (sp-local-pair '(fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
+			       geiser-mode scheme-mode racket-mode
+			       newlisp-mode picolisp-mode janet-mode
+			       lisp-interaction-mode ielm-mode) "'" "'" :actions nil))
 
 (use-package evil-cleverparens
-  :hook (hy-mode fennel-mode clojure-mode lisp-mode emacs-lisp-mode scheme-mode racket-mode)
-  :after (evil smartparens)
+  :hook ((fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode geiser-mode scheme-mode racket-mode newlisp-mode picolisp-mode janet-mode)
+	 . evil-cleverparens-mode)
   :init
   (setq evil-cleverparens-use-additional-bindings nil)
   :config
   (setq evil-cleverparens-use-additional-bindings t)
   (unless window-system
-    (setq evil-cp-additional-bindings (assoc-delete-all "M-[" evil-cp-additional-bindings))
-    (setq evil-cp-additional-bindings (assoc-delete-all "M-]" evil-cp-additional-bindings)))
-  (evil-cp-set-additional-bindings))
+    (setq evil-cp-additional-bindings (assoc-delete-all "M-[" evil-cp-additional-bindings)
+	  evil-cp-additional-bindings (assoc-delete-all "M-]" evil-cp-additional-bindings)))
+    (evil-cp-set-additional-bindings))
 
 ;; kbd-mode config ==================================
 ;; ==================================================
@@ -487,11 +492,11 @@
 	(make-comint "node-babashka" "nbb")
       (message "nbb not installed")))
   (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
-  (defun mm/cider-connected-hook ()
+  (defun cider-connected-hook ()
     (when (eq 'nbb cider-cljs-repl-type)
       (setq-local cider-show-error-buffer nil)
       (cider-set-repl-type 'cljs)))
-  (add-hook 'cider-connected-hook #'mm/cider-connected-hook)
+  (add-hook 'cider-connected-hook #'cider-connected-hook)
   (setq cider-check-cljs-repl-requirements nil)
   (define-clojure-indent
     (defroutes 'defun)
@@ -1201,7 +1206,7 @@
 (use-package orderless
   :init
   (setq orderless-style-dispatchers '(+orderless-dispatch)
-        orderless-component-separator #'orderless-escapable-split-on-space)
+	orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(basic substring partial-completion flex orderless)
 	completion-category-defaults nil
 	completion-category-overrides '((file (styles partial-completion))))
@@ -1414,9 +1419,9 @@
 
 (use-package xwidget
   :straight nil
-  :commands xwidget-new-window
-  :config
-  (setq xwidget-webkit-enable-plugins t)
+  :when     macOS-p
+  :defer    t
+  :init
   (defun xwidget-new-window ()
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://")))
@@ -1429,16 +1434,27 @@
 	    (message (concat "opening " trimmed))
 	    (xwidget-webkit-new-session trimmed))
 	(xwidget-webkit-new-session url))))
-  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
-  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
-  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
-  (evil-define-key 'normal xwidget-webkit-mode-map (kbd "q") 'kill-this-buffer)
-  (add-hook 'xwidget-webkit-mode-hook
-	    (lambda ()
-	      (local-unset-key (kbd "<backspace>"))))
+  
   (defun xwidget-webkit-find-file (file)
     (interactive "fFilename: ")
-    (xwidget-webkit-new-session (w3m-expand-file-name-as-url file))))
+    (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))
+  :bindings
+  "f"   'xwwp-follow-link
+  "L"   'xwidget-webkit-browse-url
+  "s-c" 'xwidget-webkit-copy-selection-as-kill
+  "q"   'kill-this-buffer
+  :general
+  (global-leader
+    "awx" 'xwidget-new-window)
+  :config
+  (setq xwidget-webkit-enable-plugins t)
+  
+  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
+  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
+  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
+  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "q") 'kill-this-buffer)
+
+  (add-hook 'xwidget-webkit-mode-hook (lambda () (local-unset-key (kbd "<backspace>")))))
 
 (use-package xwwp :after (xwidget))
 
@@ -1450,11 +1466,15 @@
 ;; kotlin config ===================================
 ;; =================================================
 
-(use-package kotlin-mode :mode "\\.kt\\'"
-  :config
+(use-package kotlin-mode
+  :mode "\\.kt\\'"
+
+  :init
   (defun run-kotlin ()
     (interactive)
     (comint-run "kotlin" '()))
+
+  :config
   (local-leader
     :major-modes
     '(kotlin-mode t)
@@ -1466,7 +1486,7 @@
 ;; =================================================
 
 (use-package scala-mode
-  :interpreter ("scala" . scala-mode))
+  :mode ("\\.scala\\'" . scala-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -1901,6 +1921,8 @@
   "s-0" 'winum-select-window-0)
 
 (agnostic-key
+  "s-=" 'text-scale-increase
+  "s--" 'text-scale-decrease
   "s-p" 'projectile-find-file-dwim
   "s-P" 'consult-recent-file
   "s-o" 'find-file
@@ -1981,7 +2003,10 @@
   (kbd "x TAB") 'indent-rigidly)
 
 (global-leader
-  "w" '(:ignore t :which-key "window")
+  "S" (declare-label "straight"))
+
+(global-leader
+  "w"  (declare-label "window")
   "wd" 'delete-window
   "wh" 'evil-window-left
   "wj" 'evil-window-down
@@ -2078,6 +2103,11 @@
   :config
   (setq graphviz-dot-indent-width 4))
 
+;; ace-link config ==================================
+;; ==================================================
+
+;; (use-package ace-)
+
 ;; w3m config =======================================
 ;; ==================================================
 
@@ -2102,20 +2132,119 @@
     (let ((current-filename (buffer-file-name)))
       (w3m-find-file current-filename)))
 
+  ;; shameless ripoffs from `venmos/w3m-layer`
+  (defun w3m-save-buffer-to-file ()
+    (interactive)
+    (let* ((curr (buffer-file-name))
+	   (new (read-file-name
+		 "Save to file: " nil nil nil
+		 (and curr (file-name-nondirectory curr))))
+	   (mustbenew (if (and curr (file-equal-p new curr)) 'excl t)))
+      (if (use-region-p)
+	  (write-region (region-beginning) (region-end) new nil nil nil mustbenew)
+	(save-restriction
+	  (widen)
+	  (write-region (point-min) (point-max) new nil nil nil mustbenew)))))
+
+  (defun w3m-player-movie ()
+    (interactive)
+    (let ((link (w3m-anchor)))
+      (if (not link)
+	  (message "Thing on point is not a link.")
+	(cond ((string-match "/\\/www\\.youtube\\.com\\/watch\/?" link)
+	       (message (concat "loading from youtube..." link))
+	       (call-process "mpv" nil nil nil link))
+	      ;; ((string-match "/\\/www\\.bilibili\\.com\\/video\/" link)
+	      ;;  (message (concat "loading from bilibili..." link))
+	      ;;  (call-process "bilidan" nil nil nil link))
+	      )
+	(message "Sorry, playback error. Please check the url."))))
+
+  (defun w3m-copy-link ()
+    (interactive)
+    (let ((link (w3m-anchor)))
+      (if (not link)
+	  (message "")
+	(kill-new link)
+	(message "Copy \"%s\" to clipboard." link))))
+
+  (defun w3m-open-url-with (fn url)
+    "Open url according to w3m url open function 'fn', and auto handle url prefix"
+    (cond ((string-prefix-p "http://" url) (funcall fn url))
+	  ((string-prefix-p "https://" url) (funcall fn url))
+	  (t (funcall fn (concat "http://" url)))))
+
+  (defun w3m-open-url (url)
+    "Opens url in new w3m session with `http://` appended"
+    (interactive
+     (list (read-string "Enter website address (default: google.com):" nil nil "google.com" nil )))
+    (w3m-open-url-with 'w3m-goto-url url))
+
+  (defun w3m-open-url-new-session (url)
+    "Opens url in new w3m session with `http://` appended"
+    (interactive
+     (list (read-string "Enter website address (default: google.com):" nil nil "google.com" nil )))
+    (w3m-open-url-with 'w3m-goto-url-new-session url))
+  
+  (setq browse-url-browser-function 'w3m-goto-url-new-session
+	w3m-user-agent "Mozilla/5.0 (Linux; U; Android 2.3.3; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533."
+	w3m-coding-system 'utf-8
+	w3m-file-coding-system 'utf-8
+	w3m-file-name-coding-system 'utf-8
+	w3m-input-coding-system 'utf-8
+	w3m-output-coding-system 'utf-8
+	w3m-terminal-coding-system 'utf-8)
+
   :general
   (global-leader
     "aw"  (declare-label "web")
-    "awx" 'xwidget-webkit-open-w3m-current-url
-    "awW" 'eww-open-w3m-current-url)
+    "awmm"  'w3m
+    "awmx" 'xwidget-webkit-open-w3m-current-url
+    "awmW" 'eww-open-w3m-current-url)
+
+  :general
+  (local-leader
+    :major-modes
+    '(w3m-mode t)
+    :keymaps
+    '(w3m-mode-map)
+    "p" 'w3m-player-movie
+    "y" 'w3m-copy-link
+    "f" 'w3m-find-file
+    "o" 'w3m-open-url
+    "O" 'w3m-open-url-new-session
+    "t" 'w3m-view-this-url-new-session
+    "T" 'w3m-create-empty-session
+    "s" 'w3m-search
+    "S" 'w3m-search-new-session
+    "l" 'w3m-next-buffer
+    "h" 'w3m-previous-buffer
+    "x" 'w3m-delete-buffer
+    "d" 'w3m-save-buffer-to-file
+    "D" 'w3m-save-buffer
+    "e" 'w3m-bookmark-edit
+    "a" 'w3m-bookmark-add-current-url
+    "m" 'w3m-view-url-with-external-browser
+    "b" 'w3m-bookmark-view)
+  
+  :bind
+  (:map w3m-mode-map
+	("0" . 'evil-digit-argument-or-evil-beginning-of-line)
+	("$" . 'evil-end-of-line)
+	("f" . 'evil-find-char)
+	("F" . 'evil-find-char-backward)
+	("o" . 'ace-link-eww))
 
   :config
   (setq w3m-default-display-inline-images t
-	w3m-session-load-crashed-sessions 'never)
-  (setq w3m-search-word-at-point nil)
+	w3m-session-load-crashed-sessions 'never
+	w3m-search-word-at-point nil)
   (if window-system
       (setq browse-url-browser-function 'browse-url-default-browser)
     (setq browse-url-browser-function 'w3m-browse-url))
   (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
+  (evil-define-key 'normal w3m-mode-map (kbd "C-f") 'evil-scroll-page-down)
+  (evil-define-key 'normal w3m-mode-map (kbd "C-b") 'evil-scroll-page-up)
   (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil))
 
 ;; eww config =======================================
@@ -2228,8 +2357,11 @@
 ;; TRAMP config =====================================
 ;; ==================================================
 
-(setq tramp-copy-size-limit 10000000
-      tramp-inline-compress-start-size 10000000)
+(use-package tramp
+  :straight nil
+  :config
+  (setq tramp-copy-size-limit 10000000
+	tramp-inline-compress-start-size 10000000))
 
 (use-package git-gutter+
   :defer t
