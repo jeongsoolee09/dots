@@ -1923,7 +1923,7 @@
   "s-p" 'projectile-find-file-dwim
   "s-P" 'consult-recent-file
   "s-o" 'find-file
-  "s-f" 'toggle-frame-fullscreen
+  "s-f" 'ace-window
   "s-m" 'toggle-frame-maximized
   "s-b" 'switch-to-buffer
   "s-e" 'eshell
@@ -1953,7 +1953,6 @@
   "C-s-e" 'eww
   "C-s-t" 'modus-themes-toggle
   "C-s-r" 'eradio-toggle
-  "C-s-f" 'ace-window
   "C-s-s" 'ace-swap-window
   "C-s-g" 'ag-dired-regexp
   "C-s-v" 'multi-vterm
@@ -1968,7 +1967,7 @@
   "C-s-'" 'flycheck-next-error
   "C-s-p" 'previous-buffer
   "C-s-n" 'next-buffer
-  "C-s-w" 'toggle-frame-fullscreen)
+  "C-s-f" 'toggle-frame-fullscreen)
 
 ;; SPC-Leader bindings ==============================
 ;; ==================================================
