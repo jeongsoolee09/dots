@@ -1767,7 +1767,7 @@
   (add-hook 'modus-themes-after-load-theme-hook
 	    (lambda ()
 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
-		(set-face-attribute 'fringe nil :background "#000000" :foreground "#000000")))))
+		(set-face-attribute 'tab-bar nil :background "#000000" :foreground "#000000")))))
 
 ;; make terminal transparent
 (unless (window-system)
