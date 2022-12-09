@@ -1780,6 +1780,7 @@
 ;; =================================================
 
 (use-package hl-todo
+  :defer t
   :config
   (setq hl-todo-keyword-faces
 	'(("HOLD" . "#d0bf8f")
