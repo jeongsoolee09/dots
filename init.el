@@ -1919,6 +1919,7 @@
 (agnostic-key
   "s-=" 'text-scale-increase
   "s--" 'text-scale-decrease
+  "s-0" 'text-scale-adjust		; meh
   "s-p" 'projectile-find-file-dwim
   "s-P" 'consult-recent-file
   "s-o" 'find-file
@@ -1952,7 +1953,8 @@
   "C-s-e" 'eww
   "C-s-t" 'modus-themes-toggle
   "C-s-r" 'eradio-toggle
-  "C-s-f" 'toggle-frame-fullscreen
+  "C-s-f" 'ace-window
+  "C-s-s" 'ace-swap-window
   "C-s-g" 'ag-dired-regexp
   "C-s-v" 'multi-vterm
   "C-s-b" 'ibuffer
@@ -1966,7 +1968,7 @@
   "C-s-'" 'flycheck-next-error
   "C-s-p" 'previous-buffer
   "C-s-n" 'next-buffer
-  )
+  "C-s-w" 'toggle-frame-fullscreen)
 
 ;; SPC-Leader bindings ==============================
 ;; ==================================================
@@ -2004,11 +2006,14 @@
 (global-leader
   "w"  (declare-label "window")
   "wd" 'delete-window
+  "wD" 'ace-delete-window
   "wh" 'evil-window-left
   "wj" 'evil-window-down
   "wk" 'evil-window-up
   "wl" 'evil-window-right
   "wL" 'evil-window-bottom-right
+
+  "wM" 'ace-swap-window
 
   "wt" 'transpose-frame
   "wr" 'evil-window-rotate-downwards
@@ -2103,9 +2108,26 @@
 ;; ace-link config ==================================
 ;; ==================================================
 
-(use-package ace-link :defer t)
+(use-package ace-link
+  :init
+  (with-eval-after-load 'info
+    (define-key Info-mode-map   "o" 'ace-link-info))
+  (with-eval-after-load 'help-mode
+    (define-key help-mode-map   "o" 'ace-link-help))
+  (with-eval-after-load 'woman
+    (define-key woman-mode-map  "o" 'link-hint-open-link))
+  (with-eval-after-load 'eww
+    (define-key eww-link-keymap "o" 'ace-link-eww)
+    (define-key eww-mode-map    "o" 'ace-link-eww))
+  (with-eval-after-load 'w3m
+    (define-key eww-link-keymap "o" 'ace-link-eww)
+    (define-key eww-mode-map    "o" 'ace-link-eww)))
 
-(use-package ace-window :defer t)
+(use-package ace-window
+  :defer t
+  :init
+  (setq aw-keys '(?q ?w ?e ?r ?t ?y ?u ?i ?o ?p)
+	aw-background nil))
 
 (use-package ace-jump-mode :defer t)
 
@@ -2119,7 +2141,7 @@
     (require 'xwidget)
     (xwidget-webkit-new-session w3m-current-url))
 
-(defun eww-open-w3m-current-url ()
+  (defun eww-open-w3m-current-url ()
     (interactive)
     (eww-browse-url w3m-current-url))
 
@@ -2154,11 +2176,7 @@
 	  (message "Thing on point is not a link.")
 	(cond ((string-match "/\\/www\\.youtube\\.com\\/watch\/?" link)
 	       (message (concat "loading from youtube..." link))
-	       (call-process "mpv" nil nil nil link))
-	      ;; ((string-match "/\\/www\\.bilibili\\.com\\/video\/" link)
-	      ;;  (message (concat "loading from bilibili..." link))
-	      ;;  (call-process "bilidan" nil nil nil link))
-	      )
+	       (call-process "mpv" nil nil nil link)))
 	(message "Sorry, playback error. Please check the url."))))
 
   (defun w3m-copy-link ()
@@ -2198,12 +2216,11 @@
 
   :general
   (global-leader
-    "aw"  (declare-label "web")
-    "awmm"  'w3m
+    "aw"   (declare-label "web")
+    "awmm" 'w3m
     "awmx" 'xwidget-webkit-open-w3m-current-url
     "awmW" 'eww-open-w3m-current-url)
-
-  :general
+  
   (local-leader
     :major-modes
     '(w3m-mode t)
@@ -2227,14 +2244,6 @@
     "a" 'w3m-bookmark-add-current-url
     "m" 'w3m-view-url-with-external-browser
     "b" 'w3m-bookmark-view)
-  
-  :bind
-  (:map w3m-mode-map
-	("0" . 'evil-digit-argument-or-evil-beginning-of-line)
-	("$" . 'evil-end-of-line)
-	("f" . 'evil-find-char)
-	("F" . 'evil-find-char-backward)
-	("o" . 'ace-link-eww))
 
   :config
   (setq w3m-default-display-inline-images t
@@ -2244,6 +2253,7 @@
       (setq browse-url-browser-function 'browse-url-default-browser)
     (setq browse-url-browser-function 'w3m-browse-url))
   (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
+  (evil-define-key 'normal w3m-mode-map (kbd "o") 'ace-link-w3m)
   (evil-define-key 'normal w3m-mode-map (kbd "C-f") 'evil-scroll-page-down)
   (evil-define-key 'normal w3m-mode-map (kbd "C-b") 'evil-scroll-page-up)
   (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil))
