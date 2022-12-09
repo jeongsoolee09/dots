@@ -2,7 +2,7 @@
 (setq warning-minimum-level     :emergency
       warning-minimum-log-level :warning)
 
-;; straight =========================================
+;; Straight =========================================
 ;; ==================================================
 
 (defvar bootstrap-version)
@@ -739,10 +739,10 @@
     '(racket-mode racket-repl-mode racket-xp-mode t)
     :keymaps
     '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
-    "E" '(:ignore t :which-key "error")
+    "E"  (declare-label "error")
     "En" 'racket-xp-next-error
     "EN" 'racket-xp-previous-error
-    "g" '(:ignore t :which-key "goto")
+    "g"  (declare-label "goto")
     "g`" 'racket-unvisit
     "gg" 'racket-xp-visit-definition
     "gn" 'racket-xp-next-definition
@@ -751,22 +751,22 @@
     "gr" 'racket-open-require-path
     "gu" 'racket-xp-next-use
     "gU" 'racket-xp-previous-use
-    "h" '(:ignore t :which-key "help")
+    "h"  (declare-label "help")
     "ha" 'racket-xp-annotate
     "hd" 'racket-xp-describe
     "hh" 'racket-xp-documentation
-    "i" '(:ignore t :which-key "insert")
+    "i"  (declare-label "insert")
     "il" 'racket-insert-lambda
-    "m" '(:ignore t :which-key "refactor")
+    "m"  (declare-label "refactor")
     "mr" 'racket-xp-rename
-    "e" '(:ignore t :which-key "eval")
+    "e"  (declare-label "eval")
     "'"  'racket-repl
     "eb" 'racket-run
     "ee" 'racket-send-last-sexp
     "ef" 'racket-send-definition
     "ei" 'racket-repl
     "er" 'racket-send-region
-    "t" '(:ignore t :which-key "test")
+    "t"  (declare-label "test")
     "tb" 'racket-test))
 
 ;; Scheme config ====================================
@@ -1205,7 +1205,10 @@
 
 (use-package orderless
   :init
-  (setq orderless-style-dispatchers '(+orderless-dispatch)
+  (setq orderless-style-dispatchers '(first-initialism
+				      flex-if-twiddle
+				      without-if-bang)
+	orderless-matching-styles '(orderless-regexp)
 	orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(basic substring partial-completion flex orderless)
 	completion-category-defaults nil
@@ -2000,7 +2003,9 @@
   (kbd "x TAB") 'indent-rigidly)
 
 (global-leader
-  "S" (declare-label "straight"))
+  "S"   (declare-label "straight")
+  "Sp"  (declare-label "package")
+  "Spu" 'straight-use-package)
 
 (global-leader
   "w"  (declare-label "window")
@@ -2067,7 +2072,16 @@
 (global-leader
   "a"  (declare-label "utilities")
   "ai" 'display-current-time
-  "ab" 'battery)
+  "ab" 'battery
+
+  "aw"   (declare-label "web")
+  "awww" 'eww
+  "awwM" 'eww-open-w3m-current-url
+  "awwn" 'eww-search-namu-wiki
+
+  "awmm" 'w3m
+  "awmx" 'xwidget-webkit-open-w3m-current-url
+  "awmW" 'eww-open-w3m-current-url)
 
 (global-leader
   "q"  (declare-label "quit")
@@ -2214,11 +2228,7 @@
 	w3m-terminal-coding-system 'utf-8)
 
   :general
-  (global-leader
-    "aw"   (declare-label "web")
-    "awmm" 'w3m
-    "awmx" 'xwidget-webkit-open-w3m-current-url
-    "awmW" 'eww-open-w3m-current-url)
+  
   
   (local-leader
     :major-modes
@@ -2261,7 +2271,18 @@
 ;; ==================================================
 
 (use-package eww
-  :straight nil)
+  :straight nil
+  :init
+  (defun eww-open-w3m-current-url ()
+      (interactive)
+      (w3m-browse-url (eww-copy-page-url)))
+  (defun eww-search-namu-wiki ()
+    (interactive)
+    (let ((url (read-from-minibuffer "URL: " "https://namu.wiki/w/")))
+      (eww-browse-url url)))
+  :config
+  (evil-define-key 'normal eww-mode-map (kbd "c") 'eww-copy-page-url)
+  (setq eww-search-prefix "https://www.google.com/search?q="))
 
 ;; reddigg config ===================================
 ;; ==================================================
