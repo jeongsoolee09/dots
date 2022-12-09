@@ -312,7 +312,7 @@
   (local-leader
     :keymaps
     '(eglot-mode-map)
-    "a" '(:ignore t :which-key "LSP")
+    "a" '(declare-label "LSP")
     "aa" 'eglot-code-actions
     "r" 'eglot-rename)
   :config
@@ -437,7 +437,9 @@
 
 (use-package elisp-mode
   :straight nil
+
   :defer t
+
   :general
   (local-leader
     :major-modes
@@ -452,6 +454,7 @@
     "es" 'eval-last-sexp
     "ec" 'eval-expression-at-point
     "i"  'elisp-index-search)
+
   :config
   (defun eval-expression-at-point ()
     (interactive)
@@ -521,16 +524,16 @@
     :keymaps
     '(clojure-mode-map)
     "'" 'sesman-start
-    "d" '(:ignore t :which-key "debug")
+    "d"  (declare-label "debug")
     "db" 'cider-debug-defun-at-point
     "de" 'spacemacs/cider-display-error-buffer
-    "dv" '(:ignore t :which-key "inspect values")
+    "dv"  (declare-label "inspect values")
     "dve" 'cider-inspect-last-sexp
     "dvf" 'cider-inspect-defun-at-point
     "dvi" 'cider-inspect
     "dvl" 'cider-inspect-last-result
     "dvv" 'cider-inspect-expr
-    "e" '(:ignore t :which-key "evaluation")
+    "e"  (declare-label "evaluation")
     "e;" 'cider-eval-defun-to-comment
     "e$" 'spacemacs/cider-eval-sexp-end-of-line
     "e(" 'cider-eval-list-at-point
@@ -554,33 +557,33 @@
     "ev" 'cider-eval-sexp-at-point
     "eV" 'cider-eval-sexp-up-to-point
     "ew" 'cider-eval-last-sexp-and-replace
-    "en" '(:ignore t :which-key "namespace")
+    "en"  (declare-label "namespace")
     "ena" 'cider-ns-reload-all
     "enn" 'cider-eval-ns-form
     "enr" 'cider-ns-refresh
     "enl" 'cider-ns-reload  ;; SPC u for cider-ns-reload-all
-    "ep" '(:ignore t :which-key "pretty print")
+    "ep"  (declare-label "pretty print")
     "ep;" 'cider-pprint-eval-defun-to-comment
     "ep:" 'cider-pprint-eval-last-sexp-to-comment
     "epf" 'cider-pprint-eval-defun-at-point
     "epe" 'cider-pprint-eval-last-sexp
-    "m" '(:ignore t :which-key "manage repls")
-    "mb" 'sesman-browser
-    "mi" 'sesman-info
-    "mg" 'sesman-goto
-    "ms" 'sesman-start
-    "ml" '(:ignore t :which-key "link session")
+    "m"   (declare-label "manage repls")
+    "mb"  'sesman-browser
+    "mi"  'sesman-info
+    "mg"  'sesman-goto
+    "ms"  'sesman-start
+    "ml"  (declare-label "link session")
     "mlp" 'sesman-link-with-project
     "mlb" 'sesman-link-with-buffer
     "mld" 'sesman-link-with-directory
     "mlu" 'sesman-unlink
-    "mS" '(:ignore t :which-key "sibling sessions")
+    "mS"  (declare-label "sibling sessions")
     "mSj" 'cider-connect-sibling-clj
     "mSs" 'cider-connect-sibling-cljs
-    "mq" '(:ignore t :which-key "quit/restart")
+    "mq"  (declare-label "quit/restart")
     "mqq" 'sesman-quit
     "mqr" 'sesman-restart
-    "p" '(:ignore t :which-key "profile")
+    "p"  (declare-label "profile")
     "p+" 'cider-profile-samples
     "pc" 'cider-profile-clear
     "pn" 'cider-profile-ns-toggle
@@ -588,7 +591,7 @@
     "pS" 'cider-profile-summary
     "pt" 'cider-profile-toggle
     "pv" 'cider-profile-var-profiled-p
-    "s" '(:ignore t :which-key "send to repl")
+    "s"  (declare-label "send to repl")
     "sb" 'cider-load-buffer
     "sB" 'spacemacs/cider-send-buffer-in-repl-and-focus
     "se" 'spacemacs/cider-send-last-sexp-to-repl
@@ -596,20 +599,20 @@
     "sf" 'spacemacs/cider-send-function-to-repl
     "sF" 'spacemacs/cider-send-function-to-repl-focus
     "si" 'sesman-start
-    "sc" '(:ignore t :which-key "connect external repl")
+    "sc"  (declare-label "connect external repl")
     "scj" 'cider-connect-clj
     "scm" 'cider-connect-clj&cljs
     "scs" 'cider-connect-cljs
-    "sj" '(:ignore t :which-key "jack-in")
+    "sj" (declare-label "jack-in")
     "sjj" 'cider-jack-in-clj
     "sjm" 'cider-jack-in-clj&cljs
     "sjs" 'cider-jack-in-cljs
-    "sq" '(:ignore t :which-key "quit/restart repl")
+    "sq"  (declare-label "quit/restart repl")
     "sqq" 'cider-quit
     "sqr" 'cider-restart
     "sqn" 'cider-ns-reload
     "sqN" 'cider-ns-reload-all
-    "t" '(:ignore t :which-key "test")
+    "t"  (declare-label "test")
     "ta" 'spacemacs/cider-test-run-all-tests
     "tb" 'cider-test-show-report
     "tl" 'spacemacs/cider-test-run-loaded-tests
@@ -617,18 +620,18 @@
     "tp" 'spacemacs/cider-test-run-project-tests
     "tr" 'spacemacs/cider-test-rerun-failed-tests
     "tt" 'spacemacs/cider-test-run-focused-test
-    "=" '(:ignore t :which-key "format")
+    "="  (declare-label "format")
     "==" 'cider-format-buffer
     "=eb" 'cider-format-edn-buffer
     "=ee" 'cider-format-edn-last-sexp
     "=er" 'cider-format-edn-region
     "=f" 'cider-format-defun
-    "g" '(:ignore t :which-key "goto")
+    "g"  (declare-label "goto")
     "gb" 'cider-pop-back
     "gc" 'cider-classpath
     "gg" 'spacemacs/clj-find-var
     "gn" 'cider-find-ns
-    "h" '(:ignore t :which-key "documentation")
+    "h"  (declare-label "documentation")
     "ha" 'cider-apropos
     "hc" 'cider-cheatsheet
     "hd" 'cider-clojuredocs
@@ -637,11 +640,10 @@
     "hN" 'cider-browse-ns-all
     "hs" 'cider-browse-spec
     "hS" 'cider-browse-spec-all
-
-    "T" '(:ignore t :which-key "toggle")
+    "T"  (declare-label "toggle")
     "Te" 'cider-enlighten-mode
-					;"Tf" 'spacemacs/cider-toggle-repl-font-locking
-					;"Tp" 'spacemacs/cider-toggle-repl-pretty-printing
+    "Tf" 'spacemacs/cider-toggle-repl-font-locking
+    "Tp" 'spacemacs/cider-toggle-repl-pretty-printing
     "Tt" 'cider-auto-test-mode)
   (global-leader
     "atsb" 'run-bb
@@ -1750,19 +1752,18 @@
 
 (defun general-dark-mode-p ()
   (let ((current-time (read (format-time-string "%H"))))
-    (<= 7 current-time 17)))
+    (not (<= 7 current-time 17))))
 
 (use-package modus-themes
   :config
   (if (window-system)
-      (let ((dark-mode-p
-	     (if macOS-p
-		 (mac-dark-mode-p)
-	       (general-dark-mode-p)))))
-    (if dark-mode-p
-	(load-theme 'modus-operandi t)  ; light mode!
-      (load-theme 'modus-vivendi t))) ; dark mode!
-  (load-theme 'modus-vivendi t)
+      (let ((dark-mode-p (if macOS-p
+			     (mac-dark-mode-p)
+			   (general-dark-mode-p))))
+	(if dark-mode-p
+	    (load-theme 'modus-vivendi t)  ; dark mode!
+	  (load-theme 'modus-operandi t))) ; light mode!
+    (load-theme 'modus-vivendi t))
   (add-hook 'modus-themes-after-load-theme-hook
 	    (lambda ()
 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
@@ -2076,6 +2077,7 @@
 
   "aw"   (declare-label "web")
   "awww" 'eww
+  "awws" 'eww-search-words
   "awwM" 'eww-open-w3m-current-url
   "awwn" 'eww-search-namu-wiki
 
@@ -2274,8 +2276,8 @@
   :straight nil
   :init
   (defun eww-open-w3m-current-url ()
-      (interactive)
-      (w3m-browse-url (eww-copy-page-url)))
+    (interactive)
+    (w3m-browse-url (eww-copy-page-url)))
   (defun eww-search-namu-wiki ()
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://namu.wiki/w/")))
