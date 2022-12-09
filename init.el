@@ -2073,6 +2073,7 @@
 (global-leader
   "h"   (declare-label "help")
   "hd"  (declare-label "describe")
+  "hdb" 'describe-bindings
   "hdf" 'describe-function
   "hdk" 'describe-key
   "hdv" 'describe-variable
@@ -2102,7 +2103,11 @@
 ;; ace-link config ==================================
 ;; ==================================================
 
-;; (use-package ace-)
+(use-package ace-link :defer t)
+
+(use-package ace-window :defer t)
+
+(use-package ace-jump-mode :defer t)
 
 ;; w3m config =======================================
 ;; ==================================================
@@ -2114,7 +2119,7 @@
     (require 'xwidget)
     (xwidget-webkit-new-session w3m-current-url))
 
-  (defun eww-open-w3m-current-url ()
+(defun eww-open-w3m-current-url ()
     (interactive)
     (eww-browse-url w3m-current-url))
 
