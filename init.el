@@ -1218,9 +1218,10 @@
 
 (use-package orderless
   :init
-  (setq orderless-style-dispatchers '(first-initialism
-				      flex-if-twiddle
-				      without-if-bang)
+  (setq
+   ;; orderless-style-dispatchers '(first-initialism
+   ;; 				      flex-if-twiddle
+   ;; 				      without-if-bang)
 	orderless-matching-styles '(orderless-regexp)
 	orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(basic substring partial-completion flex orderless)
@@ -1454,11 +1455,11 @@
   (defun xwidget-webkit-find-file (file)
     (interactive "fFilename: ")
     (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))
-  :bindings
-  "f"   'xwwp-follow-link
-  "L"   'xwidget-webkit-browse-url
-  "s-c" 'xwidget-webkit-copy-selection-as-kill
-  "q"   'kill-this-buffer
+  :bind
+  (("f" . 'xwwp-follow-link)
+   ("L" . 'xwidget-webkit-browse-url)
+   ("s-c" . 'xwidget-webkit-copy-selection-as-kill)
+   ("q" . 'kill-this-buffer))
   :general
   (global-leader
     "awx" 'xwidget-new-window)
@@ -1751,11 +1752,12 @@
 (setq ring-bell-function 'ignore)
 
 ;; font
-(set-face-attribute 'default nil
+(if (not chromeOS-p)
+ (set-face-attribute 'default nil
 		    :font "Fira Code"
 		    :weight 'light
-		    :height
-		    (if chromeOS-p 150 180))
+		    :height 180)
+ (set-face-attribute 'default nil :height 150))
 
 (defun mac-dark-mode-p ()
   (s-contains? "Dark" (plist-get
