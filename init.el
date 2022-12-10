@@ -240,6 +240,7 @@
   (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
   (evil-define-key 'normal 'global (kbd "C-w C-l") 'evil-window-right)
   (unbind-key (kbd "C-@"))
+  (unbind-key (kbd "M-SPC"))
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
@@ -359,6 +360,16 @@
       (setq eglot--current-flymake-report-fn 'flycheck-eglot-report-fn)))
 
   (add-hook 'eglot--managed-mode-hook 'eglot-prefer-flycheck))
+
+;; Shell config
+
+(use-package sh-script
+  :straight nil
+  :mode (("\\.sh\\'" . sh-mode)
+	 ("\\.(ba|z)shrc.*\\'" . sh-mode)
+	 ("\\.zshenv.*\\'" . sh-mode)
+	 ("\\.bash_profile\\'" . sh-mode)
+	 ("\\.zprofile\\'" . sh-mode)))
 
 ;; Guix config ======================================
 ;; ==================================================
@@ -1767,7 +1778,7 @@
   (add-hook 'modus-themes-after-load-theme-hook
 	    (lambda ()
 	      (when (string= (modus-themes--current-theme) "modus-vivendi")
-		(set-face-attribute 'tab-bar nil :background "#000000" :foreground "#000000")))))
+		(set-face-attribute 'tool-bar nil :background "#000000" :foreground "#000000")))))
 
 ;; make terminal transparent
 (unless (window-system)
