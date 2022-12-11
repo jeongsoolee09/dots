@@ -1536,9 +1536,9 @@
   :after tree-sitter-langs
   :demand t
   :init
-  (setq codeql-transient-binding "C-c q")
-  (setq codeql-configure-eglot-lsp t)
-  (setq codeql-configure-projectile t)
+  (setq codeql-transient-binding "C-c q"
+	codeql-configure-eglot-lsp t
+	codeql-configure-projectile t)
   :config
   ;; you should configure your standard search paths through a ~/.config/codeql/config entry
   ;; e.g. "--search-path /full/path/codeql:/full/path/codeql-go"
@@ -1739,7 +1739,6 @@
     "s-." 'tab-new
     "s-," 'tab-close))
 
-(fringe-mode '(0 . 0))
 (blink-cursor-mode 0)
 (global-visual-line-mode t)
 (dolist (hook '(doc-view-mode-hook
@@ -1782,19 +1781,66 @@
     (load-theme 'modus-operandi t)
     (custom-theme-set-faces
      'modus-operandi
-     '(tool-bar ((t (:foreground "#FFFFFF" :background "#FFFFFF"))))))
+     '(tool-bar ((default
+		   :box (:line-width 1 :style released-button)
+		   :foreground "black")
+		 (((type x w32 mac ns) (class color))
+		  :background "grey75")
+		 (((type x) (class mono))
+		  :background "grey")))
+     '(tab-bar ((((class color) (min-colors 88))
+		 :inherit variable-pitch
+		 :background "grey85"
+		 :foreground "black")
+		(((class mono))
+		 :background "grey")
+		(t
+		 :inverse-video t)))
+     '(tab-line ((((class color) (min-colors 88))
+		  :inherit variable-pitch
+		  :height 0.9
+		  :background "grey85"
+		  :foreground "black")
+		 (((class mono))
+		  :background "grey")
+		 (t
+		  :inverse-video t)))
+
+     '(mode-line ((((class color) (min-colors 88))
+		   :box (:line-width -1 :style released-button)
+		   :background "grey75" :foreground "black")
+		  (t
+		   :inverse-video t)))
+     '(mode-line-inactive ((default
+			     :inherit mode-line)
+			   (((class color) (min-colors 88) (background light))
+			    :weight light
+			    :box (:line-width -1 :color "grey75" :style nil)
+			    :foreground "grey20" :background "grey90")
+			   (((class color) (min-colors 88) (background dark) )
+			    :weight light
+			    :box (:line-width -1 :color "grey40" :style nil)
+			    :foreground "grey80" :background "grey30")))
+     '(mode-line-highlight ((((supports :box t) (class color) (min-colors 88))
+			     :box (:line-width 2 :color "grey40" :style released-button))
+			    (t
+			     :inherit highlight)))
+     '(mode-line-emphasis ((t (:weight bold))))
+     '(mode-line-buffer-id ((t (:weight bold))))
+     '(fringe ((t (:foreground "#FFFFFF" :background "#FFFFFF"))))))
 
   (defun load-modus-vivendi ()
     (interactive)
     (load-theme 'modus-vivendi t)
     (custom-theme-set-faces
      'modus-vivendi
-     '(tool-bar ((t (:foreground "#000000" :background "#000000"))))))
+     '(tool-bar ((t (:foreground "#000000" :background "#000000" :box nil))))
+     '(fringe ((t (:foreground "#000000" :background "#000000"))))))
 
   (defun modus-themes-toggle- ()
     (interactive)
     (let ((modus-operandi-p (string= (modus-themes--current-theme) "modus-operandi"))
-	  (modus-vivendi-p  (string= (modus-themes--current-theme) "modus-vivendi" )))
+	  (modus-vivendi-p  (string= (modus-themes--current-theme) "modus-vivendi")))
       (cond (modus-operandi-p (load-modus-vivendi))
 	    (modus-vivendi-p  (load-modus-operandi))
 	    (:else            (load-modus-operandi)))))
@@ -1804,8 +1850,8 @@
 			     (mac-dark-mode-p)
 			   (general-dark-mode-p))))
 	(if dark-mode-p
-	    (load-modus-vivendi)  ; dark mode!
-	  (load-modus-operandi))) ; light mode!
+	    (load-modus-vivendi)	; dark mode!
+	  (load-modus-operandi)))	; light mode!
     (load-modus-vivendi)))
 
 ;; make terminal transparent
@@ -2498,5 +2544,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fringe ((t (:background "#ffffff")))))
+ )
 (put 'narrow-to-region 'disabled nil)
