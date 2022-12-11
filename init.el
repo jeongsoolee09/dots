@@ -441,7 +441,7 @@
   (unless window-system
     (setq evil-cp-additional-bindings (assoc-delete-all "M-[" evil-cp-additional-bindings)
 	  evil-cp-additional-bindings (assoc-delete-all "M-]" evil-cp-additional-bindings)))
-    (evil-cp-set-additional-bindings))
+  (evil-cp-set-additional-bindings))
 
 ;; kbd-mode config ==================================
 ;; ==================================================
@@ -1226,8 +1226,8 @@
    ;; orderless-style-dispatchers '(first-initialism
    ;; 				      flex-if-twiddle
    ;; 				      without-if-bang)
-	orderless-matching-styles '(orderless-regexp)
-	orderless-component-separator #'orderless-escapable-split-on-space)
+   orderless-matching-styles '(orderless-regexp)
+   orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(basic substring partial-completion flex orderless)
 	completion-category-defaults nil
 	completion-category-overrides '((file (styles partial-completion))))
@@ -1790,7 +1790,7 @@
 		 (((type x) (class mono))
 		  :background "grey")))
      '(tab-bar ((((class color) (min-colors 88))
-		 :inherit variable-pitch
+		 ;; :inherit variable-pitch
 		 :background "grey85"
 		 :foreground "black")
 		(((class mono))
@@ -1798,7 +1798,7 @@
 		(t
 		 :inverse-video t)))
      '(tab-line ((((class color) (min-colors 88))
-		  :inherit variable-pitch
+		  ;; :inherit variable-pitch
 		  :height 0.9
 		  :background "grey85"
 		  :foreground "black")
@@ -1806,6 +1806,21 @@
 		  :background "grey")
 		 (t
 		  :inverse-video t)))
+     '(tab-bar-tab ((default
+		      :inherit tab-bar)
+		    (((class color) (min-colors 88))
+		     :box (:line-width 1 :style released-button))
+		    (t
+		     :inverse-video nil)))
+     '(tab-bar-tab-inactive ((default
+			       :inherit tab-bar-tab)
+			     (((class color) (min-colors 88))
+			      :background "grey75")
+			     (t
+			      :inverse-video t)))
+     '(tab-bar-tab-group-current ((t :inherit tab-bar-tab :box nil :weight bold)))
+     '(tab-bar-tab-group-inactive ((t :inherit (shadow tab-bar-tab-inactive))))
+     '(tab-bar-tab-ungrouped ((t :inherit (shadow tab-bar-tab-inactive))))
      '(fringe ((t (:foreground "#FFFFFF" :background "#FFFFFF"))))))
 
   (defun load-modus-vivendi ()
