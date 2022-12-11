@@ -433,6 +433,7 @@
 (use-package evil-cleverparens
   :hook ((fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode geiser-mode scheme-mode racket-mode newlisp-mode picolisp-mode janet-mode)
 	 . evil-cleverparens-mode)
+  :demand t
   :init
   (setq evil-cleverparens-use-additional-bindings nil)
   :config
@@ -1459,10 +1460,11 @@
     (interactive "fFilename: ")
     (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))
   :bind
-  (("f" . 'xwwp-follow-link)
-   ("L" . 'xwidget-webkit-browse-url)
-   ("s-c" . 'xwidget-webkit-copy-selection-as-kill)
-   ("q" . 'kill-this-buffer))
+  (:map xwidget-webkit-mode-map
+	("f" . 'xwwp-follow-link)
+	("L" . 'xwidget-webkit-browse-url)
+	("s-c" . 'xwidget-webkit-copy-selection-as-kill)
+	("q" . 'kill-this-buffer))
   :general
   (global-leader
     "awx" 'xwidget-new-window)
@@ -1525,25 +1527,25 @@
 
 ;; TODO
 
-;; (use-package emacs-codeql
-;;   :straight
-;;   (emacs-codeql :type git
-;; 		:host github
-;; 		:repo "anticomputer/emacs-codeql"
-;; 		:branch "main")
-;;   :after tree-sitter-langs
-;;   :demand
-;;   :init
-;;   (setq codeql-transient-binding "C-c q")
-;;   (setq codeql-configure-eglot-lsp t)
-;;   (setq codeql-configure-projectile t)
-;;   :config
-;;   ;; you should configure your standard search paths through a ~/.config/codeql/config entry
-;;   ;; e.g. "--search-path /full/path/codeql:/full/path/codeql-go"
-;;   ;; see: https://codeql.github.com/docs/codeql-cli/specifying-command-options-in-a-codeql-configuration-file/
-;;   ;; this option is here to provide you with load/search precedence control
-;;   ;; these paths will have precedence over the config file search paths
-;;   (setq codeql-search-paths '("./")))
+(use-package emacs-codeql
+  :straight
+  (emacs-codeql :type git
+		:host github
+		:repo "anticomputer/emacs-codeql"
+		:branch "main")
+  :after tree-sitter-langs
+  :demand t
+  :init
+  (setq codeql-transient-binding "C-c q")
+  (setq codeql-configure-eglot-lsp t)
+  (setq codeql-configure-projectile t)
+  :config
+  ;; you should configure your standard search paths through a ~/.config/codeql/config entry
+  ;; e.g. "--search-path /full/path/codeql:/full/path/codeql-go"
+  ;; see: https://codeql.github.com/docs/codeql-cli/specifying-command-options-in-a-codeql-configuration-file/
+  ;; this option is here to provide you with load/search precedence control
+  ;; these paths will have precedence over the config file search paths
+  (setq codeql-search-paths '("./")))
 
 ;; git-gutter config ================================
 ;; ==================================================
@@ -1716,7 +1718,7 @@
 (use-package tool-bar
   :straight nil
   :config
-  (tool-bar-mode -1))
+  'TODO)
 
 (use-package tab-bar
   :straight nil
@@ -1754,34 +1756,57 @@
 
 ;; font
 (if (not chromeOS-p)
- (set-face-attribute 'default nil
-		    :font "Fira Code"
-		    :weight 'light
-		    :height 180)
- (set-face-attribute 'default nil :height 150))
-
-(defun mac-dark-mode-p ()
-  (s-contains? "Dark" (plist-get
-		       (mac-application-state) :appearance)))
-
-(defun general-dark-mode-p ()
-  (let ((current-time (read (format-time-string "%H"))))
-    (not (<= 7 current-time 17))))
+    (set-face-attribute 'default nil
+			:font "Fira Code"
+			:weight 'light
+			:height 180)
+  (set-face-attribute 'default nil :height 150))
 
 (use-package modus-themes
+  :init
+  (setq custom--inhibit-theme-enable nil)
+  (defun mac-dark-mode-p ()
+    (s-contains? "Dark" (plist-get
+			 (mac-application-state) :appearance)))
+
+  (defun general-dark-mode-p ()
+    (let ((current-time (read (format-time-string "%H"))))
+      (not (<= 7 current-time 17))))
+
+  :demand t
   :config
+  (require 'modus-operandi-theme)
+  (require 'modus-vivendi-theme)
+  (defun load-modus-operandi ()
+    (interactive)
+    (load-theme 'modus-operandi t)
+    (custom-theme-set-faces
+     'modus-operandi
+     '(tool-bar ((t (:foreground "#FFFFFF" :background "#FFFFFF"))))))
+
+  (defun load-modus-vivendi ()
+    (interactive)
+    (load-theme 'modus-vivendi t)
+    (custom-theme-set-faces
+     'modus-vivendi
+     '(tool-bar ((t (:foreground "#000000" :background "#000000"))))))
+
+  (defun modus-themes-toggle- ()
+    (interactive)
+    (let ((modus-operandi-p (string= (modus-themes--current-theme) "modus-operandi"))
+	  (modus-vivendi-p  (string= (modus-themes--current-theme) "modus-vivendi" )))
+      (cond (modus-operandi-p (load-modus-vivendi))
+	    (modus-vivendi-p  (load-modus-operandi))
+	    (:else            (load-modus-operandi)))))
+
   (if (window-system)
       (let ((dark-mode-p (if macOS-p
 			     (mac-dark-mode-p)
 			   (general-dark-mode-p))))
 	(if dark-mode-p
-	    (load-theme 'modus-vivendi t)  ; dark mode!
-	  (load-theme 'modus-operandi t))) ; light mode!
-    (load-theme 'modus-vivendi t))
-  (add-hook 'modus-themes-after-load-theme-hook
-	    (lambda ()
-	      (when (string= (modus-themes--current-theme) "modus-vivendi")
-		(set-face-attribute 'tool-bar nil :background "#000000" :foreground "#000000")))))
+	    (load-modus-vivendi)  ; dark mode!
+	  (load-modus-operandi))) ; light mode!
+    (load-modus-vivendi)))
 
 ;; make terminal transparent
 (unless (window-system)
@@ -1970,7 +1995,7 @@
 ;; control-super-shortcuts
 (agnostic-key
   "C-s-e" 'eww
-  "C-s-t" 'modus-themes-toggle
+  "C-s-t" 'modus-themes-toggle-
   "C-s-r" 'eradio-toggle
   "C-s-s" 'ace-swap-window
   "C-s-g" 'ag-dired-regexp
@@ -2270,7 +2295,8 @@
     "e" 'w3m-bookmark-edit
     "a" 'w3m-bookmark-add-current-url
     "m" 'w3m-view-url-with-external-browser
-    "b" 'w3m-bookmark-view)
+    "b" 'w3m-bookmark-view
+    "c" 'w3m-copy-current-url)
 
   :config
   (setq w3m-default-display-inline-images t
