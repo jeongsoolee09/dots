@@ -2140,7 +2140,7 @@
   "ai" 'display-current-time
   "ab" 'battery
 
-  "aw"   (declare-label "web"))
+  "aw" (declare-prefix "web"))
 
 (global-leader
   "q"  (declare-prefix "quit")
