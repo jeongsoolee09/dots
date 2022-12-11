@@ -1450,7 +1450,9 @@
     "f"   'xwwp-follow-link
     "L"   'xwidget-webkit-browse-url
     "s-c" 'xwidget-webkit-copy-selection-as-kill
-    "q"   'kill-this-buffer)
+    "q"   'kill-this-buffer
+    "C"   'xwidget-webkit-clone-and-split-below
+    "c"   'xwidget-webkit-clone-and-split-right)
 
   :config
   (setq xwidget-webkit-enable-plugins t)
@@ -1462,7 +1464,6 @@
   (defun xwidget-new-window ()
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://")))
-      (require 's)
       (if (or (s-starts-with-p "https://https://" url)
 	      (s-starts-with-p "https://http://" url)
 	      (s-starts-with-p "http://http://" url)
