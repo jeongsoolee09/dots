@@ -2010,6 +2010,7 @@
   "s-o" 'find-file
   "s-f" 'ace-window
   "s-RET" 'toggle-frame-maximized
+  "s-m" 'toggle-frame-maximized
   "s-b" 'switch-to-buffer
   "s-e" 'eshell
   "s-;" 'evil-window-vsplit
