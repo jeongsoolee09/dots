@@ -1534,6 +1534,7 @@
 		:host github
 		:repo "anticomputer/emacs-codeql"
 		:branch "main")
+  :when (not chromeOS-p)
   :after tree-sitter-langs
   :demand t
   :init
