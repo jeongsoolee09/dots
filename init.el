@@ -1020,91 +1020,87 @@
 	 ("\\.topml$" . tuareg-mode))
   :defer t
   :init
-  (progn
-    (spacemacs//init-ocaml-opam)
-    (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
-					      "ga" 'tuareg-find-alternate-file
-					      "cc" 'compile)
-    ;; Make OCaml-generated files invisible to filename completion
-    (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
-      (add-to-list 'completion-ignored-extensions ext))))
+  (spacemacs//init-ocaml-opam)
+  (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+					    "ga" 'tuareg-find-alternate-file
+					    "cc" 'compile)
+  ;; Make OCaml-generated files invisible to filename completion
+  (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
+    (add-to-list 'completion-ignored-extensions ext)))
 
 (defun ocaml/init-dune ()
   (use-package dune
     :defer t
     :init
-    (progn
-      (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
-						"tP" 'dune-promote
-						"tp" 'dune-runtest-and-promote)
-      (spacemacs/declare-prefix-for-mode 'tuareg-mode "mt" "test")
-      (spacemacs/declare-prefix-for-mode 'dune-mode "mc" "compile/check")
-      (spacemacs/declare-prefix-for-mode 'dune-mode "mi" "insert-form")
-      (spacemacs/declare-prefix-for-mode 'dune-mode "mt" "test")
-      (spacemacs/set-leader-keys-for-major-mode 'dune-mode
-						"cc" 'compile
-						"ia" 'dune-insert-alias-form
-						"ic" 'dune-insert-copyfiles-form
-						"id" 'dune-insert-ignored-subdirs-form
-						"ie" 'dune-insert-executable-form
-						"ii" 'dune-insert-install-form
-						"il" 'dune-insert-library-form
-						"im" 'dune-insert-menhir-form
-						"ip" 'dune-insert-ocamllex-form
-						"ir" 'dune-insert-rule-form
-						"it" 'dune-insert-tests-form
-						"iv" 'dune-insert-env-form
-						"ix" 'dune-insert-executables-form
-						"iy" 'dune-insert-ocamlyacc-form
-						"tP" 'dune-promote
-						"tp" 'dune-runtest-and-promote))))
+    (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+					      "tP" 'dune-promote
+					      "tp" 'dune-runtest-and-promote)
+    (spacemacs/declare-prefix-for-mode 'tuareg-mode "mt" "test")
+    (spacemacs/declare-prefix-for-mode 'dune-mode "mc" "compile/check")
+    (spacemacs/declare-prefix-for-mode 'dune-mode "mi" "insert-form")
+    (spacemacs/declare-prefix-for-mode 'dune-mode "mt" "test")
+    (spacemacs/set-leader-keys-for-major-mode 'dune-mode
+					      "cc" 'compile
+					      "ia" 'dune-insert-alias-form
+					      "ic" 'dune-insert-copyfiles-form
+					      "id" 'dune-insert-ignored-subdirs-form
+					      "ie" 'dune-insert-executable-form
+					      "ii" 'dune-insert-install-form
+					      "il" 'dune-insert-library-form
+					      "im" 'dune-insert-menhir-form
+					      "ip" 'dune-insert-ocamllex-form
+					      "ir" 'dune-insert-rule-form
+					      "it" 'dune-insert-tests-form
+					      "iv" 'dune-insert-env-form
+					      "ix" 'dune-insert-executables-form
+					      "iy" 'dune-insert-ocamlyacc-form
+					      "tP" 'dune-promote
+					      "tp" 'dune-runtest-and-promote)))
 
 (use-package utop
   :defer t
   :init
-  (progn
-    (add-hook 'tuareg-mode-hook 'utop-minor-mode)
-    (spacemacs/register-repl 'utop 'utop "ocaml"))
+  (add-hook 'tuareg-mode-hook 'utop-minor-mode)
+  (spacemacs/register-repl 'utop 'utop "ocaml")
   :config
-  (progn
-    (if (executable-find "opam")
-	(setq utop-command "opam config exec -- utop -emacs")
-      (spacemacs-buffer/warning "Cannot find \"opam\" executable."))
+  (if (executable-find "opam")
+      (setq utop-command "opam config exec -- utop -emacs")
+    (spacemacs-buffer/warning "Cannot find \"opam\" executable."))
 
-    (defun spacemacs/utop-eval-phrase-and-go ()
-      "Send phrase to REPL and evaluate it and switch to the REPL in
+  (defun spacemacs/utop-eval-phrase-and-go ()
+    "Send phrase to REPL and evaluate it and switch to the REPL in
 `insert state'"
-      (interactive)
-      (utop-eval-phrase)
-      (utop)
-      (evil-insert-state))
+    (interactive)
+    (utop-eval-phrase)
+    (utop)
+    (evil-insert-state))
 
-    (defun spacemacs/utop-eval-buffer-and-go ()
-      "Send buffer to REPL and evaluate it and switch to the REPL in
+  (defun spacemacs/utop-eval-buffer-and-go ()
+    "Send buffer to REPL and evaluate it and switch to the REPL in
 `insert state'"
-      (interactive)
-      (utop-eval-buffer)
-      (utop)
-      (evil-insert-state))
+    (interactive)
+    (utop-eval-buffer)
+    (utop)
+    (evil-insert-state))
 
-    (defun spacemacs/utop-eval-region-and-go (start end)
-      "Send region to REPL and evaluate it and switch to the REPL in
+  (defun spacemacs/utop-eval-region-and-go (start end)
+    "Send region to REPL and evaluate it and switch to the REPL in
 `insert state'"
-      (interactive "r")
-      (utop-eval-region start end)
-      (utop)
-      (evil-insert-state))
+    (interactive "r")
+    (utop-eval-region start end)
+    (utop)
+    (evil-insert-state))
 
-    (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
-					      "'"  'utop
-					      "sb" 'utop-eval-buffer
-					      "sB" 'spacemacs/utop-eval-buffer-and-go
-					      "si" 'utop
-					      "sp" 'utop-eval-phrase
-					      "sP" 'spacemacs/utop-eval-phrase-and-go
-					      "sr" 'utop-eval-region
-					      "sR" 'spacemacs/utop-eval-region-and-go)
-    (spacemacs/declare-prefix-for-mode 'tuareg-mode "ms" "send"))
+  (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+					    "'"  'utop
+					    "sb" 'utop-eval-buffer
+					    "sB" 'spacemacs/utop-eval-buffer-and-go
+					    "si" 'utop
+					    "sp" 'utop-eval-phrase
+					    "sP" 'spacemacs/utop-eval-phrase-and-go
+					    "sr" 'utop-eval-region
+					    "sR" 'spacemacs/utop-eval-region-and-go)
+  (spacemacs/declare-prefix-for-mode 'tuareg-mode "ms" "send")
   (define-key utop-mode-map (kbd "C-j") 'utop-history-goto-next)
   (define-key utop-mode-map (kbd "C-k") 'utop-history-goto-prev))
 
