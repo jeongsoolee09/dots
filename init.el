@@ -1454,6 +1454,10 @@
     "C"   'xwidget-webkit-clone-and-split-below
     "c"   'xwidget-webkit-clone-and-split-right)
 
+  (global-leader
+    "awxx" 'xwidget-new-window
+    "awxf" 'xwidget-webkit-find-file)
+
   :config
   (setq xwidget-webkit-enable-plugins t)
 
@@ -2158,18 +2162,7 @@
   "ai" 'display-current-time
   "ab" 'battery
 
-  "aw"   (declare-label "web")
-  "awww" 'eww
-  "awws" 'eww-search-words
-  "awwM" 'eww-open-w3m-current-url
-  "awwn" 'eww-search-namu-wiki
-
-  "awmm" 'w3m
-  "awmx" 'xwidget-webkit-open-w3m-current-url
-  "awmW" 'eww-open-w3m-current-url
-
-  "awxx" 'xwidget-new-window
-  "awxf" 'xwidget-webkit-find-file)
+  "aw"   (declare-label "web"))
 
 (global-leader
   "q"  (declare-label "quit")
@@ -2317,8 +2310,6 @@
 	w3m-terminal-coding-system 'utf-8)
 
   :general
-  
-  
   (local-leader
     :major-modes
     '(w3m-mode t)
@@ -2343,6 +2334,11 @@
     "m" 'w3m-view-url-with-external-browser
     "b" 'w3m-bookmark-view
     "c" 'w3m-copy-current-url)
+
+  (global-leader
+    "awmm" 'w3m
+    "awmx" 'xwidget-webkit-open-w3m-current-url
+    "awmW" 'eww-open-w3m-current-url)
 
   :config
   (setq w3m-default-display-inline-images t
@@ -2370,6 +2366,14 @@
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://namu.wiki/w/")))
       (eww-browse-url url)))
+  
+  :general
+  (global-leader
+    "awww" 'eww
+    "awws" 'eww-search-words
+    "awwM" 'eww-open-w3m-current-url
+    "awwn" 'eww-search-namu-wiki)
+  
   :config
   (evil-define-key 'normal eww-mode-map (kbd "c") 'eww-copy-page-url)
   (setq eww-search-prefix "https://www.google.com/search?q="))
