@@ -2009,7 +2009,7 @@
   "s-P" 'consult-recent-file
   "s-o" 'find-file
   "s-f" 'ace-window
-  "s-m" 'toggle-frame-maximized
+  "s-RET" 'toggle-frame-maximized
   "s-b" 'switch-to-buffer
   "s-e" 'eshell
   "s-;" 'evil-window-vsplit
@@ -2021,7 +2021,6 @@
   "s-u" 'winner-undo
   "s-d" 'kill-this-buffer
   "s-D" 'kill-buffer-and-window
-  "s-m" 'helm-filtered-bookmarks
   "s-g" 'magit
   "s-r" 'winner-redo
   "s-t" 'tool-bar-mode
