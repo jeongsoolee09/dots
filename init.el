@@ -29,6 +29,13 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (add-to-list 'load-path "~/.emacs.d/straight/repos/vertico/extensions")
 
+;; GPG config =======================================
+;; ==================================================
+
+(setq epg-gpg-program "gpg")
+(unless window-system
+  (setq epg-pinentry-mode 'loopback))
+
 ;; Korean environment ===============================
 ;; ==================================================
 
@@ -1150,7 +1157,6 @@
 
 (use-package markdown-mode :mode "\\.md\\'")
 
-
 ;; CSharp config ====================================
 ;; ==================================================
 
@@ -1168,11 +1174,12 @@
 
 (setq explicit-shell-file-name "/bin/zsh")
 (use-package exec-path-from-shell
-  :if (or (memq window-system '(mac ns)) (string= system-name "penguin"))
+  :if (or macOS-p chromeOS-p)
   :config
-  (setq exec-path-from-shell-variables (if (string= system-name "penguin")
-					   '("PATH" "JAVA_HOME" "BROWSER" "OPAMCLI")
-					 '("JAVA_HOME" "BROWSER" "OPAMCLI"))
+  (setq exec-path-from-shell-variables
+	(if chromeOS-p
+	    '("PATH" "JAVA_HOME" "BROWSER" "OPAMCLI")
+	  '("JAVA_HOME" "BROWSER" "OPAMCLI"))
 	exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
@@ -1620,9 +1627,7 @@
   :straight nil
   :general
   (agnostic-key
-    "C-s" 'isearch-forward-regexp)
-  (insert-mode-major-mode
-    "C-r" 'isearch-backward-regexp))
+    "C-s" 'isearch-forward-regexp))
 
 ;; hippie-expand configs ============================
 ;; ==================================================
@@ -2117,6 +2122,7 @@
 (global-leader
   "t"  (declare-label "toggle")
   "tD" 'toggle-debug-on-error)
+
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
