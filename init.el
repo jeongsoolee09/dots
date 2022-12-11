@@ -1441,8 +1441,24 @@
 (use-package xwidget
   :straight nil
   :when     macOS-p
-  :defer    t
-  :init
+  :general
+  (normal-mode-major-mode
+    :major-modes
+    '(xwidget-webkit-mode t)
+    :keymaps
+    '(xwidget-webkit-mode-map)
+    "f"   'xwwp-follow-link
+    "L"   'xwidget-webkit-browse-url
+    "s-c" 'xwidget-webkit-copy-selection-as-kill
+    "q"   'kill-this-buffer)
+
+  :config
+  (setq xwidget-webkit-enable-plugins t)
+
+  (defun xwidget-webkit-find-file (file)
+    (interactive "fFilename: ")
+    (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))
+
   (defun xwidget-new-window ()
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://")))
@@ -1455,30 +1471,10 @@
 	    (message (concat "opening " trimmed))
 	    (xwidget-webkit-new-session trimmed))
 	(xwidget-webkit-new-session url))))
-  
-  (defun xwidget-webkit-find-file (file)
-    (interactive "fFilename: ")
-    (xwidget-webkit-new-session (w3m-expand-file-name-as-url file)))
-  :bind
-  (:map xwidget-webkit-mode-map
-	("f" . 'xwwp-follow-link)
-	("L" . 'xwidget-webkit-browse-url)
-	("s-c" . 'xwidget-webkit-copy-selection-as-kill)
-	("q" . 'kill-this-buffer))
-  :general
-  (global-leader
-    "awx" 'xwidget-new-window)
-  :config
-  (setq xwidget-webkit-enable-plugins t)
-  
-  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "f") 'xwwp-follow-link)
-  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "L") 'xwidget-webkit-browse-url)
-  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "s-c") 'xwidget-webkit-copy-selection-as-kill)
-  ;; (evil-define-key 'normal xwidget-webkit-mode-map (kbd "q") 'kill-this-buffer)
 
   (add-hook 'xwidget-webkit-mode-hook (lambda () (local-unset-key (kbd "<backspace>")))))
 
-(use-package xwwp :after (xwidget))
+(use-package xwwp :after xwidget)
 
 ;; json config =====================================
 ;; =================================================
@@ -2169,7 +2165,10 @@
 
   "awmm" 'w3m
   "awmx" 'xwidget-webkit-open-w3m-current-url
-  "awmW" 'eww-open-w3m-current-url)
+  "awmW" 'eww-open-w3m-current-url
+
+  "awxx" 'xwidget-new-window
+  "awxf" 'xwidget-webkit-find-file)
 
 (global-leader
   "q"  (declare-label "quit")
