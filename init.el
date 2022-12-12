@@ -249,7 +249,7 @@
   (normal-mode-major-mode
     :major-modes
     '(osx-dictionary-mode t)
-    :keymap
+    :keymaps
     '(osx-dictionary-mode-map)
     "q" 'osx-dictionary-quit
     "r" 'osx-dictionary-read-word
@@ -257,8 +257,7 @@
     "o" 'osx-dictionary-open-dictionary.app))
 
 (use-package osx-trash
-  :if (and macOS-p
-           (not (boundp 'mac-system-move-file-to-trash-use-finder)))
+  :if   (and macOS-p (not (boundp 'mac-system-move-file-to-trash-use-finder)))
   :init (osx-trash-setup))
 
 (use-package osx-clipboard
@@ -676,7 +675,7 @@
     "ena"  'cider-ns-reload-all
     "enn"  'cider-eval-ns-form
     "enr"  'cider-ns-refresh
-    "enl"  'cider-ns-reload  ;; SPC u for cider-ns-reload-all
+    "enl"  'cider-ns-reload ;; SPC u for cider-ns-reload-all
     "ep"   (declare-prefix "pretty print")
     "ep;"  'cider-pprint-eval-defun-to-comment
     "ep:"  'cider-pprint-eval-last-sexp-to-comment
@@ -759,10 +758,7 @@
     "Te"   'cider-enlighten-mode
     "Tf"   'spacemacs/cider-toggle-repl-font-locking
     "Tp"   'spacemacs/cider-toggle-repl-pretty-printing
-    "Tt"   'cider-auto-test-mode)
-  (global-leader
-    "atsb" 'run-bb
-    "atsn" 'run-nbb))
+    "Tt"   'cider-auto-test-mode))
 
 ;; Hy config ========================================
 ;; ==================================================
@@ -1132,34 +1128,33 @@
   (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
     (add-to-list 'completion-ignored-extensions ext)))
 
-(defun ocaml/init-dune ()
-  (use-package dune
-    :defer t
-    :init
-    (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
-					      "tP" 'dune-promote
-					      "tp" 'dune-runtest-and-promote)
-    (spacemacs/declare-prefix-for-mode 'tuareg-mode "mt" "test")
-    (spacemacs/declare-prefix-for-mode 'dune-mode "mc" "compile/check")
-    (spacemacs/declare-prefix-for-mode 'dune-mode "mi" "insert-form")
-    (spacemacs/declare-prefix-for-mode 'dune-mode "mt" "test")
-    (spacemacs/set-leader-keys-for-major-mode 'dune-mode
-					      "cc" 'compile
-					      "ia" 'dune-insert-alias-form
-					      "ic" 'dune-insert-copyfiles-form
-					      "id" 'dune-insert-ignored-subdirs-form
-					      "ie" 'dune-insert-executable-form
-					      "ii" 'dune-insert-install-form
-					      "il" 'dune-insert-library-form
-					      "im" 'dune-insert-menhir-form
-					      "ip" 'dune-insert-ocamllex-form
-					      "ir" 'dune-insert-rule-form
-					      "it" 'dune-insert-tests-form
-					      "iv" 'dune-insert-env-form
-					      "ix" 'dune-insert-executables-form
-					      "iy" 'dune-insert-ocamlyacc-form
-					      "tP" 'dune-promote
-					      "tp" 'dune-runtest-and-promote)))
+(use-package dune
+  :defer t
+  :init
+  (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+					    "tP" 'dune-promote
+					    "tp" 'dune-runtest-and-promote)
+  (spacemacs/declare-prefix-for-mode 'tuareg-mode "mt" "test")
+  (spacemacs/declare-prefix-for-mode 'dune-mode "mc" "compile/check")
+  (spacemacs/declare-prefix-for-mode 'dune-mode "mi" "insert-form")
+  (spacemacs/declare-prefix-for-mode 'dune-mode "mt" "test")
+  (spacemacs/set-leader-keys-for-major-mode 'dune-mode
+					    "cc" 'compile
+					    "ia" 'dune-insert-alias-form
+					    "ic" 'dune-insert-copyfiles-form
+					    "id" 'dune-insert-ignored-subdirs-form
+					    "ie" 'dune-insert-executable-form
+					    "ii" 'dune-insert-install-form
+					    "il" 'dune-insert-library-form
+					    "im" 'dune-insert-menhir-form
+					    "ip" 'dune-insert-ocamllex-form
+					    "ir" 'dune-insert-rule-form
+					    "it" 'dune-insert-tests-form
+					    "iv" 'dune-insert-env-form
+					    "ix" 'dune-insert-executables-form
+					    "iy" 'dune-insert-ocamlyacc-form
+					    "tP" 'dune-promote
+					    "tp" 'dune-runtest-and-promote))
 
 (use-package utop
   :defer t
@@ -1524,10 +1519,10 @@
 (use-package dired
   :straight nil
   :config
-  (when macOS-p
-    (setq delete-by-moving-to-trash t
-	  dired-kill-when-opening-new-dired-buffer t
-	  trash-directory "~/.Trash"))
+  ;; (when macOS-p
+  ;;   (setq delete-by-moving-to-trash t
+  ;; 	  dired-kill-when-opening-new-dired-buffer t
+  ;; 	  trash-directory "~/.Trash"))
   ;; Fix for dired in TRAMP environment
   (add-hook 'dired-mode-hook
 	    (lambda ()
@@ -2299,12 +2294,19 @@
   "ab" 'battery
   "al" 'launchctl
 
-  "aw" (declare-prefix "web"))
+  "aw" (declare-prefix "web")
+
+  "at"   (declare-prefix "terminal")
+  "ats"  (declare-prefix "repls")
+  "atsb" 'run-bb
+  "atsn" 'run-nbb
+  "atso" 'run-ocaml
+  "atsu" 'utop)
 
 (global-leader
-  "q"  (declare-prefix "quit")
-  "qq" 'kill-emacs
-  "qf" 'delete-frame)
+  "q"   (declare-prefix "quit")
+  "qq"  'kill-emacs
+  "qf"  'delete-frame)
 
 (global-leader
   "h"   (declare-prefix "help")
@@ -2324,7 +2326,6 @@
 (global-leader
   "t"  (declare-prefix "toggle")
   "tD" 'toggle-debug-on-error)
-
 
 ;; leader-s-bindings
 (global-leader
