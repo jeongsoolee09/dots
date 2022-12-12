@@ -351,9 +351,9 @@
 
   (flycheck-define-generic-checker 'eglot
     "Report `eglot' diagnostics using `flycheck'."
-    :start #'flycheck-eglot--start
+    :start     #'flycheck-eglot--start
     :predicate #'flycheck-eglot--available-p
-    :modes '(prog-mode text-mode))
+    :modes     '(prog-mode text-mode))
 
   (push 'eglot flycheck-checkers)
 
@@ -367,7 +367,8 @@
 
   (add-hook 'eglot--managed-mode-hook 'eglot-prefer-flycheck))
 
-;; Shell config
+;; Shell config =====================================
+;; ==================================================
 
 (use-package sh-script
   :straight nil
@@ -386,7 +387,8 @@
 ;; ==================================================
 
 (use-package notify
-  :straight (notify :type git :host github :repo "tkhoa2711/notify.el"))
+  :straight (notify :type git :host github
+		    :repo "tkhoa2711/notify.el"))
 
 ;; REPL config ======================================
 ;; ==================================================
