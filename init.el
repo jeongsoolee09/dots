@@ -103,7 +103,7 @@
 
 (use-package org
   :straight (:type built-in)
-  :mode ("\\.org\\'" . org-mode)
+  :defer t
   :general
   (local-leader
     :keymaps
@@ -124,7 +124,9 @@
   (when (fboundp 'org-appear-mode)
     (add-hook 'org-mode-hook 'org-appear-mode))
   (setq org-todo-keywords
-	'((sequence "TODO" "WORKING" "|" "DONE" "ABORTED"))))
+	'((sequence "TODO" "WORKING"
+		    "|"
+		    "DONE" "ABORTED"))))
 
 ;; Esup config ======================================
 ;; ==================================================
@@ -428,7 +430,8 @@
   (sp-local-pair '(fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
 			       geiser-mode scheme-mode racket-mode
 			       newlisp-mode picolisp-mode janet-mode
-			       lisp-interaction-mode ielm-mode) "'" "'" :actions nil))
+			       lisp-interaction-mode ielm-mode)
+		 "'" "'" :actions nil))
 
 (use-package evil-cleverparens
   :hook ((fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode geiser-mode scheme-mode racket-mode newlisp-mode picolisp-mode janet-mode)
