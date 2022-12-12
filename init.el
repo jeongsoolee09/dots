@@ -204,8 +204,8 @@
 
 (when macOS-p
   (setq mac-function-modifier 'hyper
-	      mac-option-modifier   'meta
-	      mac-command-modifier  'super))
+	mac-option-modifier   'meta
+	mac-command-modifier  'super))
 
 (use-package launchctl
   :if macOS-p
@@ -238,6 +238,46 @@
     "=" 'launchctl-setenv
     "#" 'launchctl-unsetenv
     "h" 'launchctl-help))
+
+(use-package osx-dictionary
+  :if macOS-p
+  :commands
+  (osx-dictionary-search-pointer
+   osx-dictionary-search-input
+   osx-dictionary-cli-find-or-recompile)
+  :general
+  (normal-mode-major-mode
+    :major-modes
+    '(osx-dictionary-mode t)
+    :keymap
+    '(osx-dictionary-mode-map)
+    "q" 'osx-dictionary-quit
+    "r" 'osx-dictionary-read-word
+    "s" 'osx-dictionary-search-input
+    "o" 'osx-dictionary-open-dictionary.app))
+
+(use-package osx-trash
+  :if (and macOS-p
+           (not (boundp 'mac-system-move-file-to-trash-use-finder)))
+  :init (osx-trash-setup))
+
+(use-package osx-clipboard
+  :if macOS-p
+  :commands
+  (osx-clipboard-paste-function osx-clipboard-cut-function)
+  :init
+  (setq interprogram-cut-function (lambda (text &rest ignore)
+                                    (if (display-graphic-p)
+                                        (gui-select-text text)
+                                      (osx-clipboard-cut-function text)))
+        interprogram-paste-function (lambda ()
+                                      (if (display-graphic-p)
+                                          (gui-selection-value)
+                                        (osx-clipboard-paste-function)))))
+
+(use-package reveal-in-osx-finder
+  :if macOS-p
+  :commands reveal-in-osx-finder)
 
 (agnostic-key
   "s-v" 'yank
@@ -1784,11 +1824,6 @@
   :config
   (menu-bar-mode -1))
 
-(use-package tool-bar
-  :straight nil
-  :config
-  "TODO")
-
 (use-package tab-bar
   :straight nil
   :config
@@ -2189,8 +2224,7 @@
 (global-leader
   "SPC" 'execute-extended-command
   "TAB" 'evil-switch-to-windows-last-buffer
-  "C-r" 'revert-buffer
-  (kbd "x TAB") 'indent-rigidly)
+  "C-r" 'revert-buffer)
 
 (global-leader
   "S"   (declare-prefix "straight")
@@ -2281,6 +2315,11 @@
   "hdv" 'describe-variable
   "hdm" 'describe-mode
   "hdp" 'describe-package)
+
+(global-leader
+  "x"   (declare-prefix "text")
+  "x TAB" 'indent-rigidly
+  "xwd" 'osx-dictionary-search-pointer)
 
 (global-leader
   "t"  (declare-prefix "toggle")
