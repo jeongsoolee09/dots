@@ -184,10 +184,50 @@
 ;; macOS Settings ===================================
 ;; ==================================================
 
-(when (memq window-system '(mac ns))
+(when macOS-p
+  (when (boundp 'mac-system-move-file-to-trash-use-finder)
+    (setq mac-system-move-file-to-trash-use-finder t)))
+
+(let ((gls (executable-find "gls")))
+  (when gls
+    (setq insert-directory-program gls)))
+
+(when macOS-p
   (setq mac-function-modifier 'hyper
-	mac-option-modifier 'meta
-	mac-command-modifier 'super))
+	      mac-option-modifier   'meta
+	      mac-command-modifier  'super))
+
+(use-package launchctl
+  :if macOS-p
+  :defer t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.plist\\'" . nxml-mode))
+  :general
+  (normal-mode-major-mode
+   :major-modes
+   '(launchctl-mode t)
+   :keymaps
+   '(launchctl-mode-map)
+    "q" 'quit-window
+    "s" 'tabulated-list-sort
+    "g" 'launchctl-refresh
+    "n" 'launchctl-new
+    "e" 'launchctl-edit
+    "v" 'launchctl-view
+    "l" 'launchctl-load
+    "u" 'launchctl-unload
+    "r" 'launchctl-reload
+    "S" 'launchctl-start
+    "K" 'launchctl-stop
+    "R" 'launchctl-restart
+    "D" 'launchctl-remove
+    "d" 'launchctl-disable
+    "E" 'launchctl-enable
+    "i" 'launchctl-info
+    "f" 'launchctl-filter
+    "=" 'launchctl-setenv
+    "#" 'launchctl-unsetenv
+    "h" 'launchctl-help))
 
 (agnostic-key
   "s-v" 'yank
@@ -397,6 +437,10 @@
   :straight nil
   :config
   (normal-mode-major-mode
+    :major-modes
+    '(comint-mode t)
+    :keymaps
+    '(comint-mode-map)
     "C-j" 'comint-next-input
     "C-k" 'comint-previous-input))
 
@@ -1710,9 +1754,9 @@
     "pc" 'projectile-compile-project)
   :config
   (projectile-mode)
-  (setq projectile-mode-line "Projectile"
-	projectile-enable-caching t
-	anaconda-mode-localhost-address "localhost"))
+  (setq projectile-mode-line            "Projectile"
+	anaconda-mode-localhost-address "localhost"
+	projectile-enable-caching       t))
 
 ;; minions config ===================================
 ;; ==================================================
@@ -1899,17 +1943,28 @@
 ;; line numbers ====================================
 ;; =================================================
 
-(let ((hooks '(doc-view-mode-hook
-	       pdf-view-mode-hook
-	       w3m-mode-hook
-	       eww-mode-hook
-	       inferior-hy-mode-hook
-	       inferior-python-mode-hook
-	       vterm-mode-hook)))
-  (dolist (hook hooks)
-    (add-hook hook
-	      (lambda ()
-		(display-line-numbers-mode -1)))))
+(use-package display-line-numbers
+  :straight nil
+  :config
+  (let ((hooks '(doc-view-mode-hook
+		 pdf-view-mode-hook
+		 w3m-mode-hook
+		 eww-mode-hook
+		 inferior-hy-mode-hook
+		 inferior-python-mode-hook
+		 vterm-mode-hook)))
+    (dolist (hook hooks)
+      (add-hook hook
+		(lambda ()
+		  (display-line-numbers-mode -1))))))
+
+;; Eshell config ====================================
+;; ==================================================
+
+(use-package eshell
+  :straight nil
+  :config
+  (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
 
 ;; vterm config =====================================
 ;; ==================================================
@@ -2003,7 +2058,7 @@
 (agnostic-key
   "C-x C-l" 'count-lines-page)
 
-;; super-shortcuts
+;; s-shortcuts
 (agnostic-key
   "s-1" 'winum-select-window-1
   "s-2" 'winum-select-window-2
@@ -2048,26 +2103,54 @@
   "s-?" 'yas-next-field
   "s->" 'yas-prev-field)
 
-;; control-super-shortcuts
+(defun insert-pipe ()
+  (interactive)
+  (insert-char ?|))
+
+(defun insert-ampersand ()
+  (interactive)
+  (insert-char ?&))
+
+(defun youtube-viewer-start ()
+  (interactive)
+  (if (executable-find "youtube-viewer")
+      (comint-run "youtube-viewer" '("-n"))
+    (message "youtube-viewer not found")))
+
+;; c-s-shortcuts
 (agnostic-key
+  "C-s-o" 'insert-pipe
+  "C-s-a" 'insert-ampersand
   "C-s-e" 'eww
   "C-s-t" 'modus-themes-toggle-
   "C-s-r" 'eradio-toggle
+  "C-s-f" 'toggle-frame-fullscreen
   "C-s-s" 'ace-swap-window
   "C-s-g" 'ag-dired-regexp
   "C-s-v" 'multi-vterm
+  "C-s-u" 'emms-pause
+  "C-s-," 'emms-seek-backward
+  "C-s-." 'emms-seek-forward
+  "C-s-p" 'previous-buffer
+  "C-s-n" 'next-buffer
   "C-s-b" 'ibuffer
-  "C-s-/" 'next-error
-  "C-s-\\" 'previous-error
+  "C-s-9" 'emms-volume-lower
+  "C-s-0" 'emms-volume-raise
   "C-s-=" 'balance-windows
   "C-s-i" 'imenu-list
   "C-s-x" 'xwidget-new-window
+  "C-s-y" 'youtube-viewer-start
+  "C-s-;" 'previous-error
+  "C-s-'" 'next-error
   "C-s-." 'hl-todo-occur
   "C-s-;" 'flycheck-previous-error
   "C-s-'" 'flycheck-next-error
   "C-s-p" 'previous-buffer
-  "C-s-n" 'next-buffer
-  "C-s-f" 'toggle-frame-fullscreen)
+  "C-s-n" 'next-buffer)
+
+;; c-m-shortcuts
+(agnostic-key
+  "C-M-;" 'completion-at-point)
 
 ;; SPC-Leader bindings ==============================
 ;; ==================================================
@@ -2170,6 +2253,7 @@
   "a"  (declare-prefix "utilities")
   "ai" 'display-current-time
   "ab" 'battery
+  "al" 'launchctl
 
   "aw" (declare-prefix "web"))
 
@@ -2191,6 +2275,11 @@
 (global-leader
   "t"  (declare-prefix "toggle")
   "tD" 'toggle-debug-on-error)
+
+
+;; leader-s-bindings
+(global-leader
+  )
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
