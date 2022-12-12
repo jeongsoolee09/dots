@@ -1779,6 +1779,7 @@
   (require 'modus-vivendi-theme)
   (defun load-modus-operandi ()
     (interactive)
+    (disable-theme 'modus-vivendi)
     (load-theme 'modus-operandi t)
     (custom-theme-set-faces
      'modus-operandi
@@ -1825,6 +1826,7 @@
 
   (defun load-modus-vivendi ()
     (interactive)
+    (disable-theme 'modus-operandi)
     (load-theme 'modus-vivendi t)
     (custom-theme-set-faces
      'modus-vivendi
