@@ -70,11 +70,15 @@
   (general-override-mode)
   (general-auto-unbind-keys)
   (setq general-use-package-emit-autoloads t)
+
+  ;; global-leader-prefixed major mode bindings
   (general-create-definer global-leader
     :keymaps 'override
     :states '(insert emacs normal hybrid motion visual operator)
     :prefix "SPC"
     :non-normal-prefix "S-SPC")
+
+  ;; local-leader-prefixed major mode bindings
   (general-create-definer local-leader
     :keymaps 'override
     :states '(emacs normal hybrid motion visual operator)
@@ -84,15 +88,21 @@
 		   `(,(cadr (split-string (car arg) " ")) .
 		     ,(replace-regexp-in-string "-mode$" ""
 						(symbol-name major-mode))))))
+
+  ;; works everywhere irrelevant of evil state
   (general-create-definer agnostic-key
     :keymaps 'override
     :states '(insert emacs normal hybrid motion visual operator)
     :prefix ""
     "" '(:ignore t))
+
+  ;; extends basic emacs mode for a major mode
   (general-create-definer insert-mode-major-mode
     :keymaps 'override
     :states '(insert)
     :prefix "")
+  
+  ;; extends evil mode for a major mode
   (general-create-definer normal-mode-major-mode
     :keymaps 'override
     :states '(normal visual operator motion)
@@ -204,10 +214,10 @@
   (add-to-list 'auto-mode-alist '("\\.plist\\'" . nxml-mode))
   :general
   (normal-mode-major-mode
-   :major-modes
-   '(launchctl-mode t)
-   :keymaps
-   '(launchctl-mode-map)
+    :major-modes
+    '(launchctl-mode t)
+    :keymaps
+    '(launchctl-mode-map)
     "q" 'quit-window
     "s" 'tabulated-list-sort
     "g" 'launchctl-refresh
