@@ -309,17 +309,19 @@
 
 (use-package eglot
   :hook
-  ((rust-mode . eglot-ensure)
+  ((rust-mode    . eglot-ensure)
    (clojure-mode . eglot-ensure)
-   (python-mode . eglot-ensure)
-   (tuareg-mode . eglot-ensure))
+   (python-mode  . eglot-ensure)
+   (tuareg-mode  . eglot-ensure))
+
   :general
   (local-leader
     :keymaps
     '(eglot-mode-map)
-    "a" '(declare-prefix "LSP")
+    "a"  (declare-prefix "LSP")
     "aa" 'eglot-code-actions
-    "r" 'eglot-rename)
+    "r"  'eglot-rename)
+  
   :config
   (defvar-local flycheck-eglot-current-errors nil)
 
