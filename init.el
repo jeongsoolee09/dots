@@ -179,7 +179,7 @@
 
 (defvar linux-p (equal system-type 'gnu/linux))
 
-(defvar chromeOS-p (string= system-name "penguin"))
+(defvar chromeOS-p (string= (system-name) "penguin"))
 
 ;; macOS Settings ===================================
 ;; ==================================================
@@ -198,11 +198,6 @@
   "s-`" 'other-frame
   "s-z" 'undo-tree-undo
   "s-s" 'save-buffer)
-
-;; fix macOS Trash
-(when (memq window-system '(mac ns))
-  (setq delete-by-moving-to-trash t
-	trash-directory "~/.Trash"))
 
 ;; Linux Settings ===================================
 ;; ==================================================
@@ -421,7 +416,7 @@
   (show-paren-mode 1))
 
 (use-package smartparens
-  :hook prog-mode
+  :hook (prog-mode minibuffer-mode)
   :bind (:map smartparens-mode-map
 	      ("M-p" . sp-previous-sexp)
 	      ("M-n" . sp-next-sexp))
@@ -430,7 +425,7 @@
   (sp-local-pair '(fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
 			       geiser-mode scheme-mode racket-mode
 			       newlisp-mode picolisp-mode janet-mode
-			       lisp-interaction-mode ielm-mode)
+			       lisp-interaction-mode ielm-mode minibuffer-mode)
 		 "'" "'" :actions nil))
 
 (use-package evil-cleverparens
@@ -1383,9 +1378,8 @@
 (use-package dash
   :defer t
   :config
-  (with-eval-after-load 'dash
-    (function-put '-> 'lisp-indent-function nil)
-    (function-put '->> 'lisp-indent-function nil)))
+  (function-put '-> 'lisp-indent-function nil)
+  (function-put '->> 'lisp-indent-function nil))
 
 ;; LaTeX config =====================================
 ;; ==================================================
@@ -1429,14 +1423,21 @@
 ;; dired configs ====================================
 ;; ==================================================
 
-;; Fix for dired in TRAMP environment
-(add-hook 'dired-mode-hook
-	  (lambda ()
-	    (when (file-remote-p dired-directory)
-	      (setq-local dired-actual-switches "-alhB"))))
-(add-hook 'dired-mode-hook
-	  (lambda ()
-	    (evil-define-key 'normal dired-mode-map (kbd "SPC") nil)))
+(use-package dired
+  :straight nil
+  :config
+  (when macOS-p
+    (setq delete-by-moving-to-trash t
+	  dired-kill-when-opening-new-dired-buffer t
+	  trash-directory "~/.Trash"))
+  ;; Fix for dired in TRAMP environment
+  (add-hook 'dired-mode-hook
+	    (lambda ()
+	      (when (file-remote-p dired-directory)
+		(setq-local dired-actual-switches "-alhB"))))
+  (add-hook 'dired-mode-hook
+	    (lambda ()
+	      (evil-define-key 'normal dired-mode-map (kbd "SPC") nil))))
 
 ;; xwidget config ===================================
 ;; ==================================================
@@ -1463,6 +1464,11 @@
 
   :config
   (setq xwidget-webkit-enable-plugins t)
+  (setq browse-url-browser-function (lambda (url session)
+				      (if (or (string-match ".*youtube.com.*" url)
+					      (string-match ".*youtu.be.*" url))
+					  (xwidget-webkit-browse-url url session)
+					(eww-browse-url url))))
 
   (defun xwidget-webkit-find-file (file)
     (interactive "fFilename: ")
@@ -1723,7 +1729,7 @@
 (use-package tool-bar
   :straight nil
   :config
-  'TODO)
+  "TODO")
 
 (use-package tab-bar
   :straight nil
@@ -1865,26 +1871,26 @@
 ;; =================================================
 
 (use-package hl-todo
-  :defer t
   :config
+  (global-hl-todo-mode)
   (setq hl-todo-keyword-faces
-	'(("HOLD" . "#d0bf8f")
-	  ("TODO" . "#cc9393")
-	  ("NEXT" . "#dca3a3")
-	  ("THEM" . "#dc8cc3")
+	'(("HOLD"    . "#d0bf8f")
+	  ("TODO"    . "#cc9393")
+	  ("NEXT"    . "#dca3a3")
+	  ("THEM"    . "#dc8cc3")
 	  ("WORKING" . "#7cb8bb")
-	  ("PROG" . "#7cb8bb")
-	  ("OKAY" . "#7cb8bb")
-	  ("DONT" . "#5f7f5f")
-	  ("FAIL" . "#8c5353")
-	  ("DONE" . "#afd8af")
-	  ("NOTE"   . "#d0bf8f")
-	  ("KLUDGE" . "#d0bf8f")
-	  ("HACK"   . "#d0bf8f")
-	  ("TEMP"   . "#d0bf8f")
-	  ("FIXME"  . "#cc9393")
+	  ("PROG"    . "#7cb8bb")
+	  ("OKAY"    . "#7cb8bb")
+	  ("DONT"    . "#5f7f5f")
+	  ("FAIL"    . "#8c5353")
+	  ("DONE"    . "#afd8af")
+	  ("NOTE"    . "#d0bf8f")
+	  ("KLUDGE"  . "#d0bf8f")
+	  ("HACK"    . "#d0bf8f")
+	  ("TEMP"    . "#d0bf8f")
+	  ("FIXME"   . "#cc9393")
 	  ("UNSURE"  . "#cc9393")
-	  ("XXX+"   . "#cc9393"))))
+	  ("XXX+"    . "#cc9393"))))
 
 ;; line numbers ====================================
 ;; =================================================
@@ -2182,7 +2188,6 @@
   "t"  (declare-prefix "toggle")
   "tD" 'toggle-debug-on-error)
 
-
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
 
@@ -2375,7 +2380,12 @@
   
   :config
   (evil-define-key 'normal eww-mode-map (kbd "c") 'eww-copy-page-url)
-  (setq eww-search-prefix "https://www.google.com/search?q="))
+  (setq eww-search-prefix "https://www.google.com/search?q=")
+  (setq browse-url-browser-function (lambda (url session)
+				      (if (or (string-match ".*youtube.com.*" url)
+					      (string-match ".*youtu.be.*" url))
+					  (xwidget-webkit-browse-url url session)
+					(eww-browse-url url)))))
 
 ;; reddigg config ===================================
 ;; ==================================================
@@ -2436,6 +2446,39 @@
 			  ("TBS 교통방송" . "http://tbs.hscdn.com/tbsradio/fm/playlist.m3u8")
 			  ("TBS eFM" . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
 			  ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
+
+;; Elfeed config ====================================
+;; ==================================================
+
+(use-package elfeed-org
+  :commands elfeed
+  :defer    t
+  :config
+  (setq rmh-elfeed-org-files '("~/.emacs.d/elfeed.org")))
+
+(use-package elfeed
+  :after elfeed-org
+  :defer t
+  :config
+  (elfeed-org)
+  ;; play the podcast at elfeed podcast entry
+  (defun elfeed-player ()
+    (interactive)
+    (let ((enclosure-link (elfeed-entry-enclosures (elfeed-search-selected :single)))
+	  (entry-link     (elfeed-entry-link       (elfeed-search-selected :single))))
+      (if enclosure-link
+	  (emms-play-url (caar enclosure-link))
+	(emms-play-url entry-link))
+      (elfeed-search-untag-all-unread)))
+
+  (defun elfeed-youtube-player ()
+    (interactive)
+    (let ((entry-link (elfeed-entry-link (elfeed-search-selected :single))))
+      (async-shell-command (concat "mpv " "'" entry-link "'") nil nil)
+      (elfeed-search-untag-all-unread)))
+
+  (define-key elfeed-search-mode-map (kbd "P") #'elfeed-player)
+  (define-key elfeed-search-mode-map (kbd "Y") #'elfeed-youtube-player))
 
 ;; Emms config ======================================
 ;; ==================================================
