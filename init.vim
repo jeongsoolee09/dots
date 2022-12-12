@@ -81,9 +81,9 @@ lua << EOF
 
         use 'hrsh7th/nvim-cmp'
 
-        use 'SirVer/ultisnips'
+        -- use 'SirVer/ultisnips'
 
-        use 'quangnguyen30192/cmp-nvim-ultisnips'
+        -- use 'quangnguyen30192/cmp-nvim-ultisnips'
 
         use { "catppuccin/nvim", as = "catppuccin" }
     end)

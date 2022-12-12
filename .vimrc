@@ -40,6 +40,8 @@ Plug 'farmergreg/vim-lastplace'
 
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!']  }
 
+Plug 'github/copilot'
+
 call plug#end()
 
 " force encoding as UTF-8
