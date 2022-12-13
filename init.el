@@ -1542,6 +1542,7 @@
   ;; 	  dired-kill-when-opening-new-dired-buffer t
   ;; 	  trash-directory "~/.Trash"))
   ;; Fix for dired in TRAMP environment
+  (setq dired-kill-when-opening-new-dired-buffer t)
   (add-hook 'dired-mode-hook
 	    (lambda ()
 	      (when (file-remote-p dired-directory)
