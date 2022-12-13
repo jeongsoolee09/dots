@@ -101,7 +101,7 @@
     :keymaps 'override
     :states '(insert)
     :prefix "")
-  
+
   ;; extends evil mode for a major mode
   (general-create-definer normal-mode-major-mode
     :keymaps 'override
@@ -410,7 +410,7 @@
     "a"  (declare-prefix "LSP")
     "aa" 'eglot-code-actions
     "r"  'eglot-rename)
-  
+
   :config
   (defvar-local flycheck-eglot-current-errors nil)
 
@@ -466,6 +466,24 @@
 	 ("\\.zshenv.*\\'" . sh-mode)
 	 ("\\.bash_profile\\'" . sh-mode)
 	 ("\\.zprofile\\'" . sh-mode)))
+
+;; Perl config ======================================
+;; ==================================================
+
+(use-package cperl-mode
+  :mode "\\.pl\\'"
+  :general
+  (local-leader
+    :major-modes
+    '(cperl-mode perl-mode t)
+    :keymaps
+    '(cperl-mode-map perl-mode-map)
+    "l" 'cperl-perldoc-at-point))
+
+;; Lua config =======================================
+;; ==================================================
+
+
 
 ;; Guix config ======================================
 ;; ==================================================
@@ -1354,7 +1372,7 @@
   :bind (("C-c h" . consult-history)
 	 ("C-c m" . consult-mode-command)
 	 ("C-c k" . consult-kmacro)
-	 
+
 	 ("C-x M-:" . consult-complex-command)
 	 ("C-x b" . consult-buffer)
 	 ("C-x 4 b" . consult-buffer-other-window)
@@ -1624,32 +1642,6 @@
    minibuffer-local-completion-map)
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
   (setq sbt:program-options '("-Dsbt.supershell=false")))
-
-;; CodeQL config ====================================
-;; ==================================================
-
-;; TODO
-
-(use-package emacs-codeql
-  :straight
-  (emacs-codeql :type git
-		:host github
-		:repo "anticomputer/emacs-codeql"
-		:branch "main")
-  :when (not chromeOS-p)
-  :after tree-sitter-langs
-  :demand t
-  :init
-  (setq codeql-transient-binding "C-c q"
-	codeql-configure-eglot-lsp t
-	codeql-configure-projectile t)
-  :config
-  ;; you should configure your standard search paths through a ~/.config/codeql/config entry
-  ;; e.g. "--search-path /full/path/codeql:/full/path/codeql-go"
-  ;; see: https://codeql.github.com/docs/codeql-cli/specifying-command-options-in-a-codeql-configuration-file/
-  ;; this option is here to provide you with load/search precedence control
-  ;; these paths will have precedence over the config file search paths
-  (setq codeql-search-paths '("./")))
 
 ;; git-gutter config ================================
 ;; ==================================================
@@ -2122,7 +2114,7 @@
   "s-RET" 'toggle-frame-maximized
   "s-m" 'toggle-frame-maximized
   "s-b" 'switch-to-buffer
-  "s-e" 'eshell
+  "s-e" 'eww
   "s-;" 'evil-window-vsplit
   "s-'" 'evil-window-split
   "s-h" 'evil-window-left
@@ -2161,7 +2153,7 @@
 (agnostic-key
   "C-s-o" 'insert-pipe
   "C-s-a" 'insert-ampersand
-  "C-s-e" 'eww
+  "C-s-e" 'eshell
   "C-s-t" 'modus-themes-toggle-
   "C-s-r" 'eradio-toggle
   "C-s-f" 'toggle-frame-fullscreen
@@ -2248,19 +2240,19 @@
   "w;" 'evil-window-vsplit
   "w'" 'evil-window-split
 
-  ";" 'evil-window-vsplit
-  "'" 'evil-window-split
+  ";"  'evil-window-vsplit
+  "'"  'evil-window-split
 
-  "1" 'winum-select-window-1
-  "2" 'winum-select-window-2
-  "3" 'winum-select-window-3
-  "4" 'winum-select-window-4
-  "5" 'winum-select-window-5
-  "6" 'winum-select-window-6
-  "7" 'winum-select-window-7
-  "8" 'winum-select-window-8
-  "9" 'winum-select-window-9
-  "0" 'winum-select-window-0)
+  "1"  'winum-select-window-1
+  "2"  'winum-select-window-2
+  "3"  'winum-select-window-3
+  "4"  'winum-select-window-4
+  "5"  'winum-select-window-5
+  "6"  'winum-select-window-6
+  "7"  'winum-select-window-7
+  "8"  'winum-select-window-8
+  "9"  'winum-select-window-9
+  "0"  'winum-select-window-0)
 
 (global-leader
   "f"   (declare-prefix "file")
@@ -2327,9 +2319,17 @@
   "t"  (declare-prefix "toggle")
   "tD" 'toggle-debug-on-error)
 
-;; leader-s-bindings
 (global-leader
-  )
+  "s-o" 'reveal-in-osx-finder
+  "s-c" 'compile
+  "s-v" 'variable-pitch-mode
+  "s-u" 'emacs-uptime
+  "s-g" 'cleanup-emacs
+  "s-i" 'insert-current-time
+  "s-y" 'youtube-viewer-start
+  "s-k" 'consult-yank-from-kill-ring
+  "s-x" 'delete-trailing-whitespace
+  "s-b" 'consult-bookmark)
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
@@ -2446,7 +2446,7 @@
     (interactive
      (list (read-string "Enter website address (default: google.com):" nil nil "google.com" nil )))
     (w3m-open-url-with 'w3m-goto-url-new-session url))
-  
+
   (setq browse-url-browser-function 'w3m-goto-url-new-session
 	w3m-user-agent "Mozilla/5.0 (Linux; U; Android 2.3.3; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533."
 	w3m-coding-system 'utf-8
@@ -2513,14 +2513,14 @@
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://namu.wiki/w/")))
       (eww-browse-url url)))
-  
+
   :general
   (global-leader
     "awww" 'eww
     "awws" 'eww-search-words
     "awwM" 'eww-open-w3m-current-url
     "awwn" 'eww-search-namu-wiki)
-  
+
   :config
   (evil-define-key 'normal eww-mode-map (kbd "c") 'eww-copy-page-url)
   (setq eww-search-prefix "https://www.google.com/search?q=")
