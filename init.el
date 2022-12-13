@@ -393,6 +393,33 @@
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
+(use-package tree-sitter-indent
+  :after tree-sitter)
+
+;; CodeQL config ====================================
+;; ==================================================
+
+(use-package emacs-codeql
+  :straight
+  (emacs-codeql :type git
+		:host github
+		:repo "anticomputer/emacs-codeql"
+		:branch "main")
+  :after tree-sitter-langs
+  :demand
+  :init
+  (setq codeql-transient-binding "C-c q")
+  (setq codeql-configure-eglot-lsp t)
+  (setq codeql-configure-projectile t)
+  :config
+  ;; you should configure your standard search paths through a ~/.config/codeql/config entry
+  ;; e.g. "--search-path /full/path/codeql:/full/path/codeql-go"
+  ;; see: https://codeql.github.com/docs/codeql-cli/specifying-command-options-in-a-codeql-configuration-file/
+  ;; this option is here to provide you with load/search precedence control
+  ;; these paths will have precedence over the config file search paths
+  (setq codeql-search-paths '("./")))
+
+
 ;; Eglot config =====================================
 ;; ==================================================
 
