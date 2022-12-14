@@ -1836,8 +1836,7 @@
 
 (use-package menu-bar
   :straight nil
-  :config
-  (menu-bar-mode -1))
+  :when (not (window-system)))
 
 (use-package tab-bar
   :straight nil
@@ -1966,14 +1965,16 @@
 	(if dark-mode-p
 	    (load-modus-vivendi)	; dark mode!
 	  (load-modus-operandi)))	; light mode!
-    (load-modus-vivendi)))
+    (load-modus-vivendi))
 
-;; make terminal transparent
 (unless (window-system)
   (defun make-terminal-transparent ()
     (unless (display-graphic-p (selected-frame))
       (set-face-background 'default "unspecified-bg" (selected-frame))))
-  (add-hook 'window-setup-hook 'make-terminal-transparent))
+  (add-hook 'window-setup-hook 'make-terminal-transparent)
+  (make-terminal-transparent)))
+
+;; make terminal transparent
 
 ;; hl-todo config ==================================
 ;; =================================================
