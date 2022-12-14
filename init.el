@@ -105,7 +105,7 @@
   ;; extends evil mode for a major mode
   (general-create-definer normal-mode-major-mode
     :keymaps 'override
-    :states '(normal visual operator motion)
+    :states '(normal visual operator)
     :prefix ""))
 
 ;; Org config =======================================
@@ -281,7 +281,7 @@
 (agnostic-key
   "s-v" 'yank
   "s-c" 'evil-yank
-  "s-x" 'kill-region
+  ;; "s-x" 'kill-region
   "s-w" 'delete-window
   "s-W" 'delete-frame
   "s-`" 'other-frame
@@ -2140,9 +2140,10 @@
   "s-o" 'find-file
   "s-f" 'ace-window
   "s-RET" 'toggle-frame-maximized
-  "s-m" 'toggle-frame-maximized
+  "s-m" 'w3m-browse-url
   "s-b" 'switch-to-buffer
   "s-e" 'eww
+  "s-x" 'xwidget-new-window
   "s-;" 'evil-window-vsplit
   "s-'" 'evil-window-split
   "s-h" 'evil-window-left
