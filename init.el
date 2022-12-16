@@ -2359,7 +2359,8 @@
   "s-y" 'youtube-viewer-start
   "s-k" 'consult-yank-from-kill-ring
   "s-x" 'delete-trailing-whitespace
-  "s-b" 'consult-bookmark)
+  "s-b" 'consult-bookmark
+  "s-s" 'save-buffer)
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
