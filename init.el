@@ -114,12 +114,17 @@
 (use-package org
   :straight (:type built-in)
   :defer t
+
+  ;; TODO: copy the full org-mode layer from Spacemacs
+  ;; `org-emphasize`
+
   :general
   (local-leader
     :keymaps
     '(org-mode-map)
     "i" '(declare-prefix "insert")
     "it" 'org-insert-current-time)
+
   :config
   (defun org-insert-current-time ()
     "insert the curren time at the cursor position."
@@ -190,6 +195,10 @@
 (defvar linux-p (equal system-type 'gnu/linux))
 
 (defvar chromeOS-p (string= (system-name) "penguin"))
+
+(defvar GUI-p (window-system))
+
+(defvar terminal-p (not GUI-p))
 
 ;; macOS Settings ===================================
 ;; ==================================================
@@ -1836,7 +1845,7 @@
 
 (use-package menu-bar
   :straight nil
-  :when (not (window-system)))
+  :when terminal-p)
 
 (use-package tab-bar
   :straight nil
@@ -1856,6 +1865,10 @@
     "s-]" 'tab-next
     "s-." 'tab-new
     "s-," 'tab-close))
+
+(use-package tool-bar
+  :straight nil
+  :when GUI-p)
 
 (blink-cursor-mode 0)
 (global-visual-line-mode t)
@@ -1908,7 +1921,7 @@
 		 (((type x) (class mono))
 		  :background "grey")))
      '(tab-bar ((((class color) (min-colors 88))
-		 ;; :inherit variable-pitch
+		 :inherit variable-pitch
 		 :background "grey85"
 		 :foreground "black")
 		(((class mono))
@@ -1958,7 +1971,7 @@
 	    (modus-vivendi-p  (load-modus-operandi))
 	    (:else            (load-modus-operandi)))))
 
-  (if (window-system)
+  (if GUI-p
       (let ((dark-mode-p (if macOS-p
 			     (mac-dark-mode-p)
 			   (general-dark-mode-p))))
@@ -1967,7 +1980,7 @@
 	  (load-modus-operandi)))	; light mode!
     (load-modus-vivendi))
 
-(unless (window-system)
+(when terminal-p
   (defun make-terminal-transparent ()
     (unless (display-graphic-p (selected-frame))
       (set-face-background 'default "unspecified-bg" (selected-frame))))
@@ -2766,3 +2779,4 @@
  ;; If there is more than one, they won't work right.
  )
 (put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
