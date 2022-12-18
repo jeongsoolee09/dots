@@ -722,9 +722,13 @@
   (defun eval-expression-at-point ()
     (interactive)
     (let ((expr (read (thing-at-point 'sexp))))
-      (if (and (symbolp expr) (fboundp expr))
-	  (describe-function expr)
-	(eval-expression (read (thing-at-point 'sexp)))))))
+      (cond ((and (symbolp expr) (fboundp expr))
+	     (describe-function expr))
+	    ((and (symbolp expr) (boundp expr))
+	     (describe-variable expr)
+	     (eval-expression (read (thing-at-point 'sexp))))
+	    ((consp expr) (eval-expression (read (thing-at-point 'sexp))))
+	    (t (eval-expression (read (thing-at-point 'sexp))))))))
 
 ;; Clojure config ===================================
 ;; ==================================================
@@ -1620,7 +1624,7 @@
 ;; =================================================
 
 (setq initial-scratch-message ""
-      initial-major-mode 'fundamental-mode)
+      initial-major-mode 'emacs-lisp-mode)
 
 ;; dash configs =====================================
 ;; ==================================================
