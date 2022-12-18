@@ -122,7 +122,7 @@
   (local-leader
     :keymaps
     '(org-mode-map)
-    "i" '(declare-prefix "insert")
+    "i" '(which-key-prefix "insert")
     "it" 'org-insert-current-time)
 
   :config
@@ -161,15 +161,12 @@
 
 (use-package dash
   :config
-  (function-put '-> 'lisp-indent-function nil)
+  (function-put '->  'lisp-indent-function nil)
   (function-put '->> 'lisp-indent-function nil))
 
 (use-package s)
 
 (use-package ts :defer t)
-
-(defun declare-prefix (label)
-  (list :ignore t :which-key label))
 
 (defmacro plaintext (&rest body)
   (string-join
@@ -177,9 +174,12 @@
 	       (mapcar (lambda (elem)
 			 (cond
 			  ((stringp elem) elem)
-			  ((symbolp elem) (symbol-name elem)))) body))))
+			  ((and (symbolp elem)
+				(string= (symbol-name elem) "//")) "\n")
+			  ((symbolp elem) (symbol-name elem))
+			  (t (error (format "Unrecognized string: %s" elem))))) body))))
 
-(defmacro comment (&body))
+(defmacro comment (&rest args))
 
 (defun minor-mode-activated-p (minor-mode)
   "Is the given `minor-mode` activated?"
@@ -189,6 +189,20 @@
 (defun straight-from-github (package repo)
   ;; TODO: cannot directly invoke in use-package form
   (list package :type 'git :host 'github :repo repo))
+
+(defalias 'assert 'cl-assert)
+
+(defun keyword-to-string (keyword)
+  (assert (symbolp keyword))
+  (->> keyword
+       intern-soft
+       symbol-name
+       (s-chop-prefix ":")))
+
+(defun which-key-prefix (label)
+  (list
+   :ignore t
+   :which-key (if (keywordp label) (keyword-to-string label) label)))
 
 (defvar macOS-p (equal system-type 'darwin))
 
@@ -200,6 +214,10 @@
 
 (defvar terminal-p (not GUI-p))
 
+(defmacro use-package-from-github (package repo &rest body)
+  (let ((github-form (straight-from-github package repo)))
+    `(use-package ,package :straight ,github-form ,@body)))
+
 ;; macOS Settings ===================================
 ;; ==================================================
 
@@ -207,9 +225,9 @@
   (when (boundp 'mac-system-move-file-to-trash-use-finder)
     (setq mac-system-move-file-to-trash-use-finder t)))
 
-(let ((gls (executable-find "gls")))
-  (when gls
-    (setq insert-directory-program gls)))
+
+(when-let ((gls (executable-find "gls")))
+  (setq insert-directory-program gls))
 
 (when macOS-p
   (setq mac-function-modifier 'hyper
@@ -443,7 +461,7 @@
   (local-leader
     :keymaps
     '(eglot-mode-map)
-    "a"  (declare-prefix "LSP")
+    "a"  (which-key-prefix "LSP")
     "aa" 'eglot-code-actions
     "r"  'eglot-rename)
 
@@ -519,7 +537,82 @@
 ;; Lua config =======================================
 ;; ==================================================
 
+(use-package lua-mode
+  :straight nil
+  :mode "\\.lua\\'"
 
+  :config
+  (defun run-hammerspoon ()
+    (interactive)
+    (comint-run "hs" '()))
+ 
+  (when macOS-p
+    (defun toggle-lua-process-buffer ()
+      "Swap between *lua* and *hs*, depending on the current lua process."
+      (interactive)
+      (let ((lua-process-buffer-name (buffer-name lua-process-buffer)))
+	(cond ((string= lua-process-buffer-name "*lua*")
+	       (let ((hammerspoon-buffer (get-buffer "*hs*")))
+		 (if hammerspoon-buffer
+		     (progn
+		       (setq lua-process (get-buffer-process hammerspoon-buffer)
+			     lua-process-buffer hammerspoon-buffer)
+		       (comint-send-string (get-buffer-process hammerspoon-buffer)
+					   (concat lua-process-init-code "\n")))
+		   (progn
+		     (run-hammerspoon)
+		     (let ((new-hammerspoon-buffer (get-buffer "*hs*")))
+		       (setq lua-process (get-buffer-process new-hammerspoon-buffer)
+			     lua-process-buffer new-hammerspoon-buffer)
+		       (comint-send-string (get-buffer-process new-hammerspoon-buffer)
+					   (concat lua-process-init-code "\n")))))
+		 (message "Switched to Hammerspoon.")))
+	      ((string= lua-process-buffer-name "*hs*")
+	       (let ((lua-buffer (get-buffer "*lua*")))
+		 (if lua-buffer
+		     (progn
+		       (setq lua-process (get-buffer-process lua-buffer)
+			     lua-process-buffer lua-buffer)
+		       (comint-send-string (get-buffer-process lua-buffer)
+					   (concat lua-process-init-code "\n")))
+		   (progn
+		     (run-lua)
+		     (let ((new-lua-buffer (get-buffer "*lua*")))
+		       (setq lua-process (get-buffer-process new-lua-buffer)
+			     lua-process-buffer new-lua-buffer)
+		       (comint-send-string (get-buffer-process new-lua-buffer)
+					   (concat lua-process-init-code "\n")))))
+		 (message "Switched to Lua.")))))))
+
+  (setq lua-indent-level 2
+	lua-indent-string-contents t)
+
+  :general
+  (local-leader
+    :major-modes
+    '(lua-mode t)
+    :keymaps
+    '(lua-mode-map)
+    "h"  (which-key-prefix :help)
+    "hd" 'lua-search-documentation
+    "s"  (which-key-prefix :repl)
+    "sb" 'lua-send-buffer
+    "sf" 'lua-send-defun
+    "sl" 'lua-send-current-line
+    "sr" 'lua-send-region
+    "'"  'lua-show-process-buffer)
+  ;; (when macOS-p
+  ;;   (local-leader
+  ;;     :major-modes
+  ;;     '(lua-mode t)
+  ;;     :keymaps
+      
+  ;;     ))
+
+  )
+
+(use-package company-lua
+  :after lua-mode)
 
 ;; Guix config ======================================
 ;; ==================================================
@@ -580,7 +673,10 @@
 		 "'" "'" :actions nil))
 
 (use-package evil-cleverparens
-  :hook ((fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode geiser-mode scheme-mode racket-mode newlisp-mode picolisp-mode janet-mode)
+  :hook ((fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
+		      geiser-mode scheme-mode racket-mode
+		      newlisp-mode picolisp-mode janet-mode
+		      lisp-interaction-mode ielm-mode minibuffer-mode)
 	 . evil-cleverparens-mode)
   :demand t
   :init
@@ -605,7 +701,6 @@
 
 (use-package elisp-mode
   :straight nil
-
   :defer t
 
   :general
@@ -614,7 +709,7 @@
     '(emacs-lisp-mode t)
     :keymaps
     '(emacs-lisp-mode-map)
-    "e"  (declare-prefix "eval")
+    "e"  (which-key-prefix "eval")
     "eb" 'eval-buffer
     "ef" 'eval-defun
     "er" 'eval-region
@@ -652,23 +747,30 @@
 	cider-pprint-fn 'fipp
 	cider-result-overlay-position 'at-point
 	cider-overlays-use-font-lock t)
+
   (defun run-bb ()
     (interactive)
     (if (executable-find "bb")
 	(make-comint "babashka" "bb")
       (message "bb not installed")))
+
   (defun run-nbb ()
     (interactive)
     (if (executable-find "nbb")
 	(make-comint "node-babashka" "nbb")
       (message "nbb not installed")))
+  
   (cider-register-cljs-repl-type 'nbb "(+ 1 2 3)")
+
   (defun cider-connected-hook ()
     (when (eq 'nbb cider-cljs-repl-type)
       (setq-local cider-show-error-buffer nil)
       (cider-set-repl-type 'cljs)))
+
   (add-hook 'cider-connected-hook #'cider-connected-hook)
+
   (setq cider-check-cljs-repl-requirements nil)
+
   (define-clojure-indent
     (defroutes 'defun)
     (GET 2)
@@ -685,6 +787,7 @@
     (use-like-this 'defun)
     (match 'defun)
     (comment 'defun))
+
   :general
   (local-leader
     :major-modes
@@ -692,16 +795,16 @@
     :keymaps
     '(clojure-mode-map)
     "'"    'sesman-start
-    "d"    (declare-prefix "debug")
+    "d"    (which-key-prefix "debug")
     "db"   'cider-debug-defun-at-point
     "de"   'spacemacs/cider-display-error-buffer
-    "dv"   (declare-prefix "inspect values")
+    "dv"   (which-key-prefix "inspect values")
     "dve"  'cider-inspect-last-sexp
     "dvf"  'cider-inspect-defun-at-point
     "dvi"  'cider-inspect
     "dvl"  'cider-inspect-last-result
     "dvv"  'cider-inspect-expr
-    "e"    (declare-prefix "evaluation")
+    "e"    (which-key-prefix "evaluation")
     "e;"   'cider-eval-defun-to-comment
     "e$"   'spacemacs/cider-eval-sexp-end-of-line
     "e("   'cider-eval-list-at-point
@@ -725,33 +828,33 @@
     "ev"   'cider-eval-sexp-at-point
     "eV"   'cider-eval-sexp-up-to-point
     "ew"   'cider-eval-last-sexp-and-replace
-    "en"   (declare-prefix "namespace")
+    "en"   (which-key-prefix "namespace")
     "ena"  'cider-ns-reload-all
     "enn"  'cider-eval-ns-form
     "enr"  'cider-ns-refresh
     "enl"  'cider-ns-reload ;; SPC u for cider-ns-reload-all
-    "ep"   (declare-prefix "pretty print")
+    "ep"   (which-key-prefix "pretty print")
     "ep;"  'cider-pprint-eval-defun-to-comment
     "ep:"  'cider-pprint-eval-last-sexp-to-comment
     "epf"  'cider-pprint-eval-defun-at-point
     "epe"  'cider-pprint-eval-last-sexp
-    "m"    (declare-prefix "manage repls")
+    "m"    (which-key-prefix "manage repls")
     "mb"   'sesman-browser
     "mi"   'sesman-info
     "mg"   'sesman-goto
     "ms"   'sesman-start
-    "ml"   (declare-prefix "link session")
+    "ml"   (which-key-prefix "link session")
     "mlp"  'sesman-link-with-project
     "mlb"  'sesman-link-with-buffer
     "mld"  'sesman-link-with-directory
     "mlu"  'sesman-unlink
-    "mS"   (declare-prefix "sibling sessions")
+    "mS"   (which-key-prefix "sibling sessions")
     "mSj"  'cider-connect-sibling-clj
     "mSs"  'cider-connect-sibling-cljs
-    "mq"   (declare-prefix "quit/restart")
+    "mq"   (which-key-prefix "quit/restart")
     "mqq"  'sesman-quit
     "mqr"  'sesman-restart
-    "p"    (declare-prefix "profile")
+    "p"    (which-key-prefix "profile")
     "p+"   'cider-profile-samples
     "pc"   'cider-profile-clear
     "pn"   'cider-profile-ns-toggle
@@ -759,7 +862,7 @@
     "pS"   'cider-profile-summary
     "pt"   'cider-profile-toggle
     "pv"   'cider-profile-var-profiled-p
-    "s"    (declare-prefix "send to repl")
+    "s"    (which-key-prefix "send to repl")
     "sb"   'cider-load-buffer
     "sB"   'spacemacs/cider-send-buffer-in-repl-and-focus
     "se"   'spacemacs/cider-send-last-sexp-to-repl
@@ -767,20 +870,20 @@
     "sf"   'spacemacs/cider-send-function-to-repl
     "sF"   'spacemacs/cider-send-function-to-repl-focus
     "si"   'sesman-start
-    "sc"   (declare-prefix "connect external repl")
+    "sc"   (which-key-prefix "connect external repl")
     "scj"  'cider-connect-clj
     "scm"  'cider-connect-clj&cljs
     "scs"  'cider-connect-cljs
-    "sj"   (declare-prefix "jack-in")
+    "sj"   (which-key-prefix "jack-in")
     "sjj"  'cider-jack-in-clj
     "sjm"  'cider-jack-in-clj&cljs
     "sjs"  'cider-jack-in-cljs
-    "sq"   (declare-prefix "quit/restart repl")
+    "sq"   (which-key-prefix "quit/restart repl")
     "sqq"  'cider-quit
     "sqr"  'cider-restart
     "sqn"  'cider-ns-reload
     "sqN"  'cider-ns-reload-all
-    "t"    (declare-prefix "test")
+    "t"    (which-key-prefix "test")
     "ta"   'spacemacs/cider-test-run-all-tests
     "tb"   'cider-test-show-report
     "tl"   'spacemacs/cider-test-run-loaded-tests
@@ -788,18 +891,18 @@
     "tp"   'spacemacs/cider-test-run-project-tests
     "tr"   'spacemacs/cider-test-rerun-failed-tests
     "tt"   'spacemacs/cider-test-run-focused-test
-    "="    (declare-prefix "format")
+    "="    (which-key-prefix "format")
     "=="   'cider-format-buffer
     "=eb"  'cider-format-edn-buffer
     "=ee"  'cider-format-edn-last-sexp
     "=er"  'cider-format-edn-region
     "=f"   'cider-format-defun
-    "g"    (declare-prefix "goto")
+    "g"    (which-key-prefix "goto")
     "gb"   'cider-pop-back
     "gc"   'cider-classpath
     "gg"   'spacemacs/clj-find-var
     "gn"   'cider-find-ns
-    "h"    (declare-prefix "documentation")
+    "h"    (which-key-prefix "documentation")
     "ha"   'cider-apropos
     "hc"   'cider-cheatsheet
     "hd"   'cider-clojuredocs
@@ -808,7 +911,7 @@
     "hN"   'cider-browse-ns-all
     "hs"   'cider-browse-spec
     "hS"   'cider-browse-spec-all
-    "T"    (declare-prefix "toggle")
+    "T"    (which-key-prefix "toggle")
     "Te"   'cider-enlighten-mode
     "Tf"   'spacemacs/cider-toggle-repl-font-locking
     "Tp"   'spacemacs/cider-toggle-repl-pretty-printing
@@ -825,7 +928,7 @@
     '(hy-mode inferior-hy-mode t)
     :keymaps
     '(hy-mode-map inferior-hy-mode-map)
-    "e" (declare-prefix "eval")
+    "e" (which-key-prefix "eval")
     "ec" 'hy-shell-eval-current-form
     "er" 'hy-shell-eval-region
     "eb" 'hy-shell-eval-buffer)
@@ -860,26 +963,26 @@
     '(fennel-mode fennel-repl-mode t)
     :keymaps
     '(fennel-mode-map fennel-repl-mode-map)
-    "e" (declare-prefix "eval")
+    "e" (which-key-prefix "eval")
     "ep" 'lisp-eval-paragraph
     "er" 'lisp-eval-region
     "ef" 'lisp-eval-defun
     "ee" 'lisp-eval-last-sexp
     "eE" 'lisp-eval-form-and-next
-    "d" (declare-prefix "documentation")
+    "d" (which-key-prefix "documentation")
     "dd" 'fennel-show-documentation
     "dv"'fennel-show-variable-documentation
-    "df" (declare-prefix "find")
+    "df" (which-key-prefix "find")
     "dff" 'fennel-find-definition
     "dfm" 'fennel-find-module-definition
     "dfp" 'fennel-find-definition-pop
-    "h" (declare-prefix "help")
+    "h" (which-key-prefix "help")
     "ha" 'fennel-show-arglist-at-point
     "hA" 'fennel-show-arglist
     "hc" 'fennel-view-compilation
     "m" 'fennel-macroexpand
     "=" 'fennel-format
-    "r" (declare-prefix "repl")
+    "r" (which-key-prefix "repl")
     "'" 'fennel-repl
     "r" 'fennel-reload
     :config
@@ -906,10 +1009,10 @@
     '(racket-mode racket-repl-mode racket-xp-mode t)
     :keymaps
     '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
-    "E"  (declare-prefix "error")
+    "E"  (which-key-prefix "error")
     "En" 'racket-xp-next-error
     "EN" 'racket-xp-previous-error
-    "g"  (declare-prefix "goto")
+    "g"  (which-key-prefix "goto")
     "g`" 'racket-unvisit
     "gg" 'racket-xp-visit-definition
     "gn" 'racket-xp-next-definition
@@ -918,22 +1021,22 @@
     "gr" 'racket-open-require-path
     "gu" 'racket-xp-next-use
     "gU" 'racket-xp-previous-use
-    "h"  (declare-prefix "help")
+    "h"  (which-key-prefix "help")
     "ha" 'racket-xp-annotate
     "hd" 'racket-xp-describe
     "hh" 'racket-xp-documentation
-    "i"  (declare-prefix "insert")
+    "i"  (which-key-prefix "insert")
     "il" 'racket-insert-lambda
-    "m"  (declare-prefix "refactor")
+    "m"  (which-key-prefix "refactor")
     "mr" 'racket-xp-rename
-    "e"  (declare-prefix "eval")
+    "e"  (which-key-prefix "eval")
     "'"  'racket-repl
     "eb" 'racket-run
     "ee" 'racket-send-last-sexp
     "ef" 'racket-send-definition
     "ei" 'racket-repl
     "er" 'racket-send-region
-    "t"  (declare-prefix "test")
+    "t"  (which-key-prefix "test")
     "tb" 'racket-test))
 
 ;; Scheme config ====================================
@@ -1693,7 +1796,7 @@
 (use-package magit
   :general
   (global-leader
-    "g"  (declare-prefix "magit")
+    "g"  (which-key-prefix "magit")
     "gs" 'magit
     "ga" 'magit-stage-file
     "gc" 'magit-commit-create
@@ -1820,7 +1923,7 @@
 (use-package projectile
   :general
   (global-leader
-    "p"  (declare-prefix "project")
+    "p"  (which-key-prefix "project")
     "p/" 'projectile-ripgrep
     "pf" 'projectile-find-file
     "pp" 'projectile-switch-project
@@ -1980,12 +2083,12 @@
 	  (load-modus-operandi)))	; light mode!
     (load-modus-vivendi))
 
-(when terminal-p
-  (defun make-terminal-transparent ()
-    (unless (display-graphic-p (selected-frame))
-      (set-face-background 'default "unspecified-bg" (selected-frame))))
-  (add-hook 'window-setup-hook 'make-terminal-transparent)
-  (make-terminal-transparent)))
+  (unless (window-system)
+    (defun make-terminal-transparent ()
+      (unless (display-graphic-p (selected-frame))
+	(set-face-background 'default "unspecified-bg" (selected-frame))))
+    (add-hook 'window-setup-hook 'make-terminal-transparent)
+    (make-terminal-transparent)))
 
 ;; make terminal transparent
 
@@ -2109,7 +2212,7 @@
 				    ("Asia/Seoul" "Seoul")))
   :general
   (global-leader
-    "aC"  (declare-prefix "clock")
+    "aC"  (which-key-prefix "clock")
     "aCw" 'world-clock))
 
 ;; custom functions =================================
@@ -2257,12 +2360,12 @@
   "C-r" 'revert-buffer)
 
 (global-leader
-  "S"   (declare-prefix "straight")
-  "Sp"  (declare-prefix "package")
+  "S"   (which-key-prefix "straight")
+  "Sp"  (which-key-prefix "package")
   "Spu" 'straight-use-package)
 
 (global-leader
-  "w"  (declare-prefix "window")
+  "w"  (which-key-prefix "window")
   "wd" 'delete-window
   "wD" 'ace-delete-window
   "wh" 'evil-window-left
@@ -2298,7 +2401,7 @@
   "0"  'winum-select-window-0)
 
 (global-leader
-  "f"   (declare-prefix "file")
+  "f"   (which-key-prefix "file")
   "ff"  'find-file
   "fs"  'save-buffer
   "fed" 'visit-init-dot-el
@@ -2309,7 +2412,7 @@
   "o"   'find-file)
 
 (global-leader
-  "b"  (declare-prefix "buffer")
+  "b"  (which-key-prefix "buffer")
   "bd" 'kill-this-buffer
   "bb" 'switch-to-buffer
   "bp" 'previous-buffer
@@ -2324,56 +2427,62 @@
   "\\" 'flycheck-previous-error)
 
 (global-leader
-  "a"  (declare-prefix "utilities")
-  "ai" 'display-current-time
-  "ab" 'battery
-  "al" 'launchctl
+  "a"    (which-key-prefix "utilities")
+  "ai"   'display-current-time
+  "ab"   'battery
+  "al"   'launchctl
 
-  "aw" (declare-prefix "web")
+  "aw"   (which-key-prefix "web")
 
-  "at"   (declare-prefix "terminal")
-  "ats"  (declare-prefix "repls")
-  "atsb" 'run-bb
-  "atsn" 'run-nbb
-  "atso" 'run-ocaml
-  "atsu" 'utop)
+  "at"   (which-key-prefix "terminal")
+  "atr"  (which-key-prefix "repls")
+  "atrb" 'run-bb
+  "atrn" 'run-nbb
+  "atro" 'run-ocaml
+  "atru" 'utop
+  "atrl" 'run-lua
+  "atrh" 'run-hammerspoon
 
-(global-leader
-  "q"   (declare-prefix "quit")
-  "qq"  'kill-emacs
-  "qf"  'delete-frame)
-
-(global-leader
-  "h"   (declare-prefix "help")
-  "hd"  (declare-prefix "describe")
-  "hdb" 'describe-bindings
-  "hdf" 'describe-function
-  "hdk" 'describe-key
-  "hdv" 'describe-variable
-  "hdm" 'describe-mode
-  "hdp" 'describe-package)
+  "ats"  (which-key-prefix "shells")
+  "atsa" 'async-shell-command
+  "atst" 'multi-term)
 
 (global-leader
-  "x"   (declare-prefix "text")
+  "q"    (which-key-prefix "quit")
+  "qq"   'kill-emacs
+  "qf"   'delete-frame)
+
+(global-leader
+  "h"    (which-key-prefix "help")
+  "hd"   (which-key-prefix "describe")
+  "hdb"  'describe-bindings
+  "hdf"  'describe-function
+  "hdk"  'describe-key
+  "hdv"  'describe-variable
+  "hdm"  'describe-mode
+  "hdp"  'describe-package)
+
+(global-leader
+  "x"     (which-key-prefix "text")
   "x TAB" 'indent-rigidly
-  "xwd" 'osx-dictionary-search-pointer)
+  "xwd"   'osx-dictionary-search-pointer)
 
 (global-leader
-  "t"  (declare-prefix "toggle")
-  "tD" 'toggle-debug-on-error)
+  "t"    (which-key-prefix "toggle")
+  "tD"   'toggle-debug-on-error)
 
 (global-leader
-  "s-o" 'reveal-in-osx-finder
-  "s-c" 'compile
-  "s-v" 'variable-pitch-mode
-  "s-u" 'emacs-uptime
-  "s-g" 'cleanup-emacs
-  "s-i" 'insert-current-time
-  "s-y" 'youtube-viewer-start
-  "s-k" 'consult-yank-from-kill-ring
-  "s-x" 'delete-trailing-whitespace
-  "s-b" 'consult-bookmark
-  "s-s" 'save-buffer)
+  "s-o"  'reveal-in-osx-finder
+  "s-c"  'compile
+  "s-v"  'variable-pitch-mode
+  "s-u"  'emacs-uptime
+  "s-g"  'cleanup-emacs
+  "s-i"  'insert-current-time
+  "s-y"  'youtube-viewer-start
+  "s-k"  'consult-yank-from-kill-ring
+  "s-x"  'delete-trailing-whitespace
+  "s-b"  'consult-bookmark
+  "s-s"  'save-buffer)
 
 ;; enable mouse scroll in terminal ==================
 ;; ==================================================
@@ -2580,7 +2689,7 @@
 (use-package reddigg
   :general
   (global-leader
-    "awr"  (declare-prefix "reddit")
+    "awr"  (which-key-prefix "reddit")
     "awrm" 'reddigg-view-main
     "awrs" 'reddigg-view-sub)
 
@@ -2597,7 +2706,7 @@
 (use-package hnreader
   :general
   (global-leader
-    "awh" (declare-prefix "hackernews")
+    "awh" (which-key-prefix "hackernews")
     "awhn" 'hnreader-news
     "awhp" 'hnreader-past
     "awhN" 'hnreader-newest
@@ -2616,7 +2725,7 @@
 (use-package eradio
   :general
   (global-leader
-    "aR" (declare-prefix "Radio")
+    "aR" (which-key-prefix "Radio")
     "aRp" 'eradio-play
     "aRs" 'eradio-stop
     "aRR" 'eradio-toggle)
@@ -2684,7 +2793,7 @@
 
   :general
   (global-leader
-    "am" (declare-prefix "emms")
+    "am" (which-key-prefix "emms")
     "amee" 'emms
     "ames" 'emms-pause
     "amep" 'emms-previous
