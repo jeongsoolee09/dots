@@ -631,7 +631,7 @@
 
 (use-package comint
   :straight nil
-  :config
+  :general
   (normal-mode-major-mode
     :major-modes
     '(comint-mode t)
@@ -639,6 +639,19 @@
     '(comint-mode-map)
     "C-j" 'comint-next-input
     "C-k" 'comint-previous-input))
+
+;; minibuffer config
+
+(use-package minibuffer
+  :straight nil
+  :general
+  (insert-mode-major-mode
+    :major-modes
+    '(minibuffer-mode t)
+    :keymaps
+    '(minibuffer-mode-map)
+    "M-p" 'previous-history-element
+    "M-n" 'next-history-element))
 
 ;; imenu config ======================================
 ;; ==================================================
@@ -1806,11 +1819,20 @@
     "gc" 'magit-commit-create
     "gC" 'magit-clone
     "gp" 'magit-push
-    "gd" 'magit-diff-dwim)
+    "gd" 'magit-diff-dwim
+    "gt" 'magit-dispatch)
   :config
   (add-hook 'magit-mode-hook
 	    (lambda ()
 	      (evil-define-key 'normal magit-mode-map (kbd "SPC") nil))))
+
+;; vc config ========================================
+;; ==================================================
+
+(use-package vc-git
+  :straight nil
+  :config
+  (setq vc-follow-symlinks t))
 
 ;; eldoc-mode config ================================
 ;; ==================================================
