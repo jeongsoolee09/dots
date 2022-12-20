@@ -170,12 +170,6 @@
 		    (replace-regexp-in-string
 		     "-mode$" ""
 		     (symbol-name major-mode))))))
-  ;; "" '(:ignore t :which-key)
-  ;; 		 (lambda (arg)
-  ;; 		   `(,(cadr (split-string (car arg) " ")) .
-  ;; 		     ,(replace-regexp-in-string "-mode$" ""
-  ;; 						(symbol-name major-mode))))
-
 
   ;; works everywhere irrelevant of evil state
   (general-create-definer agnostic-key
