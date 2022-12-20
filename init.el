@@ -23,26 +23,91 @@
 
 (setq straight-use-package-by-default t)
 
+;; Useful Elisp Libraries ===========================
+;; ==================================================
+
+(use-package dash
+  :config
+  (function-put '->  'lisp-indent-function nil)
+  (function-put '->> 'lisp-indent-function nil))
+
+(use-package s)
+
+(use-package ts)
+
+(defmacro plaintext (&rest body)
+  (string-join
+   (-interpose " "
+	       (mapcar (lambda (elem)
+			 (cond
+			  ((stringp elem) elem)
+			  ((and (symbolp elem)
+				(string= (symbol-name elem) "//")) "\n")
+			  ((symbolp elem) (symbol-name elem))
+			  (t (error (format "Unrecognized string: %s" elem))))) body))))
+
+(defmacro comment (&rest args))
+
+(defun minor-mode-activated-p (minor-mode)
+  "Is the given `minor-mode` activated?"
+  (let ((activated-minor-modes (mapcar #'car minor-mode-alist)))
+    (memq minor-mode activated-minor-modes)))
+
+(defun straight-from-github (package repo)
+  ;; TODO: cannot directly invoke in use-package form
+  (list package :type 'git :host 'github :repo repo))
+
+(defalias 'assert 'cl-assert)
+
+(defun keyword-to-string (keyword)
+  (assert (symbolp keyword))
+  (->> keyword
+       intern-soft
+       symbol-name
+       (s-chop-prefix ":")))
+
+(defun which-key-prefix (label)
+  (list
+   :ignore t
+   :which-key (if (keywordp label) (keyword-to-string label) label)))
+
+(defvar macOS-p (equal system-type 'darwin))
+
+(defvar linux-p (equal system-type 'gnu/linux))
+
+(defvar chromeOS-p (string= (system-name) "penguin"))
+
+(defvar GUI-p (window-system))
+
+(defvar terminal-p (not GUI-p))
+
+(defmacro use-package-from-github (package repo &rest body)
+  (let ((github-form (straight-from-github package repo)))
+    `(use-package ,package :straight ,github-form ,@body)))
+
 ;; Custom Lisp files ================================
 ;; ==================================================
 
 (setq custom-lisp-directory (concat user-emacs-directory "lisp/"))
 (setq global-cache-directory (concat user-emacs-directory "cache/"))
 
-(dolist (dir '(custom-lisp-directory global-cache-directory))
-  (unless (file-directory-p global-cache-directory)
-    (make-directory global-cache-directory))
+(dolist (dir (list custom-lisp-directory global-cache-directory))
+  (unless (file-directory-p dir)
+    (make-directory dir))
   (add-to-list 'load-path dir))
 
 (add-to-list 'load-path
 	     (concat user-emacs-directory
 		     "straight/repos/vertico/extensions/"))
 
+(defun cache: (subpath)
+  (concat global-cache-directory (s-chop-prefix "/" subpath)))
+
 ;; GPG config =======================================
 ;; ==================================================
 
 (setq epg-gpg-program "gpg")
-(unless window-system
+(when terminal-p
   (setq epg-pinentry-mode 'loopback))
 
 ;; Korean environment ===============================
@@ -131,18 +196,29 @@
 (use-package org
   :straight (:type built-in)
   :defer t
-
-  ;; TODO: copy the full org-mode layer from Spacemacs
-  ;; `org-emphasize`: `, x b`
-
   :general
   (local-leader
     :major-modes
     '(org-mode t)
     :keymaps
     '(org-mode-map)
-    "i" '(which-key-prefix "insert")
-    "it" 'org-insert-current-time)
+    "b"   (which-key-prefix :babel)
+    
+    "C"   (which-key-prefix :clock)
+    "d"   (which-key-prefix :dates)
+    "e"   (which-key-prefix :export)
+    "f"   (which-key-prefix :feeds)
+    "i"   (which-key-prefix :insert)
+    "it" 'org-insert-current-time
+    "iD"  (which-key-prefix :download)
+    "m"   (which-key-prefix :more)
+    "s"   (which-key-prefix :trees/subtrees)
+    "T"   (which-key-prefix :toggles)
+    "t"   (which-key-prefix :tables)
+    "td"  (which-key-prefix :delete)
+    "ti"  (which-key-prefix :insert)
+    "tt"  (which-key-prefix :toggle)
+    "x"   (which-key-prefix :text))
 
   :config
   (defun org-insert-current-time ()
@@ -150,13 +226,10 @@
     (interactive)
     (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
   
-  (setq org-clock-persist-file (concat spacemacs-cache-directory
-				       "org-clock-save.el")
-	org-id-locations-file (concat spacemacs-cache-directory
-				      ".org-id-locations")
-	org-publish-timestamp-directory (concat spacemacs-cache-directory
-						".org-timestamps/")
-	org-directory "~/Dropbox/Org" ;; needs to be defined for `org-default-notes-file'
+  (setq org-clock-persist-file (cache: "org-clock-save.el")
+	org-id-locations-file (cache: ".org-id-locations")
+	org-publish-timestamp-directory (cache: ".org-timestamps/")
+	org-directory "~/Dropbox/Org"
 	org-default-notes-file (expand-file-name "notes.org" org-directory)
 	org-log-done 'time
 	org-startup-with-inline-images t
@@ -164,13 +237,19 @@
 	org-image-actual-width nil
 	org-src-fontify-natively t
 	org-src-tab-acts-natively t
-	;; this is consistent with the value of
-	;; `helm-org-headings-max-depth'.
 	org-imenu-depth 8
 	org-return-follows-link t
 	org-mouse-1-follows-link t
 	org-link-descriptive t
-	org-hide-emphasis-markers t)
+	org-hide-emphasis-markers t
+	org-enforce-todo-dependencies t)
+
+  (add-hook 'org-after-todo-statistics-hook
+	    (lambda ()
+	      (and (org-get-todo-state)
+		   (when (or (and (org-entry-is-todo-p) (= n-not-done 0))
+			     (and (org-entry-is-done-p) (> n-not-done 0)))
+		     (org-todo)))))
 
   (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
 
@@ -178,9 +257,13 @@
     (add-hook 'org-mode-hook 'org-appear-mode))
 
   (setq org-todo-keywords
-	'((sequence "TODO" "WORKING"
-		    "|"
-		    "DONE" "ABORTED"))))
+	'((sequence "TODO" "WORKING" "|"
+		    "DONE" "ABORTED")))
+
+  (defmacro org-emphasize-this (fname char)
+        "Make function for setting the emphasis in org mode"
+        `(defun ,fname () (interactive)
+                (org-emphasize ,char))))
 
 (use-package evil-org
   :after (evil org)
@@ -233,6 +316,7 @@
 
 (use-package ob
   :straight (:type built-in)
+  :after org
   :defer t
   :init
   (add-hook 'org-mode-hook
@@ -245,8 +329,45 @@
 	      (when org-inline-image-overlays
 		(org-redisplay-inline-images)))))
 
+(use-package org-capture
+  :straight nil
+  :general
+  (local-leader
+    :major-modes
+    '(org-capture-mode t)
+    :keymaps
+    '(org-capture-mode-map)
+    "a" 'org-capture-kill
+    "," 'org-capture-finalize
+    "c" 'org-capture-finalize
+    "k" 'org-capture-kill
+    "r" 'org-capture-refile))
+
+(use-package org-src
+  :straight nil
+  :after org
+  :general
+  (local-leader
+    :major-modes
+    '(org-src-mode t)
+    :keymaps
+    '(org-src-mode-map)
+    "," 'org-edit-src-exit
+    "c" 'org-edit-src-exit
+    "a" 'org-edit-src-abort
+    "k" 'org-edit-src-abort))
+
 (use-package org-roam :defer t)
 (use-package org-roam-ui :defer t)
+
+(use-package org-indent
+  :after org
+  :straight nil)
+
+(use-package org-clock
+  :straight nil
+  :after org
+  :commands (org-clock-jump-to-current-clock))
 
 ;; exporters ========================================
 
@@ -274,68 +395,6 @@
 ;; ==================================================
 
 (use-package transient :defer t)
-
-;; Useful Elisp Libraries ===========================
-;; ==================================================
-
-(use-package dash
-  :config
-  (function-put '->  'lisp-indent-function nil)
-  (function-put '->> 'lisp-indent-function nil))
-
-(use-package s)
-
-(use-package ts :defer t)
-
-(defmacro plaintext (&rest body)
-  (string-join
-   (-interpose " "
-	       (mapcar (lambda (elem)
-			 (cond
-			  ((stringp elem) elem)
-			  ((and (symbolp elem)
-				(string= (symbol-name elem) "//")) "\n")
-			  ((symbolp elem) (symbol-name elem))
-			  (t (error (format "Unrecognized string: %s" elem))))) body))))
-
-(defmacro comment (&rest args))
-
-(defun minor-mode-activated-p (minor-mode)
-  "Is the given `minor-mode` activated?"
-  (let ((activated-minor-modes (mapcar #'car minor-mode-alist)))
-    (memq minor-mode activated-minor-modes)))
-
-(defun straight-from-github (package repo)
-  ;; TODO: cannot directly invoke in use-package form
-  (list package :type 'git :host 'github :repo repo))
-
-(defalias 'assert 'cl-assert)
-
-(defun keyword-to-string (keyword)
-  (assert (symbolp keyword))
-  (->> keyword
-       intern-soft
-       symbol-name
-       (s-chop-prefix ":")))
-
-(defun which-key-prefix (label)
-  (list
-   :ignore t
-   :which-key (if (keywordp label) (keyword-to-string label) label)))
-
-(defvar macOS-p (equal system-type 'darwin))
-
-(defvar linux-p (equal system-type 'gnu/linux))
-
-(defvar chromeOS-p (string= (system-name) "penguin"))
-
-(defvar GUI-p (window-system))
-
-(defvar terminal-p (not GUI-p))
-
-(defmacro use-package-from-github (package repo &rest body)
-  (let ((github-form (straight-from-github package repo)))
-    `(use-package ,package :straight ,github-form ,@body)))
 
 ;; macOS Settings ===================================
 ;; ==================================================
@@ -2134,7 +2193,7 @@
 			:font "Fira Code"
 			:weight 'light
 			:height 180)
-  (set-face-attribute 'default nil :height 150))
+  (set-face-attribute 'default nil :height 140))
 
 (use-package modus-themes
   :init
@@ -2237,6 +2296,7 @@
 ;; =================================================
 
 (use-package hl-todo
+  :demand t
   :config
   (global-hl-todo-mode)
   (setq hl-todo-keyword-faces
