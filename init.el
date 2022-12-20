@@ -2964,7 +2964,8 @@
     "k" 'tetris-rotate-prev
     "l" 'tetris-move-right
     "i" 'tetris-rotate-next
-    "m" 'tetris-move-bottom))
+    "m" 'tetris-move-bottom
+    "n" 'tetris-start-game))
 
 ;; Misc =============================================
 ;; ==================================================
