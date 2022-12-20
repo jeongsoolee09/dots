@@ -229,8 +229,9 @@
   :init
   (defmacro org-emphasize-this (fname char)
     "Make function for setting the emphasis in org mode"
-    `(defun ,fname () (interactive)
-	    (org-emphasize ,char)))
+    `(defun ,fname ()
+       (interactive)
+       (org-emphasize ,char)))
   
   :general
   (local-leader
@@ -406,10 +407,8 @@
     "xv"    (org-emphasize-this org-verbatim ?=))
 
   (normal-mode-major-mode
-    :major-modes
-    '(org-mode t)
-    :keymaps
-    '(org-mode-map)
+    :major-modes '(org-mode t)
+    :keymaps     '(org-mode-map)
     "RET" 'org-open-at-point)
   
   :config
@@ -449,10 +448,10 @@
 		    "DONE" "ABORTED")))
 
   (dolist (fn '(org-insert-drawer
-                    org-insert-heading
-                    org-insert-item
-                    org-insert-structure-template))
-        (advice-add fn :after 'evil-insert-state)))
+		org-insert-heading
+		org-insert-item
+		org-insert-structure-template))
+    (advice-add fn :after 'evil-insert-state)))
 
 (use-package evil-org
   :after (evil org)
@@ -605,10 +604,8 @@
   (add-to-list 'auto-mode-alist '("\\.plist\\'" . nxml-mode))
   :general
   (normal-mode-major-mode
-    :major-modes
-    '(launchctl-mode t)
-    :keymaps
-    '(launchctl-mode-map)
+    :major-modes '(launchctl-mode t)
+    :keymaps     '(launchctl-mode-map)
     "q" 'quit-window
     "s" 'tabulated-list-sort
     "g" 'launchctl-refresh
@@ -638,10 +635,8 @@
    osx-dictionary-cli-find-or-recompile)
   :general
   (normal-mode-major-mode
-    :major-modes
-    '(osx-dictionary-mode t)
-    :keymaps
-    '(osx-dictionary-mode-map)
+    :major-modes '(osx-dictionary-mode t)
+    :keymaps     '(osx-dictionary-mode-map)
     "q" 'osx-dictionary-quit
     "r" 'osx-dictionary-read-word
     "s" 'osx-dictionary-search-input
@@ -885,10 +880,8 @@
   :mode "\\.pl\\'"
   :general
   (local-leader
-    :major-modes
-    '(cperl-mode perl-mode t)
-    :keymaps
-    '(cperl-mode-map perl-mode-map)
+    :major-modes '(cperl-mode perl-mode t)
+    :keymaps     '(cperl-mode-map perl-mode-map)
     "l" 'cperl-perldoc-at-point))
 
 ;; Lua config =======================================
@@ -947,10 +940,8 @@
 
   :general
   (local-leader
-    :major-modes
-    '(lua-mode t)
-    :keymaps
-    '(lua-mode-map)
+    :major-modes '(lua-mode t)
+    :keymaps     '(lua-mode-map)
     "h"  (which-key-prefix :help)
     "hd" 'lua-search-documentation
     "s"  (which-key-prefix :repl)
@@ -986,10 +977,8 @@
   :straight nil
   :general
   (normal-mode-major-mode
-    :major-modes
-    '(comint-mode t)
-    :keymaps
-    '(comint-mode-map)
+    :major-modes '(comint-mode t)
+    :keymaps     '(comint-mode-map)
     "C-j" 'comint-next-input
     "C-k" 'comint-previous-input))
 
@@ -999,10 +988,8 @@
   :straight nil
   :general
   (insert-mode-major-mode
-    :major-modes
-    '(minibuffer-mode t)
-    :keymaps
-    '(minibuffer-mode-map)
+    :major-modes '(minibuffer-mode t)
+    :keymaps     '(minibuffer-mode-map)
     "M-p" 'previous-history-element
     "M-n" 'next-history-element))
 
@@ -1071,10 +1058,8 @@
 
   :general
   (local-leader
-    :major-modes
-    '(emacs-lisp-mode t)
-    :keymaps
-    '(emacs-lisp-mode-map)
+    :major-modes '(emacs-lisp-mode t)
+    :keymaps     '(emacs-lisp-mode-map)
     "e"  (which-key-prefix "eval")
     "eb" 'eval-buffer
     "ef" 'eval-defun
@@ -1160,10 +1145,8 @@
 
   :general
   (local-leader
-    :major-modes
-    '(clojure-mode t)
-    :keymaps
-    '(clojure-mode-map)
+    :major-modes '(clojure-mode t)
+    :keymaps     '(clojure-mode-map)
     "'"    'sesman-start
     "d"    (which-key-prefix "debug")
     "db"   'cider-debug-defun-at-point
@@ -1294,10 +1277,8 @@
   :defer t
   :general
   (local-leader
-    :major-modes
-    '(hy-mode inferior-hy-mode t)
-    :keymaps
-    '(hy-mode-map inferior-hy-mode-map)
+    :major-modes '(hy-mode inferior-hy-mode t)
+    :keymaps     '(hy-mode-map inferior-hy-mode-map)
     "e" (which-key-prefix "eval")
     "ec" 'hy-shell-eval-current-form
     "er" 'hy-shell-eval-region
@@ -1329,10 +1310,8 @@
   :defer t
   :general
   (local-leader
-    :major-modes
-    '(fennel-mode fennel-repl-mode t)
-    :keymaps
-    '(fennel-mode-map fennel-repl-mode-map)
+    :major-modes '(fennel-mode fennel-repl-mode t)
+    :keymaps     '(fennel-mode-map fennel-repl-mode-map)
     "e" (which-key-prefix "eval")
     "ep" 'lisp-eval-paragraph
     "er" 'lisp-eval-region
@@ -1360,10 +1339,8 @@
       (interactive)
       (fennel-show-arglist (thing-at-point 'symbol))))
   (local-leader
-    :major-modes
-    '(fennel-repl-mode t)
-    :keymaps
-    '(fennel-repl-mode-map)
+    :major-modes '(fennel-repl-mode t)
+    :keymaps     '(fennel-repl-mode-map)
     "'" 'fennel-repl
     "rq" 'fennel-repl-quit
     "r0" 'fennel-repl-move-beginning-of-line))
@@ -1375,10 +1352,12 @@
   :defer t
   :general
   (local-leader
-    :major-modes
-    '(racket-mode racket-repl-mode racket-xp-mode t)
-    :keymaps
-    '(racket-mode-map racket-repl-mode-map racket-xp-mode-map)
+    :major-modes '(racket-mode
+		   racket-repl-mode
+		   racket-xp-mode t)
+    :keymaps     '(racket-mode-map
+		   racket-repl-mode-map
+		   racket-xp-mode-map)
     "E"  (which-key-prefix "error")
     "En" 'racket-xp-next-error
     "EN" 'racket-xp-previous-error
@@ -1492,53 +1471,53 @@
 
   ;; Bind repl
   (register-repl 'haskell
-			   'haskell-interactive-switch "haskell")
+		 'haskell-interactive-switch "haskell")
 
   (dolist (mode haskell-modes)
     (set-leader-keys-for-major-mode mode
-					      "sb"  'haskell-process-load-file
-					      "sc"  'haskell-interactive-mode-clear
-					      "sS"  'haskell-interactive-bring
-					      "ss"  'haskell-interactive-switch
-					      "st"  'haskell-session-change-target
-					      "'"   'haskell-interactive-switch
+				    "sb"  'haskell-process-load-file
+				    "sc"  'haskell-interactive-mode-clear
+				    "sS"  'haskell-interactive-bring
+				    "ss"  'haskell-interactive-switch
+				    "st"  'haskell-session-change-target
+				    "'"   'haskell-interactive-switch
 
-					      "ca"  'haskell-process-cabal
-					      "cb"  'haskell-process-cabal-build
-					      "cc"  'haskell-compile
-					      "cv"  'haskell-cabal-visit-file
+				    "ca"  'haskell-process-cabal
+				    "cb"  'haskell-process-cabal-build
+				    "cc"  'haskell-compile
+				    "cv"  'haskell-cabal-visit-file
 
-					      "hd"  'inferior-haskell-find-haddock
-					      "hi"  'haskell-process-do-info
-					      "ht"  'haskell-process-do-type
-					      "hT"  'haskell-process-do-type-on-prev-line
+				    "hd"  'inferior-haskell-find-haddock
+				    "hi"  'haskell-process-do-info
+				    "ht"  'haskell-process-do-type
+				    "hT"  'haskell-process-do-type-on-prev-line
 
-					      "da"  'haskell-debug/abandon
-					      "db"  'haskell-debug/break-on-function
-					      "dB"  'haskell-debug/delete
-					      "dc"  'haskell-debug/continue
-					      "dd"  'haskell-debug
-					      "dn"  'haskell-debug/next
-					      "dN"  'haskell-debug/previous
-					      "dp"  'haskell-debug/previous
-					      "dr"  'haskell-debug/refresh
-					      "ds"  'haskell-debug/step
-					      "dt"  'haskell-debug/trace
+				    "da"  'haskell-debug/abandon
+				    "db"  'haskell-debug/break-on-function
+				    "dB"  'haskell-debug/delete
+				    "dc"  'haskell-debug/continue
+				    "dd"  'haskell-debug
+				    "dn"  'haskell-debug/next
+				    "dN"  'haskell-debug/previous
+				    "dp"  'haskell-debug/previous
+				    "dr"  'haskell-debug/refresh
+				    "ds"  'haskell-debug/step
+				    "dt"  'haskell-debug/trace
 
-					      "ri"  'haskell-format-imports)
+				    "ri"  'haskell-format-imports)
     (if (eq haskell-completion-backend 'lsp)
 	(set-leader-keys-for-major-mode mode
-						  "gl"  'haskell-navigate-imports
-						  "S"   'haskell-mode-stylish-buffer
+					"gl"  'haskell-navigate-imports
+					"S"   'haskell-mode-stylish-buffer
 
-						  "hg"  'hoogle
-						  "hG"  'haskell-hoogle-lookup-from-local)
+					"hg"  'hoogle
+					"hG"  'haskell-hoogle-lookup-from-local)
       (set-leader-keys-for-major-mode mode
-						"gi"  'haskell-navigate-imports
-						"F"   'haskell-mode-stylish-buffer
+				      "gi"  'haskell-navigate-imports
+				      "F"   'haskell-mode-stylish-buffer
 
-						"hh"  'hoogle
-						"hG"  'haskell-hoogle-lookup-from-local)))
+				      "hh"  'hoogle
+				      "hG"  'haskell-hoogle-lookup-from-local)))
 
   (evilified-state-evilify-map haskell-debug-mode-map
 			       :mode haskell-debug-mode
@@ -1560,29 +1539,29 @@
 
   ;; Switch back to editor from REPL
   (set-leader-keys-for-major-mode 'haskell-interactive-mode
-					    "ss"  'haskell-interactive-switch-back)
+				  "ss"  'haskell-interactive-switch-back)
 
   ;; Compile
   (set-leader-keys-for-major-mode 'haskell-cabal
-					    "C"  'haskell-compile)
+				  "C"  'haskell-compile)
 
   ;; Cabal-file bindings
   (set-leader-keys-for-major-mode 'haskell-cabal-mode
-					    ;; "="   'haskell-cabal-subsection-arrange-lines ;; Does a bad job, 'gg=G' works better
-					    "d"   'haskell-cabal-add-dependency
-					    "b"   'haskell-cabal-goto-benchmark-section
-					    "e"   'haskell-cabal-goto-executable-section
-					    "t"   'haskell-cabal-goto-test-suite-section
-					    "m"   'haskell-cabal-goto-exposed-modules
-					    "l"   'haskell-cabal-goto-library-section
-					    "n"   'haskell-cabal-next-subsection
-					    "p"   'haskell-cabal-previous-subsection
-					    "sc"  'haskell-interactive-mode-clear
-					    "sS"  'haskell-interactive-bring
-					    "ss"  'haskell-interactive-switch
-					    "N"   'haskell-cabal-next-section
-					    "P"   'haskell-cabal-previous-section
-					    "f"   'haskell-cabal-find-or-create-source-file)
+				  ;; "="   'haskell-cabal-subsection-arrange-lines ;; Does a bad job, 'gg=G' works better
+				  "d"   'haskell-cabal-add-dependency
+				  "b"   'haskell-cabal-goto-benchmark-section
+				  "e"   'haskell-cabal-goto-executable-section
+				  "t"   'haskell-cabal-goto-test-suite-section
+				  "m"   'haskell-cabal-goto-exposed-modules
+				  "l"   'haskell-cabal-goto-library-section
+				  "n"   'haskell-cabal-next-subsection
+				  "p"   'haskell-cabal-previous-subsection
+				  "sc"  'haskell-interactive-mode-clear
+				  "sS"  'haskell-interactive-bring
+				  "ss"  'haskell-interactive-switch
+				  "N"   'haskell-cabal-next-section
+				  "P"   'haskell-cabal-previous-section
+				  "f"   'haskell-cabal-find-or-create-source-file)
 
   ;; Make "RET" behaviour in REPL saner
   (evil-define-key 'insert haskell-interactive-mode-map
@@ -1649,8 +1628,8 @@
   :init
   (/init-ocaml-opam)
   (set-leader-keys-for-major-mode 'tuareg-mode
-					    "ga" 'tuareg-find-alternate-file
-					    "cc" 'compile)
+				  "ga" 'tuareg-find-alternate-file
+				  "cc" 'compile)
   ;; Make OCaml-generated files invisible to filename completion
   (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
     (add-to-list 'completion-ignored-extensions ext)))
@@ -1659,29 +1638,29 @@
   :defer t
   :init
   (set-leader-keys-for-major-mode 'tuareg-mode
-					    "tP" 'dune-promote
-					    "tp" 'dune-runtest-and-promote)
+				  "tP" 'dune-promote
+				  "tp" 'dune-runtest-and-promote)
   (declare-prefix-for-mode 'tuareg-mode "mt" "test")
   (declare-prefix-for-mode 'dune-mode "mc" "compile/check")
   (declare-prefix-for-mode 'dune-mode "mi" "insert-form")
   (declare-prefix-for-mode 'dune-mode "mt" "test")
   (set-leader-keys-for-major-mode 'dune-mode
-					    "cc" 'compile
-					    "ia" 'dune-insert-alias-form
-					    "ic" 'dune-insert-copyfiles-form
-					    "id" 'dune-insert-ignored-subdirs-form
-					    "ie" 'dune-insert-executable-form
-					    "ii" 'dune-insert-install-form
-					    "il" 'dune-insert-library-form
-					    "im" 'dune-insert-menhir-form
-					    "ip" 'dune-insert-ocamllex-form
-					    "ir" 'dune-insert-rule-form
-					    "it" 'dune-insert-tests-form
-					    "iv" 'dune-insert-env-form
-					    "ix" 'dune-insert-executables-form
-					    "iy" 'dune-insert-ocamlyacc-form
-					    "tP" 'dune-promote
-					    "tp" 'dune-runtest-and-promote))
+				  "cc" 'compile
+				  "ia" 'dune-insert-alias-form
+				  "ic" 'dune-insert-copyfiles-form
+				  "id" 'dune-insert-ignored-subdirs-form
+				  "ie" 'dune-insert-executable-form
+				  "ii" 'dune-insert-install-form
+				  "il" 'dune-insert-library-form
+				  "im" 'dune-insert-menhir-form
+				  "ip" 'dune-insert-ocamllex-form
+				  "ir" 'dune-insert-rule-form
+				  "it" 'dune-insert-tests-form
+				  "iv" 'dune-insert-env-form
+				  "ix" 'dune-insert-executables-form
+				  "iy" 'dune-insert-ocamlyacc-form
+				  "tP" 'dune-promote
+				  "tp" 'dune-runtest-and-promote))
 
 (use-package utop
   :defer t
@@ -1718,14 +1697,14 @@
     (evil-insert-state))
 
   (set-leader-keys-for-major-mode 'tuareg-mode
-					    "'"  'utop
-					    "sb" 'utop-eval-buffer
-					    "sB" 'utop-eval-buffer-and-go
-					    "si" 'utop
-					    "sp" 'utop-eval-phrase
-					    "sP" 'utop-eval-phrase-and-go
-					    "sr" 'utop-eval-region
-					    "sR" 'utop-eval-region-and-go)
+				  "'"  'utop
+				  "sb" 'utop-eval-buffer
+				  "sB" 'utop-eval-buffer-and-go
+				  "si" 'utop
+				  "sp" 'utop-eval-phrase
+				  "sP" 'utop-eval-phrase-and-go
+				  "sr" 'utop-eval-region
+				  "sR" 'utop-eval-region-and-go)
   (declare-prefix-for-mode 'tuareg-mode "ms" "send")
   (define-key utop-mode-map (kbd "C-j") 'utop-history-goto-next)
   (define-key utop-mode-map (kbd "C-k") 'utop-history-goto-prev))
@@ -2080,10 +2059,8 @@
 
   :general
   (normal-mode-major-mode
-    :major-modes
-    '(xwidget-webkit-mode t)
-    :keymaps
-    '(xwidget-webkit-mode-map)
+    :major-modes '(xwidget-webkit-mode t)
+    :keymaps     '(xwidget-webkit-mode-map)
     "f"   'xwwp-follow-link
     "L"   'xwidget-webkit-browse-url
     "s-c" 'xwidget-webkit-copy-selection-as-kill
@@ -2137,10 +2114,8 @@
 
   :config
   (local-leader
-    :major-modes
-    '(kotlin-mode t)
-    :keymaps
-    '(kotlin-mode-map)
+    :major-modes '(kotlin-mode t)
+    :keymaps     '(kotlin-mode-map)
     "'" 'run-kotlin))
 
 ;; scala config ====================================
@@ -2539,10 +2514,8 @@
   
   :general
   (insert-mode-major-mode
-    :major-modes
-    '(vterm-mode vterm-copy-mode t)
-    :keymaps
-    '(vterm-mode-map vterm-copy-mode-map)
+    :major-modes '(vterm-mode vterm-copy-mode t)
+    :keymaps     '(vterm-mode-map vterm-copy-mode-map)
     "C-e"   'vterm--self-insert
     "C-f"   'vterm--self-insert
     "C-a"   'vterm--self-insert
@@ -2564,19 +2537,15 @@
     "C-d"   'vterm--self-insert)
 
   (local-leader
-    :major-modes
-    '(vterm-mode vterm-copy-mode t)
-    :keymaps
-    '(vterm-mode-map vterm-copy-mode-map)
+    :major-modes '(vterm-mode vterm-copy-mode t)
+    :keymaps     '(vterm-mode-map vterm-copy-mode-map)
     "c" 'multi-vterm
     "n" 'multi-vterm-next
     "p" 'multi-vterm-prev)
 
   (normal-mode-major-mode
-    :major-modes
-    '(vterm-mode vterm-copy-mode t)
-    :keymaps
-    '(vterm-mode-map vterm-copy-mode-map)
+    :major-modes '(vterm-mode vterm-copy-mode t)
+    :keymaps     '(vterm-mode-map vterm-copy-mode-map)
     "i"   'evil-insert-resume
     "o"   'evil-insert-resume
     "RET" 'evil-insert-resume))
@@ -3286,10 +3255,8 @@
   :defer t
   :general
   (normal-mode-major-mode
-    :major-modes
-    '(tetris-mode t)
-    :keymaps
-    '(tetris-mode-map)
+    :major-modes '(tetris-mode t)
+    :keymaps     '(tetris-mode-map)
     "q" 'tetris-end-game
     "h" 'tetris-move-left
     "j" 'tetris-move-down
