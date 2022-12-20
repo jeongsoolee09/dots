@@ -90,6 +90,28 @@
   (let ((github-form (straight-from-github package repo)))
     `(use-package ,package :straight ,github-form ,@body)))
 
+(defun toggle-debug-on-error ()
+  "Toggle `debug-on-error`."
+  (interactive)
+  (if debug-on-error
+      (progn
+	(setq debug-on-error nil)
+	(message "%s" "Now disabling stacktrace on error."))
+    (setq debug-on-error t)
+    (message "%s" "Now showing stacktrace on error.")))
+
+(defun visit-init-dot-el ()
+  "Visit `~/.emacs.d/init.el'."
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+(defun eval-init-dot-el ()
+  "Evaluate the contents of `~/.emacs.d/init.el'."
+  (interactive)
+  (with-temp-buffer
+    (insert-file-contents "~/.emacs.d/init.el")
+    (eval-buffer)))
+
 ;; Custom Lisp files ================================
 ;; ==================================================
 
@@ -190,7 +212,7 @@
     :states  '(normal visual operator)
     :prefix  ""))
 
-;; emoji config =====================================
+;; Emoji config =====================================
 ;; ==================================================
 
 (use-package emoji-cheat-sheet-plus) ; TODO: add general
@@ -874,6 +896,7 @@
 (use-package lua-mode
   :straight nil
   :mode "\\.lua\\'"
+  :defines (run-hammerspoon)
 
   :config
   (defun run-hammerspoon ()
@@ -935,14 +958,12 @@
     "sl" 'lua-send-current-line
     "sr" 'lua-send-region
     "'"  'lua-show-process-buffer)
+  ;; TODO
   ;; (when macOS-p
   ;;   (local-leader
   ;;     :major-modes
   ;;     '(lua-mode t)
-  ;;     :keymaps
-  
-  ;;     ))
-
+  ;;     :keymaps))
   )
 
 ;; Guix config ======================================
@@ -2051,9 +2072,11 @@
 (use-package xwidget
   :straight nil
   :when     macOS-p
+  :defines  (xwidget-webkit-find-file xwidget-new-window)
   :commands (xwidget-new-window
 	     xwidget-webkit-find-file
 	     xwidget-webkit-browse-url)
+
   :general
   (normal-mode-major-mode
     :major-modes
@@ -2137,31 +2160,22 @@
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
   (setq sbt:program-options '("-Dsbt.supershell=false")))
 
-;; git-gutter config ================================
+;; Git-gutter config ================================
 ;; ==================================================
 
 (use-package git-gutter
   :config
   (global-git-gutter-mode +1))
 
-;; magit config =====================================
+;; Magit config =====================================
 ;; ==================================================
 
 (use-package magit
-  :general
-  (global-leader
-    "g"  (which-key-prefix "magit")
-    "gs" 'magit
-    "ga" 'magit-stage-file
-    "gc" 'magit-commit-create
-    "gC" 'magit-clone
-    "gp" 'magit-push
-    "gd" 'magit-diff-dwim
-    "gt" 'magit-dispatch)
   :config
   (add-hook 'magit-mode-hook
 	    (lambda ()
-	      (evil-define-key 'normal magit-mode-map (kbd "SPC") nil))))
+	      (evil-define-key 'normal
+		magit-mode-map (kbd "SPC") nil))))
 
 ;; vc config ========================================
 ;; ==================================================
@@ -2178,10 +2192,12 @@
   :straight nil
   :hook ((emacs-lisp-mode lisp-interaction-mode ielm-mode) . turn-on-eldoc-mode))
 
-;; comments =========================================
+;; Newcomment =======================================
 ;; ==================================================
 
-(agnostic-key "M-;" 'comment-dwim)
+(use-package newcomment
+  :config
+  (agnostic-key "M-;" 'comment-dwim))
 
 ;; save-place configs ===============================
 ;; ==================================================
@@ -2195,7 +2211,9 @@
 ;; winner-mode configs ==============================
 ;; ==================================================
 
-(winner-mode 1)
+(use-package winner
+  :config
+  (winner-mode 1))
 
 ;; which-key configs ================================
 ;; ==================================================
@@ -2284,14 +2302,6 @@
 ;; ==================================================
 
 (use-package projectile
-  :general
-  (global-leader
-    "p"  (which-key-prefix "project")
-    "p/" 'projectile-ripgrep
-    "pf" 'projectile-find-file
-    "pp" 'projectile-switch-project
-    "pP" 'projectile-switch-open-project
-    "pc" 'projectile-compile-project)
   :config
   (projectile-mode)
   (setq projectile-mode-line            "Projectile"
@@ -2698,39 +2708,18 @@
 ;; SPC-Leader bindings ==============================
 ;; ==================================================
 
-(defun toggle-debug-on-error ()
-  (interactive)
-  (if debug-on-error
-      (progn
-	(setq debug-on-error nil)
-	(message "%s" "Now disabling stacktrace on error."))
-    (setq debug-on-error t)
-    (message "%s" "Now showing stacktrace on error.")))
-
-(defun visit-init-dot-el ()
-  "visit `~/.emacs.d/init.el'."
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-(defun eval-init-dot-el ()
-  "evaluates the contents of `~/.emacs.d/init.el'."
-  (interactive)
-  (with-temp-buffer
-    (insert-file-contents "~/.emacs.d/init.el")
-    (eval-buffer)))
-
 (global-leader
   "SPC" 'execute-extended-command
   "TAB" 'evil-switch-to-windows-last-buffer
   "C-r" 'revert-buffer)
 
 (global-leader
-  "S"   (which-key-prefix "straight")
-  "Sp"  (which-key-prefix "package")
+  "S"   (which-key-prefix :straight)
+  "Sp"  (which-key-prefix :package)
   "Spu" 'straight-use-package)
 
 (global-leader
-  "w"  (which-key-prefix "window")
+  "w"  (which-key-prefix :window)
   "wd" 'delete-window
   "wD" 'ace-delete-window
   "wh" 'evil-window-left
@@ -2766,7 +2755,7 @@
   "0"  'winum-select-window-0)
 
 (global-leader
-  "f"   (which-key-prefix "file")
+  "f"   (which-key-prefix :file)
   "ff"  'find-file
   "fs"  'save-buffer
   "fed" 'visit-init-dot-el
@@ -2777,7 +2766,7 @@
   "o"   'find-file)
 
 (global-leader
-  "b"  (which-key-prefix "buffer")
+  "b"  (which-key-prefix :buffer)
   "bd" 'kill-this-buffer
   "bb" 'switch-to-buffer
   "bp" 'previous-buffer
@@ -2787,47 +2776,64 @@
 	 (kill-buffer (get-buffer "*Help*"))))
 
 (global-leader
-  "." 'tab-new
-  "," 'tab-close
-  "[" 'tab-previous
-  "]" 'tab-next
-  "/" 'flycheck-next-error
+  "."  'tab-new
+  ","  'tab-close
+  "["  'tab-previous
+  "]"  'tab-next
+  "/"  'flycheck-next-error
   "\\" 'flycheck-previous-error)
 
 (global-leader
-  "a"    (which-key-prefix "utilities")
+  "g"  (which-key-prefix :magit)
+  "gs" 'magit
+  "ga" 'magit-stage-file
+  "gc" 'magit-commit-create
+  "gC" 'magit-clone
+  "gp" 'magit-push
+  "gd" 'magit-diff-dwim
+  "gt" 'magit-dispatch)
+
+(global-leader
+  "a"    (which-key-prefix :utilities)
   "ai"   'display-current-time
   "ab"   'battery
   "al"   'launchctl
 
-  "aw"   (which-key-prefix "web")
+  "aw"   (which-key-prefix :web)
+  "aww"  (which-key-prefix :eww)
   "awww" 'eww
   "awws" 'eww-search-words
   "awwM" 'eww-open-w3m-current-url
   "awwn" 'eww-search-namu-wiki
 
+  "awm"  (which-key-prefix :w3m)
   "awmm" 'w3m
   "awmx" 'xwidget-webkit-open-w3m-current-url
   "awmW" 'eww-open-w3m-current-url
 
+  "awx"  (which-key-prefix :xwidget-webkit)
   "awxx" 'xwidget-new-window
   "awxf" 'xwidget-webkit-find-file
 
-  "aC"   (which-key-prefix "clock")
+  "aC"   (which-key-prefix :clock)
   "aCw"  'world-clock
   
-  "at"   (which-key-prefix "terminal")
-  "atr"  (which-key-prefix "repls")
+  "at"   (which-key-prefix :terminal)
+  "atr"  (which-key-prefix :repls)
   "atrb" 'run-bb
   "atrn" 'run-nbb
   "atro" 'run-ocaml
   "atru" 'utop
   "atrl" 'run-lua
   "atrh" 'run-hammerspoon
-
   "ats"  (which-key-prefix :shells)
   "atsa" 'async-shell-command
-  "atst" 'multi-term)
+  "atst" 'multi-term
+
+  "aR"   (which-key-prefix :radio)
+  "aRp"  'eradio-play
+  "aRs"  'eradio-stop
+  "aRR"  'eradio-toggle)
 
 (global-leader
   "q"    (which-key-prefix :quit)
@@ -2844,6 +2850,14 @@
   "hdm"  'describe-mode
   "hdp"  'describe-package
   "hdM"  'describe-keymap)
+
+(global-leader
+  "p"  (which-key-prefix "project")
+  "p/" 'projectile-ripgrep
+  "pf" 'projectile-find-file
+  "pp" 'projectile-switch-project
+  "pP" 'projectile-switch-open-project
+  "pc" 'projectile-compile-project)
 
 (global-leader
   "x"     (which-key-prefix "text")
@@ -3095,24 +3109,20 @@
 
 (use-package eradio
   :general
-  (global-leader
-    "aR" (which-key-prefix "Radio")
-    "aRp" 'eradio-play
-    "aRs" 'eradio-stop
-    "aRR" 'eradio-toggle)
+  
 
   :config
   (setq eradio-player '("mpv" "--no-video" "--no-terminal" "--really-quiet")
-	eradio-channels '(("MBC FM4U" . "http://serpent0.duckdns.org:8088/mbcfm.pls")
-			  ("MBC 표준FM" . "http://serpent0.duckdns.org:8088/mbcsfm.pls")
-			  ("KBS 쿨FM" . "http://serpent0.duckdns.org:8088/kbs2fm.pls")
-			  ("KBS 해피FM" . "http://serpent0.duckdns.org:8088/kbs2radio.pls")
+	eradio-channels '(("MBC FM4U"    . "http://serpent0.duckdns.org:8088/mbcfm.pls")
+			  ("MBC 표준FM"   . "http://serpent0.duckdns.org:8088/mbcsfm.pls")
+			  ("KBS 쿨FM"     . "http://serpent0.duckdns.org:8088/kbs2fm.pls")
+			  ("KBS 해피FM"   . "http://serpent0.duckdns.org:8088/kbs2radio.pls")
 			  ("KBS 클래식 FM" . "http://serpent0.duckdns.org:8088/kbsfm.pls")
-			  ("SBS 파워FM" . "http://serpent0.duckdns.org:8088/sbsfm.pls")
-			  ("SBS 러브FM" . "http://serpent0.duckdns.org:8088/sbs2fm.pls")
-			  ("TBS 교통방송" . "http://tbs.hscdn.com/tbsradio/fm/playlist.m3u8")
-			  ("TBS eFM" . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
-			  ("CBS 음악방송" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
+			  ("SBS 파워FM"   . "http://serpent0.duckdns.org:8088/sbsfm.pls")
+			  ("SBS 러브FM"   . "http://serpent0.duckdns.org:8088/sbs2fm.pls")
+			  ("TBS 교통방송"  . "http://tbs.hscdn.com/tbsradio/fm/playlist.m3u8")
+			  ("TBS eFM"     . "http://tbs.hscdn.com/tbsradio/efm/playlist.m3u8")
+			  ("CBS 음악방송"  . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8"))))
 
 ;; Elfeed config ====================================
 ;; ==================================================
