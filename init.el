@@ -225,13 +225,17 @@
 
 (use-package org
   :straight (:type built-in)
-  :defer t
+  :defer    t
+  :init
+  (defmacro org-emphasize-this (fname char)
+    "Make function for setting the emphasis in org mode"
+    `(defun ,fname () (interactive)
+	    (org-emphasize ,char)))
+  
   :general
   (local-leader
-    :major-modes
-    '(org-mode t)
-    :keymaps
-    '(org-mode-map)
+    :major-modes '(org-mode t)
+    :keymaps     '(org-mode-map)
     "'"     'org-edit-special
     ","     'org-ctrl-c-ctrl-c
     "*"     'org-ctrl-c-star
@@ -268,7 +272,7 @@
     "bZ"    'org-babel-switch-to-session-with-code
     "ba"    'org-babel-sha1-hash
     "bx"    'org-babel-do-key-sequence-in-edit-buffer
-    "b."    'spacemacs/org-babel-transient-state/body
+    "b."    'org-babel-transient-state/body
 
     "C"     (which-key-prefix :clock)
     "Cc"    'org-clock-cancel
@@ -277,7 +281,7 @@
     "Cg"    'org-clock-goto
     "Ci"    'org-clock-in
     "CI"    'org-clock-in-last
-    "Cj"    'spacemacs/org-clock-jump-to-current-clock
+    "Cj"    'org-clock-jump-to-current-clock
     "Co"    'org-clock-out
     "CR"    'org-clock-report
     "Cr"    'org-resolve-clocks
@@ -304,7 +308,7 @@
     "ih"    'org-insert-heading
     "iH"    'org-insert-heading-after-current
     "ii"    'org-insert-item
-    "iK"    'spacemacs/insert-keybinding-org
+    "iK"    'insert-keybinding-org
     "il"    'org-insert-link
     "in"    'org-add-note
     "ip"    'org-set-property
@@ -333,6 +337,12 @@
     "sr"    'org-refile
     "ss"    'org-sparse-tree
     "sS"    'org-sort
+
+    "S"     (which-key-prefix :shift)
+    "Sh"    'org-shiftcontrolleft
+    "Sj"    'org-shiftcontroldown
+    "Sk"    'org-shiftcontrolup
+    "Sl"    'org-shiftcontrolright
 
     "T"     (which-key-prefix :toggles)
     "Tc"    'org-toggle-checkbox
@@ -386,36 +396,42 @@
     "tto"   'org-table-toggle-coordinate-overlays
 
     "x"     (which-key-prefix :text)
-    "xb"    (spacemacs|org-emphasize spacemacs/org-bold ?*)
-    "xc"    (spacemacs|org-emphasize spacemacs/org-code ?~)
-    "xi"    (spacemacs|org-emphasize spacemacs/org-italic ?/)
     "xo"    'org-open-at-point
-    "xr"    (spacemacs|org-emphasize spacemacs/org-clear ? )
-    "xs"    (spacemacs|org-emphasize spacemacs/org-strike-through ?+)
-    "xu"    (spacemacs|org-emphasize spacemacs/org-underline ?_)
-    "xv"    (spacemacs|org-emphasize spacemacs/org-verbatim ?=))
+    "xb"    (org-emphasize-this org-bold ?*)
+    "xc"    (org-emphasize-this org-code ?~)
+    "xi"    (org-emphasize-this org-italic ?/)
+    "xr"    (org-emphasize-this org-clear ? )
+    "xs"    (org-emphasize-this org-strike-through ?+)
+    "xu"    (org-emphasize-this org-underline ?_)
+    "xv"    (org-emphasize-this org-verbatim ?=))
 
   (normal-mode-major-mode
     :major-modes
     '(org-mode t)
     :keymaps
     '(org-mode-map)
-    "C-S-l" 'org-shiftcontrolright
-    "C-S-h" 'org-shiftcontrolleft
-    "C-S-j" 'org-shiftcontroldown
-    "C-S-k" 'org-shiftcontrolup)
-
+    "RET" 'org-open-at-point)
+  
   :config
   (defun org-insert-current-time ()
     "insert the curren time at the cursor position."
     (interactive)
     (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
+
+  (defun cycle-todo-state ()
+    (and (org-get-todo-state)
+	 (when (or (and (org-entry-is-todo-p) (= n-not-done 0))
+		   (and (org-entry-is-done-p) (> n-not-done 0)))
+	   (org-todo))))
+
+  (add-hook 'org-after-todo-statistics-hook #'cycle-todo-state)
   
   (setq org-clock-persist-file (cache: "org-clock-save.el")
 	org-id-locations-file (cache: ".org-id-locations")
 	org-publish-timestamp-directory (cache: ".org-timestamps/")
 	org-directory "~/Dropbox/Org"
-	org-default-notes-file (expand-file-name "notes.org" org-directory)
+	org-default-notes-file (expand-file-name
+				"notes.org" org-directory)
 	org-log-done 'time
 	org-startup-with-inline-images t
 	org-latex-prefer-user-labels t
@@ -427,28 +443,16 @@
 	org-mouse-1-follows-link t
 	org-link-descriptive t
 	org-hide-emphasis-markers t
-	org-enforce-todo-dependencies t)
-
-  (add-hook 'org-after-todo-statistics-hook
-	    (lambda ()
-	      (and (org-get-todo-state)
-		   (when (or (and (org-entry-is-todo-p) (= n-not-done 0))
-			     (and (org-entry-is-done-p) (> n-not-done 0)))
-		     (org-todo)))))
-
-  (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
-
-  (when (fboundp 'org-appear-mode)
-    (add-hook 'org-mode-hook 'org-appear-mode))
-
-  (setq org-todo-keywords
+	org-enforce-todo-dependencies t
+	org-todo-keywords
 	'((sequence "TODO" "WORKING" "|"
 		    "DONE" "ABORTED")))
 
-  (defmacro org-emphasize-this (fname char)
-    "Make function for setting the emphasis in org mode"
-    `(defun ,fname () (interactive)
-	    (org-emphasize ,char))))
+  (dolist (fn '(org-insert-drawer
+                    org-insert-heading
+                    org-insert-item
+                    org-insert-structure-template))
+        (advice-add fn :after 'evil-insert-state)))
 
 (use-package evil-org
   :after (evil org)
@@ -489,7 +493,8 @@
   :after org)
 
 (use-package org-appear
-  :after org)
+  :after org
+  :hook  (org-mode . org-appear-mode))
 
 (use-package org-sticky-header :after org)
 
@@ -501,8 +506,8 @@
 
 (use-package ob
   :straight (:type built-in)
-  :after org
-  :defer t
+  :after    org
+  :defer    t
   :init
   (add-hook 'org-mode-hook
 	    (lambda () (org-babel-do-load-languages
@@ -516,51 +521,47 @@
 
 (use-package org-capture
   :straight nil
+  :demand   t
   :general
   (local-leader
-    :major-modes
-    '(org-capture-mode t)
-    :keymaps
-    '(org-capture-mode-map)
-    "a" 'org-capture-kill
+    :major-modes '(org-capture-mode t)
+    :keymaps     '(org-capture-mode-map)
     "," 'org-capture-finalize
+    "a" 'org-capture-kill
     "c" 'org-capture-finalize
     "k" 'org-capture-kill
     "r" 'org-capture-refile))
 
 (use-package org-src
   :straight nil
-  :after org
+  :after    org
   :general
   (local-leader
-    :major-modes
-    '(org-src-mode t)
-    :keymaps
-    '(org-src-mode-map)
+    :major-modes '(org-src-mode t)
+    :keymaps     '(org-src-mode-map)
     "," 'org-edit-src-exit
-    "c" 'org-edit-src-exit
     "a" 'org-edit-src-abort
+    "c" 'org-edit-src-exit
     "k" 'org-edit-src-abort))
 
-(use-package org-roam :defer t)
+(use-package org-roam    :defer t)
 (use-package org-roam-ui :defer t)
 
 (use-package org-indent
-  :after org
-  :straight nil)
+  :straight nil
+  :after    org)
 
 (use-package org-clock
   :straight nil
-  :after org
+  :after    org
   :commands (org-clock-jump-to-current-clock))
 
-;; exporters ========================================
-
-(use-package ox-latex :straight nil :defer t)
-(use-package ox-publish :straight nil :defer t)
-(use-package ox-epub :defer t)
-(use-package ox-pandoc :defer t)
-(use-package ox-gfm :defer t)
+;; exporters
+(use-package ox-latex    :straight nil :defer t)
+(use-package ox-publish  :straight nil :defer t)
+(use-package ox-epub     :defer t)
+(use-package ox-pandoc   :defer t)
+(use-package ox-gfm      :defer t)
 (use-package ox-asciidoc :defer t)
 
 ;; Emoji config =====================================
@@ -1166,7 +1167,7 @@
     "'"    'sesman-start
     "d"    (which-key-prefix "debug")
     "db"   'cider-debug-defun-at-point
-    "de"   'spacemacs/cider-display-error-buffer
+    "de"   'cider-display-error-buffer
     "dv"   (which-key-prefix "inspect values")
     "dve"  'cider-inspect-last-sexp
     "dvf"  'cider-inspect-defun-at-point
@@ -1175,13 +1176,13 @@
     "dvv"  'cider-inspect-expr
     "e"    (which-key-prefix "evaluation")
     "e;"   'cider-eval-defun-to-comment
-    "e$"   'spacemacs/cider-eval-sexp-end-of-line
+    "e$"   'cider-eval-sexp-end-of-line
     "e("   'cider-eval-list-at-point
     "eb"   'cider-eval-buffer
     "ee"   'cider-eval-last-sexp
     "ef"   'cider-eval-defun-at-point
     "ei"   'cider-interrupt
-    "el"   'spacemacs/cider-eval-sexp-end-of-line
+    "el"   'cider-eval-sexp-end-of-line
     "em"   'cider-macroexpand-1
     "eM"   'cider-macroexpand-all
     "ena"  'cider-ns-reload-all
@@ -1233,11 +1234,11 @@
     "pv"   'cider-profile-var-profiled-p
     "s"    (which-key-prefix "send to repl")
     "sb"   'cider-load-buffer
-    "sB"   'spacemacs/cider-send-buffer-in-repl-and-focus
-    "se"   'spacemacs/cider-send-last-sexp-to-repl
-    "sE"   'spacemacs/cider-send-last-sexp-to-repl-focus
-    "sf"   'spacemacs/cider-send-function-to-repl
-    "sF"   'spacemacs/cider-send-function-to-repl-focus
+    "sB"   'cider-send-buffer-in-repl-and-focus
+    "se"   'cider-send-last-sexp-to-repl
+    "sE"   'cider-send-last-sexp-to-repl-focus
+    "sf"   'cider-send-function-to-repl
+    "sF"   'cider-send-function-to-repl-focus
     "si"   'sesman-start
     "sc"   (which-key-prefix "connect external repl")
     "scj"  'cider-connect-clj
@@ -1253,13 +1254,13 @@
     "sqn"  'cider-ns-reload
     "sqN"  'cider-ns-reload-all
     "t"    (which-key-prefix "test")
-    "ta"   'spacemacs/cider-test-run-all-tests
+    "ta"   'cider-test-run-all-tests
     "tb"   'cider-test-show-report
-    "tl"   'spacemacs/cider-test-run-loaded-tests
-    "tn"   'spacemacs/cider-test-run-ns-tests
-    "tp"   'spacemacs/cider-test-run-project-tests
-    "tr"   'spacemacs/cider-test-rerun-failed-tests
-    "tt"   'spacemacs/cider-test-run-focused-test
+    "tl"   'cider-test-run-loaded-tests
+    "tn"   'cider-test-run-ns-tests
+    "tp"   'cider-test-run-project-tests
+    "tr"   'cider-test-rerun-failed-tests
+    "tt"   'cider-test-run-focused-test
     "="    (which-key-prefix "format")
     "=="   'cider-format-buffer
     "=eb"  'cider-format-edn-buffer
@@ -1269,7 +1270,7 @@
     "g"    (which-key-prefix "goto")
     "gb"   'cider-pop-back
     "gc"   'cider-classpath
-    "gg"   'spacemacs/clj-find-var
+    "gg"   'clj-find-var
     "gn"   'cider-find-ns
     "h"    (which-key-prefix "documentation")
     "ha"   'cider-apropos
@@ -1282,8 +1283,8 @@
     "hS"   'cider-browse-spec-all
     "T"    (which-key-prefix "toggle")
     "Te"   'cider-enlighten-mode
-    "Tf"   'spacemacs/cider-toggle-repl-font-locking
-    "Tp"   'spacemacs/cider-toggle-repl-pretty-printing
+    "Tf"   'cider-toggle-repl-font-locking
+    "Tp"   'cider-toggle-repl-pretty-printing
     "Tt"   'cider-auto-test-mode))
 
 ;; Hy config ========================================
@@ -1456,7 +1457,7 @@
    haskell-process-suggest-remove-import-lines t
    haskell-process-auto-import-loaded-modules t)
   :config
-  (defun spacemacs/haskell-interactive-bring ()
+  (defun haskell-interactive-bring ()
     "Bring up the interactive mode for this session without
 	 switching to it."
     (interactive)
@@ -1469,17 +1470,17 @@
 
   ;; prefixes
   (dolist (mode haskell-modes)
-    (spacemacs/declare-prefix-for-mode mode "mg" "haskell/navigation")
-    (spacemacs/declare-prefix-for-mode mode "ms" "haskell/repl")
-    (spacemacs/declare-prefix-for-mode mode "mc" "haskell/cabal")
-    (spacemacs/declare-prefix-for-mode mode "mh" "haskell/documentation")
-    (spacemacs/declare-prefix-for-mode mode "md" "haskell/debug")
-    (spacemacs/declare-prefix-for-mode mode "mr" "haskell/refactor"))
-  (spacemacs/declare-prefix-for-mode 'haskell-interactive-mode "ms" "haskell/repl")
-  (spacemacs/declare-prefix-for-mode 'haskell-cabal-mode "ms" "haskell/repl")
+    (declare-prefix-for-mode mode "mg" "haskell/navigation")
+    (declare-prefix-for-mode mode "ms" "haskell/repl")
+    (declare-prefix-for-mode mode "mc" "haskell/cabal")
+    (declare-prefix-for-mode mode "mh" "haskell/documentation")
+    (declare-prefix-for-mode mode "md" "haskell/debug")
+    (declare-prefix-for-mode mode "mr" "haskell/refactor"))
+  (declare-prefix-for-mode 'haskell-interactive-mode "ms" "haskell/repl")
+  (declare-prefix-for-mode 'haskell-cabal-mode "ms" "haskell/repl")
 
   ;; key bindings
-  (defun spacemacs/haskell-process-do-type-on-prev-line ()
+  (defun haskell-process-do-type-on-prev-line ()
     (interactive)
     (haskell-process-do-type 1))
 
@@ -1490,14 +1491,14 @@
     (kbd "C-l") 'haskell-interactive-mode-clear)
 
   ;; Bind repl
-  (spacemacs/register-repl 'haskell
+  (register-repl 'haskell
 			   'haskell-interactive-switch "haskell")
 
   (dolist (mode haskell-modes)
-    (spacemacs/set-leader-keys-for-major-mode mode
+    (set-leader-keys-for-major-mode mode
 					      "sb"  'haskell-process-load-file
 					      "sc"  'haskell-interactive-mode-clear
-					      "sS"  'spacemacs/haskell-interactive-bring
+					      "sS"  'haskell-interactive-bring
 					      "ss"  'haskell-interactive-switch
 					      "st"  'haskell-session-change-target
 					      "'"   'haskell-interactive-switch
@@ -1510,7 +1511,7 @@
 					      "hd"  'inferior-haskell-find-haddock
 					      "hi"  'haskell-process-do-info
 					      "ht"  'haskell-process-do-type
-					      "hT"  'spacemacs/haskell-process-do-type-on-prev-line
+					      "hT"  'haskell-process-do-type-on-prev-line
 
 					      "da"  'haskell-debug/abandon
 					      "db"  'haskell-debug/break-on-function
@@ -1524,15 +1525,15 @@
 					      "ds"  'haskell-debug/step
 					      "dt"  'haskell-debug/trace
 
-					      "ri"  'spacemacs/haskell-format-imports)
+					      "ri"  'haskell-format-imports)
     (if (eq haskell-completion-backend 'lsp)
-	(spacemacs/set-leader-keys-for-major-mode mode
+	(set-leader-keys-for-major-mode mode
 						  "gl"  'haskell-navigate-imports
 						  "S"   'haskell-mode-stylish-buffer
 
 						  "hg"  'hoogle
 						  "hG"  'haskell-hoogle-lookup-from-local)
-      (spacemacs/set-leader-keys-for-major-mode mode
+      (set-leader-keys-for-major-mode mode
 						"gi"  'haskell-navigate-imports
 						"F"   'haskell-mode-stylish-buffer
 
@@ -1558,15 +1559,15 @@
   (bind-key "C-c C-z" 'haskell-interactive-switch haskell-mode-map)
 
   ;; Switch back to editor from REPL
-  (spacemacs/set-leader-keys-for-major-mode 'haskell-interactive-mode
+  (set-leader-keys-for-major-mode 'haskell-interactive-mode
 					    "ss"  'haskell-interactive-switch-back)
 
   ;; Compile
-  (spacemacs/set-leader-keys-for-major-mode 'haskell-cabal
+  (set-leader-keys-for-major-mode 'haskell-cabal
 					    "C"  'haskell-compile)
 
   ;; Cabal-file bindings
-  (spacemacs/set-leader-keys-for-major-mode 'haskell-cabal-mode
+  (set-leader-keys-for-major-mode 'haskell-cabal-mode
 					    ;; "="   'haskell-cabal-subsection-arrange-lines ;; Does a bad job, 'gg=G' works better
 					    "d"   'haskell-cabal-add-dependency
 					    "b"   'haskell-cabal-goto-benchmark-section
@@ -1577,7 +1578,7 @@
 					    "n"   'haskell-cabal-next-subsection
 					    "p"   'haskell-cabal-previous-subsection
 					    "sc"  'haskell-interactive-mode-clear
-					    "sS"  'spacemacs/haskell-interactive-bring
+					    "sS"  'haskell-interactive-bring
 					    "ss"  'haskell-interactive-switch
 					    "N"   'haskell-cabal-next-section
 					    "P"   'haskell-cabal-previous-section
@@ -1646,8 +1647,8 @@
 	 ("\\.topml$" . tuareg-mode))
   :defer t
   :init
-  (spacemacs//init-ocaml-opam)
-  (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+  (/init-ocaml-opam)
+  (set-leader-keys-for-major-mode 'tuareg-mode
 					    "ga" 'tuareg-find-alternate-file
 					    "cc" 'compile)
   ;; Make OCaml-generated files invisible to filename completion
@@ -1657,14 +1658,14 @@
 (use-package dune
   :defer t
   :init
-  (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+  (set-leader-keys-for-major-mode 'tuareg-mode
 					    "tP" 'dune-promote
 					    "tp" 'dune-runtest-and-promote)
-  (spacemacs/declare-prefix-for-mode 'tuareg-mode "mt" "test")
-  (spacemacs/declare-prefix-for-mode 'dune-mode "mc" "compile/check")
-  (spacemacs/declare-prefix-for-mode 'dune-mode "mi" "insert-form")
-  (spacemacs/declare-prefix-for-mode 'dune-mode "mt" "test")
-  (spacemacs/set-leader-keys-for-major-mode 'dune-mode
+  (declare-prefix-for-mode 'tuareg-mode "mt" "test")
+  (declare-prefix-for-mode 'dune-mode "mc" "compile/check")
+  (declare-prefix-for-mode 'dune-mode "mi" "insert-form")
+  (declare-prefix-for-mode 'dune-mode "mt" "test")
+  (set-leader-keys-for-major-mode 'dune-mode
 					    "cc" 'compile
 					    "ia" 'dune-insert-alias-form
 					    "ic" 'dune-insert-copyfiles-form
@@ -1686,13 +1687,13 @@
   :defer t
   :init
   (add-hook 'tuareg-mode-hook 'utop-minor-mode)
-  (spacemacs/register-repl 'utop 'utop "ocaml")
+  (register-repl 'utop 'utop "ocaml")
   :config
   (if (executable-find "opam")
       (setq utop-command "opam config exec -- utop -emacs")
     (spacemacs-buffer/warning "Cannot find \"opam\" executable."))
 
-  (defun spacemacs/utop-eval-phrase-and-go ()
+  (defun utop-eval-phrase-and-go ()
     "Send phrase to REPL and evaluate it and switch to the REPL in
 `insert state'"
     (interactive)
@@ -1700,7 +1701,7 @@
     (utop)
     (evil-insert-state))
 
-  (defun spacemacs/utop-eval-buffer-and-go ()
+  (defun utop-eval-buffer-and-go ()
     "Send buffer to REPL and evaluate it and switch to the REPL in
 `insert state'"
     (interactive)
@@ -1708,7 +1709,7 @@
     (utop)
     (evil-insert-state))
 
-  (defun spacemacs/utop-eval-region-and-go (start end)
+  (defun utop-eval-region-and-go (start end)
     "Send region to REPL and evaluate it and switch to the REPL in
 `insert state'"
     (interactive "r")
@@ -1716,16 +1717,16 @@
     (utop)
     (evil-insert-state))
 
-  (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
+  (set-leader-keys-for-major-mode 'tuareg-mode
 					    "'"  'utop
 					    "sb" 'utop-eval-buffer
-					    "sB" 'spacemacs/utop-eval-buffer-and-go
+					    "sB" 'utop-eval-buffer-and-go
 					    "si" 'utop
 					    "sp" 'utop-eval-phrase
-					    "sP" 'spacemacs/utop-eval-phrase-and-go
+					    "sP" 'utop-eval-phrase-and-go
 					    "sr" 'utop-eval-region
-					    "sR" 'spacemacs/utop-eval-region-and-go)
-  (spacemacs/declare-prefix-for-mode 'tuareg-mode "ms" "send")
+					    "sR" 'utop-eval-region-and-go)
+  (declare-prefix-for-mode 'tuareg-mode "ms" "send")
   (define-key utop-mode-map (kbd "C-j") 'utop-history-goto-next)
   (define-key utop-mode-map (kbd "C-k") 'utop-history-goto-prev))
 
@@ -2196,6 +2197,7 @@
 ;; ==================================================
 
 (use-package newcomment
+  :straight nil
   :config
   (agnostic-key "M-;" 'comment-dwim))
 
@@ -2799,6 +2801,28 @@
   "ab"   'battery
   "al"   'launchctl
 
+  "ao"   (which-key-prefix :org)
+  "aof"  (which-key-prefix :feeds)
+  "ao#"  'org-agenda-list-stuck-projects
+  "aoa"  'org-agenda-list
+  "aoo"  'org-agenda
+  "aoc"  'org-capture
+  "aoe"  'org-store-agenda-views
+  "aofi" 'org-feed-goto-inbox
+  "aofu" 'org-feed-update-all
+  "aoC"  (which-key-prefix :clocks)
+  "aoCc" 'org-clock-cancel
+  "aoCg" 'org-clock-goto
+  "aoCi" 'org-clock-in
+  "aoCI" 'org-clock-in-last
+  "aoCj" 'spacemacs/org-clock-jump-to-current-clock
+  "aoCo" 'org-clock-out
+  "aoCr" 'org-resolve-clocks
+  "aol"  'org-store-link
+  "aom"  'org-tags-view
+  "aos"  'org-search-view
+  "aot"  'org-todo-list
+
   "aw"   (which-key-prefix :web)
   "aww"  (which-key-prefix :eww)
   "awww" 'eww
@@ -2834,6 +2858,9 @@
   "aRp"  'eradio-play
   "aRs"  'eradio-stop
   "aRR"  'eradio-toggle)
+
+(global-leader
+  "Cc"   'org-capture)
 
 (global-leader
   "q"    (which-key-prefix :quit)
@@ -2902,18 +2929,13 @@
 
 (use-package ace-link
   :init
-  (with-eval-after-load 'info
-    (define-key Info-mode-map   "o" 'ace-link-info))
-  (with-eval-after-load 'help-mode
-    (define-key help-mode-map   "o" 'ace-link-help))
-  (with-eval-after-load 'woman
-    (define-key woman-mode-map  "o" 'link-hint-open-link))
-  (with-eval-after-load 'eww
-    (define-key eww-link-keymap "o" 'ace-link-eww)
-    (define-key eww-mode-map    "o" 'ace-link-eww))
-  (with-eval-after-load 'w3m
-    (define-key eww-link-keymap "o" 'ace-link-eww)
-    (define-key eww-mode-map    "o" 'ace-link-eww)))
+  (define-key Info-mode-map   "o" 'ace-link-info)
+  (define-key help-mode-map   "o" 'ace-link-help)
+  (define-key woman-mode-map  "o" 'link-hint-open-link)
+  (define-key eww-link-keymap "o" 'ace-link-eww)
+  (define-key eww-mode-map    "o" 'ace-link-eww)
+  (define-key eww-link-keymap "o" 'ace-link-eww)
+  (define-key eww-mode-map    "o" 'ace-link-eww))
 
 (use-package ace-window
   :defer t
