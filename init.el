@@ -2943,7 +2943,8 @@
   (setq aw-keys '(?q ?w ?e ?r ?t ?y ?u ?i ?o ?p)
 	aw-background nil))
 
-(use-package ace-jump-mode :defer t)
+(use-package ace-jump-mode
+  :defer t)
 
 ;; w3m config =======================================
 ;; ==================================================
@@ -3030,10 +3031,8 @@
 
   :general
   (local-leader
-    :major-modes
-    '(w3m-mode t)
-    :keymaps
-    '(w3m-mode-map)
+    :major-modes '(w3m-mode t)
+    :keymaps     '(w3m-mode-map)
     "p" 'w3m-player-movie
     "y" 'w3m-copy-link
     "f" 'w3m-find-file
@@ -3054,18 +3053,40 @@
     "b" 'w3m-bookmark-view
     "c" 'w3m-copy-current-url)
 
+  (normal-mode-major-mode
+    :major-modes '(w3m-mode t)
+    :keymaps     '(w3m-mode-map)
+    "SPC" nil
+    "o"   'ace-link-w3m
+    "C-f" 'evil-scroll-page-down
+    "C-b" 'evil-scroll-page-up
+    "wp"  'w3m-player-movie
+    "wy"  'w3m-copy-link
+    "wf"  'w3m-find-file
+    "wo"  'w3m-open-url
+    "wO"  'w3m-open-url-new-session
+    "wt"  'w3m-view-this-url-new-session
+    "wT"  'w3m-create-empty-session
+    "ws"  'w3m-search
+    "wS"  'w3m-search-new-session
+    "wl"  'w3m-next-buffer
+    "wh"  'w3m-previous-buffer
+    "wx"  'w3m-delete-buffer
+    "wd"  'w3m-save-buffer-to-file
+    "wD"  'w3m-save-buffer
+    "we"  'w3m-bookmark-edit
+    "wa"  'w3m-bookmark-add-current-url
+    "wm"  'w3m-view-url-with-external-browser
+    "wb"  'w3m-bookmark-view
+    "wc"  'w3m-copy-current-url)
+
   :config
-  (setq w3m-default-display-inline-images t
-	w3m-session-load-crashed-sessions 'never
-	w3m-search-word-at-point nil)
-  (if window-system
+  (if GUI-p
       (setq browse-url-browser-function 'browse-url-default-browser)
     (setq browse-url-browser-function 'w3m-browse-url))
-  (define-key w3m-mode-map (kbd "wc") 'w3m-copy-current-url)
-  (evil-define-key 'normal w3m-mode-map (kbd "o") 'ace-link-w3m)
-  (evil-define-key 'normal w3m-mode-map (kbd "C-f") 'evil-scroll-page-down)
-  (evil-define-key 'normal w3m-mode-map (kbd "C-b") 'evil-scroll-page-up)
-  (evil-define-key 'normal w3m-mode-map (kbd "SPC") nil))
+  (setq w3m-default-display-inline-images t
+	w3m-session-load-crashed-sessions 'never
+	w3m-search-word-at-point nil))
 
 ;; eww config =======================================
 ;; ==================================================
