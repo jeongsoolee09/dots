@@ -1783,6 +1783,7 @@
 (use-package xwidget
   :straight nil
   :when     macOS-p
+  :commands (xwidget-new-window xwidget-webkit-find-file xwidget-webkit-browse-url)
   :general
   (normal-mode-major-mode
     :major-modes
@@ -2944,6 +2945,26 @@
 
 (evil-define-key 'insert 'global-map (kbd "C-h") 'backward-delete-char)
 (evil-define-key 'insert 'company-mode-map (kbd "C-h") 'backward-delete-char)
+
+;; Tetris config ====================================
+;; ==================================================
+
+(use-package tetris
+  :straight nil
+  :defer t
+  :general
+  (normal-mode-major-mode
+    :major-modes
+    '(tetris-mode t)
+    :keymaps
+    '(tetris-mode-map)
+    "q" 'tetris-end-game
+    "h" 'tetris-move-left
+    "j" 'tetris-move-down
+    "k" 'tetris-rotate-prev
+    "l" 'tetris-move-right
+    "i" 'tetris-rotate-next
+    "m" 'tetris-move-bottom))
 
 ;; Misc =============================================
 ;; ==================================================
