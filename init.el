@@ -26,8 +26,17 @@
 ;; Custom Lisp files ================================
 ;; ==================================================
 
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(add-to-list 'load-path "~/.emacs.d/straight/repos/vertico/extensions")
+(setq custom-lisp-directory (concat user-emacs-directory "lisp/"))
+(setq global-cache-directory (concat user-emacs-directory "cache/"))
+
+(dolist (dir '(custom-lisp-directory global-cache-directory))
+  (unless (file-directory-p global-cache-directory)
+    (make-directory global-cache-directory))
+  (add-to-list 'load-path dir))
+
+(add-to-list 'load-path
+	     (concat user-emacs-directory
+		     "straight/repos/vertico/extensions/"))
 
 ;; GPG config =======================================
 ;; ==================================================
@@ -111,9 +120,10 @@
 ;; emoji config =====================================
 ;; ==================================================
 
-(use-package emoji-cheat-sheet-plus
+(use-package emoji-cheat-sheet-plus) ; TODO: add general
 
-  )
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
 
 ;; Org config =======================================
 ;; ==================================================
@@ -127,6 +137,8 @@
 
   :general
   (local-leader
+    :major-modes
+    '(org-mode t)
     :keymaps
     '(org-mode-map)
     "i" '(which-key-prefix "insert")
@@ -137,14 +149,31 @@
     "insert the curren time at the cursor position."
     (interactive)
     (insert (format-time-string "** %Y-%m-%d %H:%M:%S")))
-
-  (setq org-return-follows-link t
+  
+  (setq org-clock-persist-file (concat spacemacs-cache-directory
+				       "org-clock-save.el")
+	org-id-locations-file (concat spacemacs-cache-directory
+				      ".org-id-locations")
+	org-publish-timestamp-directory (concat spacemacs-cache-directory
+						".org-timestamps/")
+	org-directory "~/Dropbox/Org" ;; needs to be defined for `org-default-notes-file'
+	org-default-notes-file (expand-file-name "notes.org" org-directory)
+	org-log-done 'time
+	org-startup-with-inline-images t
+	org-latex-prefer-user-labels t
+	org-image-actual-width nil
+	org-src-fontify-natively t
+	org-src-tab-acts-natively t
+	;; this is consistent with the value of
+	;; `helm-org-headings-max-depth'.
+	org-imenu-depth 8
+	org-return-follows-link t
 	org-mouse-1-follows-link t
 	org-link-descriptive t
 	org-hide-emphasis-markers t)
 
   (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
-  
+
   (when (fboundp 'org-appear-mode)
     (add-hook 'org-mode-hook 'org-appear-mode))
 
@@ -198,16 +227,35 @@
 
 (use-package org-transclusion :after org)
 
+(use-package htmlize :after org)
+
 (use-package verb :defer t)
+
+(use-package ob
+  :straight (:type built-in)
+  :defer t
+  :init
+  (add-hook 'org-mode-hook
+	    (lambda () (org-babel-do-load-languages
+			'org-babel-load-languages
+			org-babel-load-languages)))
+
+  (add-hook 'org-babel-after-execute-hook
+	    (lambda ()
+	      (when org-inline-image-overlays
+		(org-redisplay-inline-images)))))
+
+(use-package org-roam :defer t)
+(use-package org-roam-ui :defer t)
 
 ;; exporters ========================================
 
+(use-package ox-latex :straight nil :defer t)
+(use-package ox-publish :straight nil :defer t)
 (use-package ox-epub :defer t)
 (use-package ox-pandoc :defer t)
 (use-package ox-gfm :defer t)
 (use-package ox-asciidoc :defer t)
-(use-package org-roam :defer t)
-(use-package org-roam-ui :defer t)
 
 ;; Emoji config =====================================
 ;; ==================================================
@@ -1763,16 +1811,14 @@
 (use-package dired
   :straight nil
   :config
-  ;; (when macOS-p
-  ;;   (setq delete-by-moving-to-trash t
-  ;; 	  dired-kill-when-opening-new-dired-buffer t
-  ;; 	  trash-directory "~/.Trash"))
   ;; Fix for dired in TRAMP environment
   (setq dired-kill-when-opening-new-dired-buffer t)
+
   (add-hook 'dired-mode-hook
 	    (lambda ()
 	      (when (file-remote-p dired-directory)
 		(setq-local dired-actual-switches "-alhB"))))
+
   (add-hook 'dired-mode-hook
 	    (lambda ()
 	      (evil-define-key 'normal dired-mode-map (kbd "SPC") nil))))
@@ -1783,7 +1829,9 @@
 (use-package xwidget
   :straight nil
   :when     macOS-p
-  :commands (xwidget-new-window xwidget-webkit-find-file xwidget-webkit-browse-url)
+  :commands (xwidget-new-window
+	     xwidget-webkit-find-file
+	     xwidget-webkit-browse-url)
   :general
   (normal-mode-major-mode
     :major-modes
@@ -2509,7 +2557,10 @@
   "bd" 'kill-this-buffer
   "bb" 'switch-to-buffer
   "bp" 'previous-buffer
-  "bn" 'next-buffer)
+  "bn" 'next-buffer
+  "bh" (lambda ()
+	 (interactive)
+	 (kill-buffer (get-buffer "*Help*"))))
 
 (global-leader
   "." 'tab-new
