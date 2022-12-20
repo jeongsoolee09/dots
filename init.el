@@ -108,6 +108,13 @@
     :states '(normal visual operator)
     :prefix ""))
 
+;; emoji config =====================================
+;; ==================================================
+
+(use-package emoji-cheat-sheet-plus
+
+  )
+
 ;; Org config =======================================
 ;; ==================================================
 
@@ -116,7 +123,7 @@
   :defer t
 
   ;; TODO: copy the full org-mode layer from Spacemacs
-  ;; `org-emphasize`
+  ;; `org-emphasize`: `, x b`
 
   :general
   (local-leader
@@ -135,13 +142,78 @@
 	org-mouse-1-follows-link t
 	org-link-descriptive t
 	org-hide-emphasis-markers t)
+
   (evil-define-key 'normal 'org-mode "RET" 'org-open-at-point)
+  
   (when (fboundp 'org-appear-mode)
     (add-hook 'org-mode-hook 'org-appear-mode))
+
   (setq org-todo-keywords
 	'((sequence "TODO" "WORKING"
 		    "|"
 		    "DONE" "ABORTED"))))
+
+(use-package evil-org
+  :after (evil org)
+  :init
+  (add-hook 'org-mode-hook 'spacemacs//evil-org-mode)
+      (setq evil-org-use-additional-insert t
+            evil-org-key-theme `(textobjects
+                                 navigation
+                                 additional
+                                 todo)))
+
+(use-package org-superstar
+  :after org)
+
+(use-package org-wild-notifier
+  :after org)
+
+(use-package org-contrib
+  :after org)
+
+(use-package org-pomodoro
+  :defer t
+  :after org)
+
+(use-package org-present
+  :defer t
+  :after org)
+
+(use-package org-cliplink
+  :after org)
+
+(use-package org-rich-yank
+  :after org)
+
+(use-package org-projectile
+  :after org)
+
+(use-package valign
+  :after org)
+
+(use-package org-appear
+  :after org)
+
+(use-package org-sticky-header :after org)
+
+(use-package org-transclusion :after org)
+
+(use-package verb :defer t)
+
+;; exporters ========================================
+
+(use-package ox-epub :defer t)
+(use-package ox-pandoc :defer t)
+(use-package ox-gfm :defer t)
+(use-package ox-asciidoc :defer t)
+(use-package org-roam :defer t)
+(use-package org-roam-ui :defer t)
+
+;; Emoji config =====================================
+;; ==================================================
+
+(use-package emojify)
 
 ;; Esup config ======================================
 ;; ==================================================
@@ -393,9 +465,6 @@
   :after evil
   :config (evil-commentary-mode))
 
-(use-package evil-org
-  :after evil)
-
 ;; Yasnippet config  ================================
 ;; ==================================================
 
@@ -450,7 +519,8 @@
   ((rust-mode    . eglot-ensure)
    (clojure-mode . eglot-ensure)
    (python-mode  . eglot-ensure)
-   (tuareg-mode  . eglot-ensure))
+   (tuareg-mode  . eglot-ensure)
+   (ql-tree-sitter-mode . eglot-ensure))
 
   :general
   (local-leader
@@ -605,9 +675,6 @@
   ;;     ))
 
   )
-
-(use-package company-lua
-  :after lua-mode)
 
 ;; Guix config ======================================
 ;; ==================================================
@@ -1400,9 +1467,6 @@
 (use-package web-mode
   :mode ("\\.html\\'" . web-mode))
 
-(use-package company-web
-  :after (web-mode))
-
 (use-package tagedit
   :after (web-mode))
 
@@ -1597,6 +1661,36 @@
   (autoload 'projectile-project-root "projectile")
   (setq consult-project-function (lambda (_) (projectile-project-root))))
 
+;; company config ===================================
+;; ==================================================
+
+(use-package company
+  :hook ((prog-mode . global-company-mode)
+	 (org-mode  . global-company-mode))
+  :commands (company-mode)
+  :config
+  ;; (global-company-mode)
+  (setq company-idle-delay 0)
+  (setq company-echo-delay 0)
+  (setq company-tooltip-idle-delay 0)
+  (setq company-async-redisplay-delay 0)
+  (define-key company-active-map (kbd "<return>") nil)
+  (define-key company-active-map (kbd "RET") nil)
+  (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
+  (define-key company-active-map (kbd "TAB") #'company-complete-selection))
+
+(use-package company-lua
+  :after (company lua-mode))
+
+(use-package company-web
+  :after (company web-mode))
+
+(use-package company-auctex
+  :after (company tex))
+
+(use-package company-emojify
+  :after (company emojify))
+
 ;; iedit config =====================================
 ;; ==================================================
 
@@ -1656,7 +1750,6 @@
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer))
 
 (use-package auctex-lua :after tex)
-(use-package company-auctex :after (tex company))
 (use-package citar :defer t)
 
 ;; clipetty config ==================================
@@ -1664,23 +1757,6 @@
 
 (use-package clipetty
   :hook (after-init . global-clipetty-mode))
-
-;; company-mode config ==============================
-;; ==================================================
-
-(use-package company
-  :hook (prog-mode . global-company-mode)
-  :commands (company-mode)
-  :config
-  ;; (global-company-mode)
-  (setq company-idle-delay 0)
-  (setq company-echo-delay 0)
-  (setq company-tooltip-idle-delay 0)
-  (setq company-async-redisplay-delay 0)
-  (define-key company-active-map (kbd "<return>") nil)
-  (define-key company-active-map (kbd "RET") nil)
-  (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
-  (define-key company-active-map (kbd "TAB") #'company-complete-selection))
 
 ;; dired configs ====================================
 ;; ==================================================
