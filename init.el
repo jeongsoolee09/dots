@@ -36,6 +36,7 @@
 (use-package ts)
 
 (defmacro plaintext (&rest body)
+  "Write whatever you want in the BODY!"
   (string-join
    (-interpose " "
 	       (mapcar (lambda (elem)
@@ -46,20 +47,22 @@
 			  ((symbolp elem) (symbol-name elem))
 			  (t (error (format "Unrecognized string: %s" elem))))) body))))
 
-(defmacro comment (&rest args))
+(defmacro comment (&rest args)
+  "Rich comment: ignore whatever that is in ARGS.")
 
 (defun minor-mode-activated-p (minor-mode)
-  "Is the given `minor-mode` activated?"
+  "Is the given MINOR-MODE activated?"
   (let ((activated-minor-modes (mapcar #'car minor-mode-alist)))
     (memq minor-mode activated-minor-modes)))
 
 (defun straight-from-github (package repo)
-  ;; TODO: cannot directly invoke in use-package form
+  "Make a straight.el specification to locate the PACKAGE from github REPO."
   (list package :type 'git :host 'github :repo repo))
 
 (defalias 'assert 'cl-assert)
 
 (defun keyword-to-string (keyword)
+  "Convert the KEYWORD to string."
   (assert (symbolp keyword))
   (->> keyword
        intern-soft
@@ -67,6 +70,7 @@
        (s-chop-prefix ":")))
 
 (defun which-key-prefix (label)
+  "Create a which-key prefix with LABEL."
   (list
    :ignore t
    :which-key (if (keywordp label) (keyword-to-string label) label)))
@@ -82,6 +86,7 @@
 (defvar terminal-p (not GUI-p))
 
 (defmacro use-package-from-github (package repo &rest body)
+  "Extended form of use-package to pull PACKAGE from REPO.  Use the BODY as ordinary use-package."
   (let ((github-form (straight-from-github package repo)))
     `(use-package ,package :straight ,github-form ,@body)))
 
@@ -101,6 +106,7 @@
 		     "straight/repos/vertico/extensions/"))
 
 (defun cache: (subpath)
+  "Concatenate the SUBPATH to the global-cache-directory."
   (concat global-cache-directory (s-chop-prefix "/" subpath)))
 
 ;; GPG config =======================================
@@ -148,39 +154,47 @@
   ;; global-leader-prefixed major mode bindings
   (general-create-definer global-leader
     :keymaps 'override
-    :states '(insert emacs normal hybrid motion visual operator)
-    :prefix "SPC"
+    :states  '(insert emacs normal hybrid motion visual operator)
+    :prefix  "SPC"
     :non-normal-prefix "S-SPC")
 
   ;; local-leader-prefixed major mode bindings
   (general-create-definer local-leader
     :keymaps 'override
-    :states '(emacs normal hybrid motion visual operator)
-    :prefix ","
+    :states  '(emacs normal hybrid motion visual operator)
+    :prefix  ","
     "" '(:ignore t :which-key
 		 (lambda (arg)
-		   `(,(cadr (split-string (car arg) " ")) .
-		     ,(replace-regexp-in-string "-mode$" ""
-						(symbol-name major-mode))))))
+		   (cons
+		    (cadr (split-string (car arg) " "))
+		    (replace-regexp-in-string
+		     "-mode$" ""
+		     (symbol-name major-mode))))))
+  ;; "" '(:ignore t :which-key)
+  ;; 		 (lambda (arg)
+  ;; 		   `(,(cadr (split-string (car arg) " ")) .
+  ;; 		     ,(replace-regexp-in-string "-mode$" ""
+  ;; 						(symbol-name major-mode))))
+
 
   ;; works everywhere irrelevant of evil state
   (general-create-definer agnostic-key
     :keymaps 'override
-    :states '(insert emacs normal hybrid motion visual operator)
-    :prefix ""
+    :states  '(insert emacs normal hybrid motion visual operator)
+    :prefix  ""
     "" '(:ignore t))
 
   ;; extends basic emacs mode for a major mode
   (general-create-definer insert-mode-major-mode
     :keymaps 'override
-    :states '(insert)
-    :prefix "")
+    :states  '(insert)
+    :prefix  "")
 
   ;; extends evil mode for a major mode
   (general-create-definer normal-mode-major-mode
     :keymaps 'override
-    :states '(normal visual operator)
-    :prefix ""))
+    :states  '(normal visual operator)
+    :prefix  ""))
 
 ;; emoji config =====================================
 ;; ==================================================
@@ -202,23 +216,178 @@
     '(org-mode t)
     :keymaps
     '(org-mode-map)
-    "b"   (which-key-prefix :babel)
+    "'"     'org-edit-special
+    ","     'org-ctrl-c-ctrl-c
+    "*"     'org-ctrl-c-star
+    "-"     'org-ctrl-c-minus
+    "#"     'org-update-statistics-cookies
+    "RET"   'org-ctrl-c-ret
+    "M-RET" 'org-meta-return
+    "A"     'org-attach
+    "a"     'org-agenda
+    "["     'org-agenda-file-to-front
+    "]"     'org-remove-file
+    "c"     'org-capture
+
+    "b"     (which-key-prefix :babel)
+    "bp"    'org-babel-previous-src-block
+    "bn"    'org-babel-next-src-block
+    "be"    'org-babel-execute-maybe
+    "bo"    'org-babel-open-src-block-result
+    "bv"    'org-babel-expand-src-block
+    "bu"    'org-babel-goto-src-block-head
+    "bg"    'org-babel-goto-named-src-block
+    "br"    'org-babel-goto-named-result
+    "bb"    'org-babel-execute-buffer
+    "bs"    'org-babel-execute-subtree
+    "bd"    'org-babel-demarcate-block
+    "bt"    'org-babel-tangle
+    "bf"    'org-babel-tangle-file
+    "bc"    'org-babel-check-src-block
+    "bj"    'org-babel-insert-header-arg
+    "bl"    'org-babel-load-in-session
+    "bi"    'org-babel-lob-ingest
+    "bI"    'org-babel-view-src-block-info
+    "bz"    'org-babel-switch-to-session
+    "bZ"    'org-babel-switch-to-session-with-code
+    "ba"    'org-babel-sha1-hash
+    "bx"    'org-babel-do-key-sequence-in-edit-buffer
+    "b."    'spacemacs/org-babel-transient-state/body
+
+    "C"     (which-key-prefix :clock)
+    "Cc"    'org-clock-cancel
+    "Cd"    'org-clock-display
+    "Ce"    'org-evaluate-time-range
+    "Cg"    'org-clock-goto
+    "Ci"    'org-clock-in
+    "CI"    'org-clock-in-last
+    "Cj"    'spacemacs/org-clock-jump-to-current-clock
+    "Co"    'org-clock-out
+    "CR"    'org-clock-report
+    "Cr"    'org-resolve-clocks
+
+    "d"     (which-key-prefix :dates)
+    "dd"    'org-deadline
+    "ds"    'org-schedule
+    "dt"    'org-time-stamp
+    "dT"    'org-time-stamp-inactive
+
+    "e"     (which-key-prefix :export)
+    "ee"    'org-export-dispatch
+
+    "f"     (which-key-prefix :feeds)
+    "fi"    'org-feed-goto-inbox
+    "fu"    'org-feed-update-all
+
+    "i"     (which-key-prefix :insert)
+    "it"    'org-insert-current-time
+    "ib"    'org-insert-structure-template
+    "id"    'org-insert-drawer
+    "ie"    'org-set-effort
+    "if"    'org-footnote-new
+    "ih"    'org-insert-heading
+    "iH"    'org-insert-heading-after-current
+    "ii"    'org-insert-item
+    "iK"    'spacemacs/insert-keybinding-org
+    "il"    'org-insert-link
+    "in"    'org-add-note
+    "ip"    'org-set-property
+    "is"    'org-insert-subheading
+    "iT"    'org-set-tags-command
+
+    "iD"    (which-key-prefix :download)
     
-    "C"   (which-key-prefix :clock)
-    "d"   (which-key-prefix :dates)
-    "e"   (which-key-prefix :export)
-    "f"   (which-key-prefix :feeds)
-    "i"   (which-key-prefix :insert)
-    "it" 'org-insert-current-time
-    "iD"  (which-key-prefix :download)
-    "m"   (which-key-prefix :more)
-    "s"   (which-key-prefix :trees/subtrees)
-    "T"   (which-key-prefix :toggles)
-    "t"   (which-key-prefix :tables)
-    "td"  (which-key-prefix :delete)
-    "ti"  (which-key-prefix :insert)
-    "tt"  (which-key-prefix :toggle)
-    "x"   (which-key-prefix :text))
+    "m"     (which-key-prefix :more)
+
+    "p"     'org-priority
+
+    "s"     (which-key-prefix :trees/subtrees)
+    "sa"    'org-toggle-archive-tag
+    "sA"    'org-archive-subtree-default
+    "sb"    'org-tree-to-indirect-buffer
+    "sd"    'org-cut-subtree
+    "sy"    'org-copy-subtree
+    "sp"    'org-paste-subtree
+    "sh"    'org-promote-subtree
+    "sj"    'org-move-subtree-down
+    "sk"    'org-move-subtree-up
+    "sl"    'org-demote-subtree
+    "sn"    'org-narrow-to-subtree
+    "sw"    'widen
+    "sr"    'org-refile
+    "ss"    'org-sparse-tree
+    "sS"    'org-sort
+
+    "T"     (which-key-prefix :toggles)
+    "Tc"    'org-toggle-checkbox
+    "Te"    'org-toggle-pretty-entities
+    "Ti"    'org-toggle-inline-images
+    "Tn"    'org-num-mode
+    "Tl"    'org-toggle-link-display
+    "Tt"    'org-show-todo-tree
+    "TT"    'org-todo
+    "TV"    'space-doc-mode
+    "Tx"    'org-latex-preview
+    "L"     'org-shiftright
+    "H"     'org-shiftleft
+    "J"     'org-shiftdown
+    "K"     'org-shiftup
+
+    "t"     (which-key-prefix :tables)
+    "ta"    'org-table-align
+    "tb"    'org-table-blank-field
+    "tc"    'org-table-convert
+    "te"    'org-table-eval-formula
+    "tE"    'org-table-export
+    "tf"    'org-table-field-info
+    "th"    'org-table-previous-field
+    "tH"    'org-table-move-column-left
+    "tI"    'org-table-import
+    "tj"    'org-table-next-row
+    "tJ"    'org-table-move-row-down
+    "tK"    'org-table-move-row-up
+    "tl"    'org-table-next-field
+    "tL"    'org-table-move-column-right
+    "tn"    'org-table-create
+    "tN"    'org-table-create-with-table.el
+    "tr"    'org-table-recalculate
+    "tR"    'org-table-recalculate-buffer-tables
+    "ts"    'org-table-sort-lines
+    "tw"    'org-table-wrap-region
+
+    "td"    (which-key-prefix :delete)
+    "tdc"   'org-table-delete-column
+    "tdr"   'org-table-kill-row
+
+    "ti"    (which-key-prefix :insert)
+    "tic"   'org-table-insert-column
+    "tih"   'org-table-insert-hline
+    "tiH"   'org-table-hline-and-move
+    "tir"   'org-table-insert-row
+
+    "tt"    (which-key-prefix :toggle)
+    "ttf"   'org-table-toggle-formula-debugger
+    "tto"   'org-table-toggle-coordinate-overlays
+
+    "x"     (which-key-prefix :text)
+    "xb"    (spacemacs|org-emphasize spacemacs/org-bold ?*)
+    "xc"    (spacemacs|org-emphasize spacemacs/org-code ?~)
+    "xi"    (spacemacs|org-emphasize spacemacs/org-italic ?/)
+    "xo"    'org-open-at-point
+    "xr"    (spacemacs|org-emphasize spacemacs/org-clear ? )
+    "xs"    (spacemacs|org-emphasize spacemacs/org-strike-through ?+)
+    "xu"    (spacemacs|org-emphasize spacemacs/org-underline ?_)
+    "xv"    (spacemacs|org-emphasize spacemacs/org-verbatim ?=))
+
+  (normal-mode-major-mode
+    :major-modes
+    '(org-mode t)
+    :keymaps
+    '(org-mode-map)
+    "C-S-l" 'org-shiftcontrolright
+    "C-S-h" 'org-shiftcontrolleft
+    "C-S-j" 'org-shiftcontroldown
+    "C-S-k" 'org-shiftcontrolup)
 
   :config
   (defun org-insert-current-time ()
@@ -261,9 +430,9 @@
 		    "DONE" "ABORTED")))
 
   (defmacro org-emphasize-this (fname char)
-        "Make function for setting the emphasis in org mode"
-        `(defun ,fname () (interactive)
-                (org-emphasize ,char))))
+    "Make function for setting the emphasis in org mode"
+    `(defun ,fname () (interactive)
+	    (org-emphasize ,char))))
 
 (use-package evil-org
   :after (evil org)
@@ -2357,33 +2526,37 @@
 	    (lambda ()
 	      (setq-local evil-insert-state-cursor 'box)
 	      (evil-insert-state)))
+
   (define-key vterm-mode-map (kbd "<return>") #'vterm-send-return)
+  
   (setq vterm-keymap-exceptions nil)
-  :config
+  
+  :general
   (insert-mode-major-mode
     :major-modes
     '(vterm-mode vterm-copy-mode t)
     :keymaps
     '(vterm-mode-map vterm-copy-mode-map)
-    "C-e" 'vterm--self-insert
-    "C-f" 'vterm--self-insert
-    "C-a" 'vterm--self-insert
-    "C-v" 'vterm--self-insert
-    "C-b" 'vterm--self-insert
-    "C-w" 'vterm--self-insert
-    "C-u" 'vterm--self-insert
-    "C-d" 'vterm--self-insert
-    "C-n" 'vterm--self-insert
-    "C-m" 'vterm--self-insert
-    "C-p" 'vterm--self-insert
-    "C-j" 'vterm--self-insert
-    "C-k" 'vterm--self-insert
-    "C-r" 'vterm--self-insert
-    "C-t" 'vterm--self-insert
-    "C-g" 'vterm--self-insert
-    "C-c" 'vterm--self-insert
-    (kbd "C-SPC") 'vterm--self-insert
-    "C-d" 'vterm--self-insert)
+    "C-e"   'vterm--self-insert
+    "C-f"   'vterm--self-insert
+    "C-a"   'vterm--self-insert
+    "C-v"   'vterm--self-insert
+    "C-b"   'vterm--self-insert
+    "C-w"   'vterm--self-insert
+    "C-u"   'vterm--self-insert
+    "C-d"   'vterm--self-insert
+    "C-n"   'vterm--self-insert
+    "C-m"   'vterm--self-insert
+    "C-p"   'vterm--self-insert
+    "C-j"   'vterm--self-insert
+    "C-k"   'vterm--self-insert
+    "C-r"   'vterm--self-insert
+    "C-t"   'vterm--self-insert
+    "C-g"   'vterm--self-insert
+    "C-c"   'vterm--self-insert
+    "C-SPC" 'vterm--self-insert
+    "C-d"   'vterm--self-insert)
+
   (local-leader
     :major-modes
     '(vterm-mode vterm-copy-mode t)
@@ -2392,14 +2565,15 @@
     "c" 'multi-vterm
     "n" 'multi-vterm-next
     "p" 'multi-vterm-prev)
+
   (normal-mode-major-mode
     :major-modes
     '(vterm-mode vterm-copy-mode t)
     :keymaps
     '(vterm-mode-map vterm-copy-mode-map)
-    "i" 'evil-insert-resume
-    "o" 'evil-insert-resume
-    (kbd "<return>") #'evil-insert-resume))
+    "i"   'evil-insert-resume
+    "o"   'evil-insert-resume
+    "RET" 'evil-insert-resume))
 
 ;; world clock config ===============================
 ;; ==================================================
@@ -2410,22 +2584,18 @@
   (setq world-clock-list t
 	zoneinfo-style-world-list '(("America/Los_Angeles" "Los Angeles")
 				    ("America/New_York" "New York")
-				    ("Asia/Seoul" "Seoul")))
-  :general
-  (global-leader
-    "aC"  (which-key-prefix "clock")
-    "aCw" 'world-clock))
+				    ("Asia/Seoul" "Seoul"))))
 
 ;; custom functions =================================
 ;; ==================================================
 
 (defun display-current-time ()
-  "display the current time in the buffer."
+  "Display the current time in the buffer."
   (interactive)
   (message (format-time-string "%Y-%m-%d %H:%M:%S")))
 
 (defun insert-current-time ()
-  "insert the current time at point."
+  "Insert the current time at point."
   (interactive)
   (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
 
@@ -2649,6 +2819,9 @@
   "awxx" 'xwidget-new-window
   "awxf" 'xwidget-webkit-find-file
 
+  "aC"   (which-key-prefix "clock")
+  "aCw"  'world-clock
+  
   "at"   (which-key-prefix "terminal")
   "atr"  (which-key-prefix "repls")
   "atrb" 'run-bb
@@ -2658,24 +2831,25 @@
   "atrl" 'run-lua
   "atrh" 'run-hammerspoon
 
-  "ats"  (which-key-prefix "shells")
+  "ats"  (which-key-prefix :shells)
   "atsa" 'async-shell-command
   "atst" 'multi-term)
 
 (global-leader
-  "q"    (which-key-prefix "quit")
+  "q"    (which-key-prefix :quit)
   "qq"   'kill-emacs
   "qf"   'delete-frame)
 
 (global-leader
-  "h"    (which-key-prefix "help")
-  "hd"   (which-key-prefix "describe")
+  "h"    (which-key-prefix :help)
+  "hd"   (which-key-prefix :describe)
   "hdb"  'describe-bindings
   "hdf"  'describe-function
   "hdk"  'describe-key
   "hdv"  'describe-variable
   "hdm"  'describe-mode
-  "hdp"  'describe-package)
+  "hdp"  'describe-package
+  "hdM"  'describe-keymap)
 
 (global-leader
   "x"     (which-key-prefix "text")
