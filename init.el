@@ -156,12 +156,11 @@
 (use-package evil-org
   :after (evil org)
   :init
-  (add-hook 'org-mode-hook 'spacemacs//evil-org-mode)
-      (setq evil-org-use-additional-insert t
-            evil-org-key-theme `(textobjects
-                                 navigation
-                                 additional
-                                 todo)))
+  (add-hook 'org-mode-hook (lambda ()
+			     (evil-org-mode)
+			     (evil-normalize-keymaps)))
+  (setq evil-org-use-additional-insert t
+	evil-org-key-theme `(textobjects navigation additional todo)))
 
 (use-package org-superstar
   :after org)
@@ -365,13 +364,13 @@
   (osx-clipboard-paste-function osx-clipboard-cut-function)
   :init
   (setq interprogram-cut-function (lambda (text &rest ignore)
-                                    (if (display-graphic-p)
-                                        (gui-select-text text)
-                                      (osx-clipboard-cut-function text)))
-        interprogram-paste-function (lambda ()
-                                      (if (display-graphic-p)
-                                          (gui-selection-value)
-                                        (osx-clipboard-paste-function)))))
+				    (if (display-graphic-p)
+					(gui-select-text text)
+				      (osx-clipboard-cut-function text)))
+	interprogram-paste-function (lambda ()
+				      (if (display-graphic-p)
+					  (gui-selection-value)
+					(osx-clipboard-paste-function)))))
 
 (use-package reveal-in-osx-finder
   :if macOS-p
@@ -1797,10 +1796,6 @@
     "C"   'xwidget-webkit-clone-and-split-below
     "c"   'xwidget-webkit-clone-and-split-right)
 
-  (global-leader
-    "awxx" 'xwidget-new-window
-    "awxf" 'xwidget-webkit-find-file)
-
   :config
   (setq xwidget-webkit-enable-plugins t)
   (setq browse-url-browser-function (lambda (url session)
@@ -2530,6 +2525,17 @@
   "al"   'launchctl
 
   "aw"   (which-key-prefix "web")
+  "awww" 'eww
+  "awws" 'eww-search-words
+  "awwM" 'eww-open-w3m-current-url
+  "awwn" 'eww-search-namu-wiki
+
+  "awmm" 'w3m
+  "awmx" 'xwidget-webkit-open-w3m-current-url
+  "awmW" 'eww-open-w3m-current-url
+
+  "awxx" 'xwidget-new-window
+  "awxf" 'xwidget-webkit-find-file
 
   "at"   (which-key-prefix "terminal")
   "atr"  (which-key-prefix "repls")
@@ -2732,11 +2738,6 @@
     "b" 'w3m-bookmark-view
     "c" 'w3m-copy-current-url)
 
-  (global-leader
-    "awmm" 'w3m
-    "awmx" 'xwidget-webkit-open-w3m-current-url
-    "awmW" 'eww-open-w3m-current-url)
-
   :config
   (setq w3m-default-display-inline-images t
 	w3m-session-load-crashed-sessions 'never
@@ -2763,13 +2764,6 @@
     (interactive)
     (let ((url (read-from-minibuffer "URL: " "https://namu.wiki/w/")))
       (eww-browse-url url)))
-
-  :general
-  (global-leader
-    "awww" 'eww
-    "awws" 'eww-search-words
-    "awwM" 'eww-open-w3m-current-url
-    "awwn" 'eww-search-namu-wiki)
 
   :config
   (evil-define-key 'normal eww-mode-map (kbd "c") 'eww-copy-page-url)
