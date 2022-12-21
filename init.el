@@ -565,7 +565,7 @@
     (org-eval-in-calendar '(calendar-backward-year 1)))
 
   :general
-  (normal-mode-major-mode
+  (insert-mode-major-mode
     :keymaps '(org-read-date-minibuffer-local-map)
     "M-h" 'calendar-one-day-backward
     "M-k" 'calendar-one-week-backward
@@ -577,6 +577,7 @@
     "M-J" 'calednar-one-year-forward
     "M-L" 'calendar-one-month-forward))
 
+;; TODO
 (use-package org-superstar
   :after org)
 
