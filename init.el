@@ -451,7 +451,7 @@
 		org-insert-heading
 		org-insert-item
 		org-insert-structure-template))
-    (advice-add fn :after 'evil-insert-state)))
+    (advice-add fn :after #'evil-insert-state)))
 
 (use-package evil-org
   :after (evil org)
@@ -461,6 +461,55 @@
 			     (evil-normalize-keymaps)))
   (setq evil-org-use-additional-insert t
 	evil-org-key-theme `(textobjects navigation additional todo)))
+
+(use-package org-keys
+  :straight nil
+  :after    org
+  :config
+  (defun calendar-one-day-forward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-forward-day 1)))
+
+  (defun calendar-one-day-backward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-backward-day 1)))
+
+  (defun calendar-one-week-forward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-forward-week 1)))
+
+  (defun calendar-one-week-backward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-backward-week 1)))
+   
+  (defun calendar-one-month-forward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-forward-month 1)))
+
+  (defun calendar-one-month-backward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-backward-month 1)))
+
+  (defun calendar-one-year-forward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-forward-year 1)))
+
+  (defun calendar-one-year-backward ()
+    (interactive)
+    (org-eval-in-calendar '(calendar-backward-year 1)))
+
+  :general
+  (normal-mode-major-mode
+    :keymaps '(org-read-date-minibuffer-local-map)
+    "M-h" 'calendar-one-day-backward
+    "M-k" 'calendar-one-week-backward
+    "M-j" 'calendar-one-week-forward
+    "M-l" 'calendar-one-day-forward
+
+    "M-H" 'calendar-one-month-backward
+    "M-K" 'calendar-one-year-backward
+    "M-J" 'calednar-one-year-forward
+    "M-L" 'calendar-one-month-forward))
 
 (use-package org-superstar
   :after org)
@@ -541,7 +590,8 @@
     "," 'org-edit-src-exit
     "a" 'org-edit-src-abort
     "c" 'org-edit-src-exit
-    "k" 'org-edit-src-abort))
+    "k" 'org-edit-src-abort
+    "'" 'org-edit-src-exit))
 
 (use-package org-roam    :defer t)
 (use-package org-roam-ui :defer t)
@@ -554,6 +604,9 @@
   :straight nil
   :after    org
   :commands (org-clock-jump-to-current-clock))
+
+(use-package org-remark
+  :after org)
 
 ;; exporters
 (use-package ox-latex    :straight nil :defer t)
@@ -1054,13 +1107,15 @@
 
 (use-package elisp-mode
   :straight nil
-  :defer t
+  :defer    t
+  :hook     (emacs-lisp-mode
+	     . evil-cleverparens-mode)
 
   :general
   (local-leader
     :major-modes '(emacs-lisp-mode t)
     :keymaps     '(emacs-lisp-mode-map)
-    "e"  (which-key-prefix "eval")
+    "e"  (which-key-prefix :eval)
     "eb" 'eval-buffer
     "ef" 'eval-defun
     "er" 'eval-region
@@ -2433,7 +2488,7 @@
 	  (load-modus-operandi)))	; light mode!
     (load-modus-vivendi))
 
-  (unless (window-system)
+  (when terminal-p
     (defun make-terminal-transparent ()
       (unless (display-graphic-p (selected-frame))
 	(set-face-background 'default "unspecified-bg" (selected-frame))))
@@ -2619,6 +2674,7 @@
   "s-g" 'magit
   "s-r" 'winner-redo
   "s-t" 'tool-bar-mode
+  "s-T" 'tab-bar-mode
   "s-i" 'comment-dwim
   "s-a" 'org-agenda
   "s-y" 'mu4e-update-mail-and-index
