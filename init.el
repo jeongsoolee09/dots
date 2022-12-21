@@ -694,6 +694,7 @@
 (use-package esup
   :defer t
   :config
+  (setq esup-user-init-file (file-truename "~/.emacs.d/init.el"))
   (setq esup-depth 0))
 
 ;; Transient config =================================
@@ -818,38 +819,22 @@
 (use-package ripgrep :defer t)
 (use-package ag :defer t)
 
-;; Tree-sitter config ===============================
-;; ==================================================
-
-(use-package tree-sitter-langs)
-
-(use-package tree-sitter
-  :after tree-sitter-langs
-  :hook prog-mode
-  :config
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
-(use-package tree-sitter-indent
-  :after tree-sitter)
-
 ;; CodeQL config ====================================
 ;; ==================================================
 
-(use-package emacs-codeql
-  :straight
-  (emacs-codeql :type git
-		:host github
-		:repo "anticomputer/emacs-codeql"
-		:branch "main")
-  :after tree-sitter-langs
-  :demand
-  :init
-  (setq codeql-transient-binding "C-c q"
-	codeql-configure-eglot-lsp t
-	codeql-configure-projectile t)
-  :config
-  (setq codeql-search-paths '("./")))
+;; (use-package emacs-codeql
+;;   :straight
+;;   (emacs-codeql :type git
+;; 		:host github
+;; 		:repo "anticomputer/emacs-codeql"
+;; 		:branch "main")
+;;   :mode ("\\.ql\\'" . ql-tree-sitter-mode)
+;;   :init
+;;   (setq codeql-transient-binding "C-c q"
+;; 	codeql-configure-eglot-lsp t
+;; 	codeql-configure-projectile t)
+;;   :config
+;;   (setq codeql-search-paths '("./")))
 
 
 ;; Eglot config =====================================
@@ -1080,12 +1065,6 @@
 		 "'" "'" :actions nil))
 
 (use-package evil-cleverparens
-  :hook ((fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
-		      geiser-mode scheme-mode racket-mode
-		      newlisp-mode picolisp-mode janet-mode
-		      lisp-interaction-mode ielm-mode minibuffer-mode)
-	 . evil-cleverparens-mode)
-  :demand t
   :init
   (setq evil-cleverparens-use-additional-bindings nil)
   :config
@@ -1099,8 +1078,10 @@
 ;; ==================================================
 
 (use-package kbd-mode
+  :when linux-p
   :straight (kbd-mode :type git :host github :repo "kmonad/kbd-mode")
   :mode "\\.kbd\\'"
+  :hook     (kbd-mode . evil-cleverparens-mode)
   :commands kbd-mode)
 
 ;; Elisp config =====================================
@@ -1144,6 +1125,8 @@
   :mode (("\\.clj\\'" . clojure-mode)
 	 ("\\.cljs\\'" . clojurescript-mode)
 	 ("\\.cljc\\'" . clojurec-mode))
+  :hook     (clojure-mode
+	     . evil-cleverparens-mode)
   :init
   (setq clojure-indent-style 'align-arguments
 	clojure-align-forms-automatically t
@@ -1207,12 +1190,14 @@
     "d"    (which-key-prefix "debug")
     "db"   'cider-debug-defun-at-point
     "de"   'cider-display-error-buffer
+
     "dv"   (which-key-prefix "inspect values")
     "dve"  'cider-inspect-last-sexp
     "dvf"  'cider-inspect-defun-at-point
     "dvi"  'cider-inspect
     "dvl"  'cider-inspect-last-result
     "dvv"  'cider-inspect-expr
+
     "e"    (which-key-prefix "evaluation")
     "e;"   'cider-eval-defun-to-comment
     "e$"   'cider-eval-sexp-end-of-line
@@ -1224,45 +1209,54 @@
     "el"   'cider-eval-sexp-end-of-line
     "em"   'cider-macroexpand-1
     "eM"   'cider-macroexpand-all
-    "ena"  'cider-ns-reload-all
-    "enn"  'cider-eval-ns-form
-    "enr"  'cider-ns-refresh
-    "enl"  'cider-ns-reload
-    "ep;"  'cider-pprint-eval-defun-to-comment
-    "ep:"  'cider-pprint-eval-last-sexp-to-comment
-    "epf"  'cider-pprint-eval-defun-at-point
-    "epe"  'cider-pprint-eval-last-sexp
     "er"   'cider-eval-region
     "eu"   'cider-undef
     "ev"   'cider-eval-sexp-at-point
     "eV"   'cider-eval-sexp-up-to-point
     "ew"   'cider-eval-last-sexp-and-replace
+    "en"   (which-key-prefix "ns")
+    "ena"  'cider-ns-reload-all
+    "enn"  'cider-eval-ns-form
+    "enr"  'cider-ns-refresh
+    "enl"  'cider-ns-reload
+    "ep"   (which-key-prefix "pprint")
+    "ep;"  'cider-pprint-eval-defun-to-comment
+    "ep:"  'cider-pprint-eval-last-sexp-to-comment
+    "epf"  'cider-pprint-eval-defun-at-point
+    "epe"  'cider-pprint-eval-last-sexp
+
     "en"   (which-key-prefix "namespace")
     "ena"  'cider-ns-reload-all
     "enn"  'cider-eval-ns-form
     "enr"  'cider-ns-refresh
     "enl"  'cider-ns-reload ;; SPC u for cider-ns-reload-all
+
     "ep"   (which-key-prefix "pretty print")
     "ep;"  'cider-pprint-eval-defun-to-comment
     "ep:"  'cider-pprint-eval-last-sexp-to-comment
     "epf"  'cider-pprint-eval-defun-at-point
     "epe"  'cider-pprint-eval-last-sexp
+
     "m"    (which-key-prefix "manage repls")
     "mb"   'sesman-browser
     "mi"   'sesman-info
     "mg"   'sesman-goto
     "ms"   'sesman-start
+
     "ml"   (which-key-prefix "link session")
     "mlp"  'sesman-link-with-project
     "mlb"  'sesman-link-with-buffer
     "mld"  'sesman-link-with-directory
     "mlu"  'sesman-unlink
+
     "mS"   (which-key-prefix "sibling sessions")
     "mSj"  'cider-connect-sibling-clj
     "mSs"  'cider-connect-sibling-cljs
+    
     "mq"   (which-key-prefix "quit/restart")
     "mqq"  'sesman-quit
     "mqr"  'sesman-restart
+
     "p"    (which-key-prefix "profile")
     "p+"   'cider-profile-samples
     "pc"   'cider-profile-clear
@@ -1271,6 +1265,7 @@
     "pS"   'cider-profile-summary
     "pt"   'cider-profile-toggle
     "pv"   'cider-profile-var-profiled-p
+
     "s"    (which-key-prefix "send to repl")
     "sb"   'cider-load-buffer
     "sB"   'cider-send-buffer-in-repl-and-focus
@@ -1279,19 +1274,23 @@
     "sf"   'cider-send-function-to-repl
     "sF"   'cider-send-function-to-repl-focus
     "si"   'sesman-start
+
     "sc"   (which-key-prefix "connect external repl")
     "scj"  'cider-connect-clj
     "scm"  'cider-connect-clj&cljs
     "scs"  'cider-connect-cljs
+
     "sj"   (which-key-prefix "jack-in")
     "sjj"  'cider-jack-in-clj
     "sjm"  'cider-jack-in-clj&cljs
     "sjs"  'cider-jack-in-cljs
+
     "sq"   (which-key-prefix "quit/restart repl")
     "sqq"  'cider-quit
     "sqr"  'cider-restart
     "sqn"  'cider-ns-reload
     "sqN"  'cider-ns-reload-all
+
     "t"    (which-key-prefix "test")
     "ta"   'cider-test-run-all-tests
     "tb"   'cider-test-show-report
@@ -1300,17 +1299,21 @@
     "tp"   'cider-test-run-project-tests
     "tr"   'cider-test-rerun-failed-tests
     "tt"   'cider-test-run-focused-test
+
     "="    (which-key-prefix "format")
     "=="   'cider-format-buffer
+    "=f"   'cider-format-defun
+    "=e"   (which-key-prefix "edn")
     "=eb"  'cider-format-edn-buffer
     "=ee"  'cider-format-edn-last-sexp
     "=er"  'cider-format-edn-region
-    "=f"   'cider-format-defun
+
     "g"    (which-key-prefix "goto")
     "gb"   'cider-pop-back
     "gc"   'cider-classpath
     "gg"   'clj-find-var
     "gn"   'cider-find-ns
+
     "h"    (which-key-prefix "documentation")
     "ha"   'cider-apropos
     "hc"   'cider-cheatsheet
@@ -1320,6 +1323,7 @@
     "hN"   'cider-browse-ns-all
     "hs"   'cider-browse-spec
     "hS"   'cider-browse-spec-all
+
     "T"    (which-key-prefix "toggle")
     "Te"   'cider-enlighten-mode
     "Tf"   'cider-toggle-repl-font-locking
@@ -1331,6 +1335,7 @@
 
 (use-package hy-mode
   :defer t
+  :hook  (hy-mode . evil-cleverparens-mode)
   :general
   (local-leader
     :major-modes '(hy-mode inferior-hy-mode t)
@@ -1364,48 +1369,55 @@
 (use-package fennel-mode
   ;; WIP
   :defer t
+  :hook  (fennel-mode . evil-cleverparens-mode)
   :general
   (local-leader
     :major-modes '(fennel-mode fennel-repl-mode t)
     :keymaps     '(fennel-mode-map fennel-repl-mode-map)
-    "e" (which-key-prefix "eval")
-    "ep" 'lisp-eval-paragraph
-    "er" 'lisp-eval-region
-    "ef" 'lisp-eval-defun
-    "ee" 'lisp-eval-last-sexp
-    "eE" 'lisp-eval-form-and-next
-    "d" (which-key-prefix "documentation")
-    "dd" 'fennel-show-documentation
-    "dv"'fennel-show-variable-documentation
-    "df" (which-key-prefix "find")
+    "e"   (which-key-prefix "eval")
+    "ep"  'lisp-eval-paragraph
+    "er"  'lisp-eval-region
+    "ef"  'lisp-eval-defun
+    "ee"  'lisp-eval-last-sexp
+    "eE"  'lisp-eval-form-and-next
+    
+    "d"   (which-key-prefix "documentation")
+    "dd"  'fennel-show-documentation
+    "dv"  'fennel-show-variable-documentation
+
+    "df"  (which-key-prefix "find")
     "dff" 'fennel-find-definition
     "dfm" 'fennel-find-module-definition
     "dfp" 'fennel-find-definition-pop
-    "h" (which-key-prefix "help")
-    "ha" 'fennel-show-arglist-at-point
-    "hA" 'fennel-show-arglist
-    "hc" 'fennel-view-compilation
-    "m" 'fennel-macroexpand
-    "=" 'fennel-format
-    "r" (which-key-prefix "repl")
-    "'" 'fennel-repl
-    "r" 'fennel-reload
-    :config
-    (defun fennel-show-arglist-at-point ()
-      (interactive)
-      (fennel-show-arglist (thing-at-point 'symbol))))
+
+    "h"   (which-key-prefix "help")
+    "ha"  'fennel-show-arglist-at-point
+    "hA"  'fennel-show-arglist
+    "hc"  'fennel-view-compilation
+    "m"   'fennel-macroexpand
+    "="   'fennel-format
+
+    "'"   'fennel-repl
+    "r"   'fennel-reload)
+
   (local-leader
     :major-modes '(fennel-repl-mode t)
     :keymaps     '(fennel-repl-mode-map)
-    "'" 'fennel-repl
+    "'"  'fennel-repl
     "rq" 'fennel-repl-quit
-    "r0" 'fennel-repl-move-beginning-of-line))
+    "r0" 'fennel-repl-move-beginning-of-line)
+  
+  :config
+  (defun fennel-show-arglist-at-point ()
+    (interactive)
+    (fennel-show-arglist (thing-at-point 'symbol))))
 
 ;; Racket config ====================================
 ;; ==================================================
 
 (use-package racket-mode
   :defer t
+  :hook  (racket-mode . evil-cleverparens-mode)
   :general
   (local-leader
     :major-modes '(racket-mode
@@ -1448,7 +1460,11 @@
 ;; ==================================================
 
 (use-package sicp :defer t)
-(use-package geiser :defer t)
+
+(use-package geiser
+  :defer t
+  :hook  (geiser-mode . evil-cleverparens-mode))
+
 (use-package geiser-chicken :after geiser :defer t)
 (use-package geiser-chez :after geiser :defer t)
 (use-package geiser-gambit :after geiser :defer t)
@@ -1458,18 +1474,25 @@
 ;; Janet config =====================================
 ;; ==================================================
 
-(use-package janet-mode :defer t)
+(use-package janet-mode
+  :defer t
+  :hook  (janet-mode . evil-cleverparens-mode))
 
 ;; PicoLisp config ==================================
 ;; ==================================================
 
-(use-package picolisp :defer t)
+(use-package picolisp
+  :defer t
+  :hook  (picolisp-mode . evil-cleverparens-mode))
+
 (use-package picolisp-wiki-mode :defer t)
 
 ;; newLISP config ===================================
 ;; ==================================================
 
-(use-package newlisp-mode :defer t)
+(use-package newlisp-mode
+  :defer t
+  :hook  (hy-mode . evil-cleverparens-mode))
 
 ;; Haskell config ===================================
 ;; ==================================================
@@ -1912,7 +1935,7 @@
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (("C-c h" . consult-history)
 	 ("C-c m" . consult-mode-command)
-	 ("C-c k" . consult-kmacro)
+	 ("C-c k" . consult-yank-from-kill-ring)
 
 	 ("C-x M-:" . consult-complex-command)
 	 ("C-x b" . consult-buffer)
