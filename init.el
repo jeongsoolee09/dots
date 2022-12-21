@@ -2,8 +2,6 @@
 (setq warning-minimum-level     :emergency
       warning-minimum-log-level :warning)
 
-
-
 ;; Straight =========================================
 ;; ==================================================
 
