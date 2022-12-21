@@ -112,6 +112,72 @@
     (insert-file-contents "~/.emacs.d/init.el")
     (eval-buffer)))
 
+;; evil-mode config =================================
+;; ==================================================
+
+(setq evil-undo-system 'undo-tree)
+(use-package evil
+  :init
+  (setq evil-want-keybinding nil
+	evil-disable-insert-state-bindings t
+	evil-want-C-u-scroll t
+	evil-want-integration t)
+  :config
+  (evil-mode 1)
+  ;; set leader key in normal state
+  (evil-set-leader 'normal (kbd "SPC"))
+  ;; set local leader
+  (evil-set-leader 'normal "," t)
+  (setq evil-motion-state-cursor 'box
+	evil-visual-state-cursor 'box
+	evil-normal-state-cursor 'box
+	evil-insert-state-cursor 'bar)
+  (evil-ex-define-cmd "q" 'kill-this-buffer)
+  (evil-ex-define-cmd "Q" 'kill-this-buffer)
+  (evil-ex-define-cmd "W" 'save-buffer)
+  (evil-ex-define-cmd "Wq" 'evil-save-and-close)
+  (evil-ex-define-cmd "WQ" 'evil-save-and-close)
+  (evil-ex-define-cmd "E" 'evil-edit)
+  (setq evil-vsplit-window-right t
+	evil-split-window-below t)
+  (evil-define-key 'normal 'global (kbd "C-w DEL") 'evil-window-left)
+  (evil-define-key 'normal 'global (kbd "C-w C-j") 'evil-window-down)
+  (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
+  (evil-define-key 'normal 'global (kbd "C-w C-l") 'evil-window-right)
+  (unbind-key (kbd "C-@"))
+  (unbind-key (kbd "M-SPC"))
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; make evil-search-word look for symbol rather than word boundaries
+  (setq-default evil-symbol-word-search t)
+
+  (defun evil-toggle-input-method ()
+    "when toggle on input method, switch to evil-insert-state if possible.
+  when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
+    (interactive)
+    (if (not current-input-method)
+	(if (not (string= evil-state "insert"))
+	    (evil-insert-state))
+      (if (string= evil-state "insert")
+	  (evil-normal-state)))
+    (toggle-input-method)))
+
+(use-package evil-collection
+  :after (evil)
+  :config
+  (evil-collection-init)
+  (setq evil-collection-calendar-want-org-bindings t))
+
+(use-package evil-surround
+  :after evil
+  :config (global-evil-surround-mode 1))
+
+(use-package evil-anzu
+  :after evil)
+
+(use-package evil-commentary
+  :after evil
+  :config (evil-commentary-mode))
+
 ;; Custom Lisp files ================================
 ;; ==================================================
 
@@ -738,72 +804,6 @@
 (when chromeOS-p
   (setq x-super-keysym 'meta
 	x-meta-keysym 'super))
-
-;; evil-mode config =================================
-;; ==================================================
-
-(setq evil-undo-system 'undo-tree)
-(use-package evil
-  :init
-  (setq evil-want-keybinding nil
-	evil-disable-insert-state-bindings t
-	evil-want-C-u-scroll t
-	evil-want-integration t)
-  :config
-  (evil-mode 1)
-  ;; set leader key in normal state
-  (evil-set-leader 'normal (kbd "SPC"))
-  ;; set local leader
-  (evil-set-leader 'normal "," t)
-  (setq evil-motion-state-cursor 'box
-	evil-visual-state-cursor 'box
-	evil-normal-state-cursor 'box
-	evil-insert-state-cursor 'bar)
-  (evil-ex-define-cmd "q" 'kill-this-buffer)
-  (evil-ex-define-cmd "Q" 'kill-this-buffer)
-  (evil-ex-define-cmd "W" 'save-buffer)
-  (evil-ex-define-cmd "Wq" 'evil-save-and-close)
-  (evil-ex-define-cmd "WQ" 'evil-save-and-close)
-  (evil-ex-define-cmd "E" 'evil-edit)
-  (setq evil-vsplit-window-right t
-	evil-split-window-below t)
-  (evil-define-key 'normal 'global (kbd "C-w DEL") 'evil-window-left)
-  (evil-define-key 'normal 'global (kbd "C-w C-j") 'evil-window-down)
-  (evil-define-key 'normal 'global (kbd "C-w C-k") 'evil-window-up)
-  (evil-define-key 'normal 'global (kbd "C-w C-l") 'evil-window-right)
-  (unbind-key (kbd "C-@"))
-  (unbind-key (kbd "M-SPC"))
-  (defalias #'forward-evil-word #'forward-evil-symbol)
-  ;; make evil-search-word look for symbol rather than word boundaries
-  (setq-default evil-symbol-word-search t)
-
-  (defun evil-toggle-input-method ()
-    "when toggle on input method, switch to evil-insert-state if possible.
-  when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
-    (interactive)
-    (if (not current-input-method)
-	(if (not (string= evil-state "insert"))
-	    (evil-insert-state))
-      (if (string= evil-state "insert")
-	  (evil-normal-state)))
-    (toggle-input-method)))
-
-(use-package evil-collection
-  :after (evil)
-  :config
-  (evil-collection-init)
-  (setq evil-collection-calendar-want-org-bindings t))
-
-(use-package evil-surround
-  :after evil
-  :config (global-evil-surround-mode 1))
-
-(use-package evil-anzu
-  :after evil)
-
-(use-package evil-commentary
-  :after evil
-  :config (evil-commentary-mode))
 
 ;; Yasnippet config  ================================
 ;; ==================================================
