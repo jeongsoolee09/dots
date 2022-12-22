@@ -873,20 +873,20 @@
 ;; CodeQL config ====================================
 ;; ==================================================
 
-;; (use-package emacs-codeql
-;;   :straight
-;;   (emacs-codeql :type git
-;; 		:host github
-;; 		:repo "anticomputer/emacs-codeql"
-;; 		:branch "main")
-;;   :mode ("\\.ql\\'" . ql-tree-sitter-mode)
-;;   :init
-;;   (setq codeql-transient-binding "C-c q"
-;; 	codeql-configure-eglot-lsp t
-;; 	codeql-configure-projectile t)
-;;   :config
-;;   (setq codeql-search-paths '("./")))
 
+(use-package emacs-codeql
+  :straight
+  (emacs-codeql :type git
+		:host github
+		:repo "anticomputer/emacs-codeql"
+		:branch "main")
+  :demand t
+  :init
+  (setq codeql-transient-binding "C-c q")
+  (setq codeql-configure-eglot-lsp t)
+  (setq codeql-configure-projectile t)
+  :config
+  (setq codeql-search-paths '("./")))
 
 ;; Eglot config =====================================
 ;; ==================================================
@@ -2819,7 +2819,9 @@
 (global-leader
   "S"   (which-key-prefix :straight)
   "Sp"  (which-key-prefix :package)
-  "Spu" 'straight-use-package)
+  "Spu" 'straight-use-package
+  "Spp" 'straight-pull-package
+  "SpP" 'straight-pull-all)
 
 (global-leader
   "w"  (which-key-prefix :window)
