@@ -48,7 +48,8 @@
 			  (t (error (format "Unrecognized string: %s" elem))))) body))))
 
 (defmacro comment (&rest args)
-  "Rich comment: ignore whatever that is in ARGS.")
+  "Rich comment: ignore whatever that is in ARGS."
+  nil)
 
 (defun minor-mode-activated-p (minor-mode)
   "Is the given MINOR-MODE activated?"
@@ -309,7 +310,7 @@
   :defer    t
   :init
   (defmacro org-emphasize-this (fname char)
-    "Make function for setting the emphasis in org mode"
+    "Make function called FNAME for setting the emphasis (signified by CHAR) in org mode."
     `(defun ,fname ()
        (interactive)
        (org-emphasize ,char)))
@@ -382,8 +383,17 @@
     "fu"    'org-feed-update-all
 
     "i"     (which-key-prefix :insert)
-    "it"    'org-insert-current-time
-    "ib"    'org-insert-structure-template
+    "ita"   (org-insert-structure org-insert-ascii "ascii")
+    "itc"   (org-insert-structure org-insert-center "center")
+    "itC"   (org-insert-structure org-insert-comment "comment")
+    "ite"   (org-insert-structure org-insert-example "example")
+    "itE"   (org-insert-structure org-insert-export "export")
+    "ith"   (org-insert-structure org-insert-export-html "html")
+    "itl"   (org-insert-structure org-insert-export-latex "latex")
+    "itq"   (org-insert-structure org-insert-quote "quote")
+    "its"   (org-insert-structure org-insert-src "src")
+    "itv"   (org-insert-structure org-insert-verse "verse")
+    "iT"    'org-insert-current-time
     "id"    'org-insert-drawer
     "ie"    'org-set-effort
     "if"    'org-footnote-new
@@ -503,6 +513,12 @@
 	 (when (or (and (org-entry-is-todo-p) (= n-not-done 0))
 		   (and (org-entry-is-done-p) (> n-not-done 0)))
 	   (org-todo))))
+  
+  (defmacro org-insert-structure (fname code)
+    "Make function called FNAME for inserting structure (signified by CODE) in org mode."
+    `(defun ,fname ()
+       (interactive)
+       (org-insert-structure-template ,code)))
 
   (add-hook 'org-after-todo-statistics-hook #'cycle-todo-state)
   
@@ -515,8 +531,8 @@
 				"notes.org" org-directory)
 	org-log-done 'time
 	org-startup-with-inline-images t
-        org-startup-latex-with-latex-preview t
-        org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
+	org-startup-latex-with-latex-preview t
+	org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
 	org-latex-prefer-user-labels t
 	org-image-actual-width nil
 	org-src-fontify-natively t
@@ -565,7 +581,7 @@
   (defun calendar-one-week-backward ()
     (interactive)
     (org-eval-in-calendar '(calendar-backward-week 1)))
-   
+  
   (defun calendar-one-month-forward ()
     (interactive)
     (org-eval-in-calendar '(calendar-forward-month 1)))
@@ -1133,7 +1149,13 @@
 			       newlisp-mode picolisp-mode janet-mode
 			       lisp-interaction-mode ielm-mode minibuffer-mode
 			       fennel-repl-mode)
-		 "'" "'" :actions nil))
+		 "'" "'" :actions nil)
+  (sp-local-pair '(fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
+			       geiser-mode scheme-mode racket-mode
+			       newlisp-mode picolisp-mode janet-mode
+			       lisp-interaction-mode ielm-mode minibuffer-mode
+			       fennel-repl-mode)
+		 "`" "`" :actions nil))
 
 (use-package evil-cleverparens
   :init
@@ -2897,7 +2919,10 @@
   "bn" 'next-buffer
   "bh" (lambda ()
 	 (interactive)
-	 (kill-buffer (get-buffer "*Help*"))))
+	 (kill-buffer (get-buffer "*Help*")))
+  "bs" (lambda ()
+	 (interactive)
+	 (switch-to-buffer "*scratch*")))
 
 (global-leader
   "."  'tab-new
