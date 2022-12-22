@@ -286,6 +286,12 @@
 (use-package emojify
   :hook (after-init . global-emojify-mode))
 
+;; Mixed-Pitch ======================================
+;; ==================================================
+
+(use-package mixed-pitch
+  :hook (org-mode . mixed-pitch-mode))
+
 ;; Org config =======================================
 ;; ==================================================
 
@@ -499,6 +505,8 @@
 				"notes.org" org-directory)
 	org-log-done 'time
 	org-startup-with-inline-images t
+        org-startup-latex-with-latex-preview t
+        org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
 	org-latex-prefer-user-labels t
 	org-image-actual-width nil
 	org-src-fontify-natively t
@@ -579,7 +587,9 @@
 
 ;; TODO
 (use-package org-superstar
-  :after org)
+  :after org
+  :config
+  (setq org-superstar-bullet-list '("■" "◆" "▲" "▶")))
 
 (use-package org-wild-notifier
   :after org)
@@ -619,6 +629,14 @@
 
 (use-package verb :defer t)
 
+(use-package ob-hy :defer t)
+
+(use-package ob-rust :defer t)
+
+(use-package ob-kotlin :defer t)
+
+(use-package ob-mermaid :defer t)
+
 (use-package ob
   :straight (:type built-in)
   :after    org
@@ -632,7 +650,16 @@
   (add-hook 'org-babel-after-execute-hook
 	    (lambda ()
 	      (when org-inline-image-overlays
-		(org-redisplay-inline-images)))))
+		(org-redisplay-inline-images))))
+
+  :config
+  (dolist (babel-language (list 'ob-lisp 'ob-clojure 'ob-scheme 'ob-hy
+				'ob-dot 'ob-rust 'ob-kotlin 'ob-shell)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((lisp . t) (clojure . t) (scheme . t) (hy . t)
+     (dot . t) (rust . t) (kotlin . t) (shell . t)
+     (mermaid . t) (plantuml . t) (awk . t))))
 
 (use-package org-capture
   :straight nil
@@ -645,7 +672,21 @@
     "a" 'org-capture-kill
     "c" 'org-capture-finalize
     "k" 'org-capture-kill
-    "r" 'org-capture-refile))
+    "r" 'org-capture-refile)
+  :config
+  (setq org-capture-templates
+	`(("w" "Work TODO" entry (file+headline ,(concat org-directory "/WorkTODO.org") "Tasks")
+	   "* TODO %?\n%i\n%a")
+	  ("W" "TODO" entry (file+headline ,(concat org-directory "/TODO.org") "Tasks")
+	   "* TODO %?\n%i\n%a")
+	  ("j" "TIL" entry (file+headline ,(concat org-directory "/TIL.org") "TIL")
+	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
+	  ("c" "Clipboard" entry (file+headline ,(concat org-directory "/Clipboard.org") "Clipboard")
+	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
+	  ("a" "Journal" entry (file+datetree,(concat org-directory "/Journal.org"))
+	   "** %U\n\n%?\n%i\n")
+	  ("s" "ShowerThoughts" entry (file+headline ,(concat org-directory "/ShowerThoughts.org") "ShowerThoughts")
+	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n"))))
 
 (use-package org-src
   :straight nil
@@ -660,7 +701,17 @@
     "k" 'org-edit-src-abort
     "'" 'org-edit-src-exit))
 
-(use-package org-roam    :defer t)
+(use-package org-compat
+  :straight nil
+  :after org
+  :config
+  (setq org-latex-create-formula-image-program 'dvisvgm))
+
+(use-package org-roam
+  :defer t
+  :config
+  (setq org-roam-completion-everywhere t))
+
 (use-package org-roam-ui :defer t)
 
 (use-package org-indent
@@ -1061,7 +1112,8 @@
   (sp-local-pair '(fennel-mode hy-mode clojure-mode lisp-mode emacs-lisp-mode
 			       geiser-mode scheme-mode racket-mode
 			       newlisp-mode picolisp-mode janet-mode
-			       lisp-interaction-mode ielm-mode minibuffer-mode)
+			       lisp-interaction-mode ielm-mode minibuffer-mode
+			       fennel-repl-mode)
 		 "'" "'" :actions nil))
 
 (use-package evil-cleverparens
