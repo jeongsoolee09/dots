@@ -699,6 +699,14 @@
 	  ("s" "ShowerThoughts" entry (file+headline ,(concat org-directory "/ShowerThoughts.org") "ShowerThoughts")
 	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n"))))
 
+(use-package org-agenda
+  :straight nil
+  :after    org
+  :defer    t
+  :config
+  (setq org-agenda-files `(,(concat org-work-directory "/WorkTODO.org")
+			   ,(concat org-directory "/TODO.org"))))
+
 (use-package org-src
   :straight nil
   :after    org
