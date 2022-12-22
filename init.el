@@ -1107,7 +1107,8 @@
     "C-j" 'comint-next-input
     "C-k" 'comint-previous-input))
 
-;; minibuffer config
+;; minibuffer config ================================
+;; ==================================================
 
 (use-package minibuffer
   :straight nil
@@ -2405,18 +2406,26 @@
 	try-complete-lisp-symbol-partially
 	try-complete-lisp-symbol))
 
-;; uniquify configs =================================
+;; Uniquify configs =================================
 ;; ==================================================
 
-(setq uniquify-buffer-name-style 'forward)
+(use-package uniquify
+  :straight nil
+  :config
+  (setq uniquify-buffer-name-style 'forward))
 
-;; flycheck configs =================================
+;; Flycheck configs =================================
 ;; ==================================================
 
 (use-package flycheck
   :config
   (global-flycheck-mode)
   (setq flycheck-checker-error-threshold 1000))
+
+;; Helpful ==========================================
+;; ==================================================
+
+(use-package helpful)
 
 ;; recentf configs ==================================
 ;; ==================================================
@@ -2445,7 +2454,10 @@
 ;; ibuffer configs ==================================
 ;; ==================================================
 
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+(use-package ibuffer
+  :straight nil
+  :config
+  (add-hook 'ibuffer-mode-hook #'ibuffer-set-filter-groups-by-mode))
 
 ;; projectile configs ===============================
 ;; ==================================================
@@ -2751,7 +2763,8 @@
 
 ;; emacs key remappings
 (agnostic-key
-  "C-x C-l" 'count-lines-page)
+  "C-x C-l" 'count-lines-page
+  "C-x C-b" 'ibuffer)
 
 ;; s-shortcuts
 (agnostic-key
@@ -3024,6 +3037,16 @@
   "hdm"  'describe-mode
   "hdp"  'describe-package
   "hdM"  'describe-keymap)
+
+(global-leader
+  "H"    (which-key-prefix :helpful)
+  "Hc"   'helpful-callable
+  "Hf"   'helpful-function
+  "Hm"   'helpful-macro
+  "Hc"   'helpful-command
+  "Hk"   'helpful-key
+  "Hv"   'helpful-variable
+  "Hp"   'helpful-at-point)
 
 (global-leader
   "p"  (which-key-prefix "project")
