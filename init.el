@@ -75,15 +75,23 @@
    :ignore t
    :which-key (if (keywordp label) (keyword-to-string label) label)))
 
-(defvar macOS-p (equal system-type 'darwin))
+(defvar macOS-p (equal system-type 'darwin)
+  "Am I in macOS?")
 
-(defvar linux-p (equal system-type 'gnu/linux))
+(defvar linux-p (equal system-type 'gnu/linux)
+  "Am I in a generic Linux distro?")
 
-(defvar chromeOS-p (string= (system-name) "penguin"))
+(defvar chromeOS-p (string= (system-name) "penguin")
+  "Am I in chromeOS?")
 
-(defvar GUI-p (window-system))
+(defvar GUI-p (window-system)
+  "Am I in a GUI Client?")
 
-(defvar terminal-p (not GUI-p))
+(defvar terminal-p (not GUI-p)
+  "Am I in a tty?")
+
+(defvar work-machine-p (getenv "WORK_MACHINE")
+  "Am I in a work machine?")
 
 (defmacro use-package-from-github (package repo &rest body)
   "Extended form of use-package to pull PACKAGE from REPO.  Use the BODY as ordinary use-package."
@@ -290,7 +298,8 @@
 ;; ==================================================
 
 (use-package mixed-pitch
-  :hook (org-mode . mixed-pitch-mode))
+  :hook ((org-mode . mixed-pitch-mode)
+	 (w3m-mode . mixed-pitch-mode)))
 
 ;; Org config =======================================
 ;; ==================================================
@@ -501,6 +510,7 @@
 	org-id-locations-file (cache: ".org-id-locations")
 	org-publish-timestamp-directory (cache: ".org-timestamps/")
 	org-directory "~/Dropbox/Org"
+	org-work-directory "~/Work/WorkNotes"
 	org-default-notes-file (expand-file-name
 				"notes.org" org-directory)
 	org-log-done 'time
@@ -675,8 +685,9 @@
     "r" 'org-capture-refile)
   :config
   (setq org-capture-templates
-	`(("w" "Work TODO" entry (file+headline ,(concat org-directory "/WorkTODO.org") "Tasks")
-	   "* TODO %?\n%i\n%a")
+	`(,(when work-machine-p
+	     `("w" "Work TODO" entry (file+headline ,(concat org-work-directory "/WorkTODO.org") "Todos")
+	       "*** TODO %?\n%i\nEntered on %U\n%a"))
 	  ("W" "TODO" entry (file+headline ,(concat org-directory "/TODO.org") "Tasks")
 	   "* TODO %?\n%i\n%a")
 	  ("j" "TIL" entry (file+headline ,(concat org-directory "/TIL.org") "TIL")
@@ -838,7 +849,7 @@
 
 (agnostic-key
   "s-v" 'yank
-  "s-c" 'evil-yank
+  "s-c" 'org-capture
   ;; "s-x" 'kill-region
   "s-w" 'delete-window
   "s-W" 'delete-frame
@@ -1901,7 +1912,7 @@
   (setq exec-path-from-shell-variables
 	(if chromeOS-p
 	    '("PATH" "JAVA_HOME" "BROWSER" "OPAMCLI")
-	  '("JAVA_HOME" "BROWSER" "OPAMCLI"))
+	  '("JAVA_HOME" "BROWSER" "OPAMCLI" "WORK_MACHINE"))
 	exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
@@ -3008,6 +3019,7 @@
   "s-y"  'youtube-viewer-start
   "s-k"  'consult-yank-from-kill-ring
   "s-x"  'delete-trailing-whitespace
+  "s-j"  'join-line
   "s-b"  'consult-bookmark
   "s-s"  'save-buffer)
 
@@ -3254,9 +3266,7 @@
 ;; ==================================================
 
 (use-package eradio
-  :general
-  
-
+  :defer t
   :config
   (setq eradio-player '("mpv" "--no-video" "--no-terminal" "--really-quiet")
 	eradio-channels '(("MBC FM4U"    . "http://serpent0.duckdns.org:8088/mbcfm.pls")
@@ -3316,7 +3326,7 @@
 		      (emms-playlist-current-selected-track)))
 	   (splitted (s-split "/" fullname))
 	   (filename (car (last splitted))))
-      (concat " " (car (s-split "\\.[mp3|wma|m4a]" filename)))))
+      (concat "🎧 " (car (s-split "\\.[mp3|wma|m4a]" filename)))))
 
   :general
   (global-leader
@@ -3343,6 +3353,14 @@
   (setq emms-mode-line-mode-line-function #'emms-mode-line-only-filename)
   (require 'emms-playing-time)
   (emms-playing-time nil))
+
+;; Streamlink config ================================
+;; ==================================================
+
+(use-package streamlink
+  ;; TODO
+  :config
+  (setq streamlink-player "mpv --no-video"))
 
 ;; TRAMP config =====================================
 ;; ==================================================
