@@ -706,7 +706,7 @@
 	       "*** TODO %?\n%i\nEntered on %U\n%a"))
 	  ,(when work-machine-p
 	     `("N" "Work Notes" entry (file+headline ,(concat org-work-directory "/WorkTODO.org") "Notes")
-	       "*** TODO %?\n%i\nEntered on %U\n%a"))
+	       "*** %?\n%i\nEntered on %U\n%a"))
 	  ("t" "TODO" entry (file+headline ,(concat org-directory "/TODO.org") "Tasks")
 	   "* TODO %?\n%i\n%a")
 	  ("l" "TIL" entry (file+headline ,(concat org-directory "/TIL.org") "TIL")
