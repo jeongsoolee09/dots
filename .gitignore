@@ -4,14 +4,6 @@
 .mbsyncrc
 .mbsyncrc-x86
 .spacemacs-phone-new
-.z
-.zshenv
-.zshenv-phone
-.zshenv-x86
-.zshrc
-.zshrc-bak
-.zshrc-phone
-.zshrc-x86
 Brewfile
 api.json
 com.googlecode.iterm2.plist
@@ -39,3 +31,5 @@ tron-legacy-theme/
 undo_mac_animation_speed.sh
 uninstall-vscode.sh
 vanilla-init.el
+.spacemacs
+.spacemacs-with-lsp
