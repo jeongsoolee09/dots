@@ -702,17 +702,20 @@
   :config
   (setq org-capture-templates
 	`(,(when work-machine-p
-	     `("w" "Work TODO" entry (file+headline ,(concat org-work-directory "/WorkTODO.org") "Todos")
+	     `("T" "Work TODO" entry (file+headline ,(concat org-work-directory "/WorkTODO.org") "Todos")
 	       "*** TODO %?\n%i\nEntered on %U\n%a"))
-	  ("W" "TODO" entry (file+headline ,(concat org-directory "/TODO.org") "Tasks")
+	  ,(when work-machine-p
+	     `("N" "Work Notes" entry (file+headline ,(concat org-work-directory "/WorkTODO.org") "Notes")
+	       "*** TODO %?\n%i\nEntered on %U\n%a"))
+	  ("t" "TODO" entry (file+headline ,(concat org-directory "/TODO.org") "Tasks")
 	   "* TODO %?\n%i\n%a")
-	  ("j" "TIL" entry (file+headline ,(concat org-directory "/TIL.org") "TIL")
+	  ("l" "TIL" entry (file+headline ,(concat org-directory "/TIL.org") "TIL")
 	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
 	  ("c" "Clipboard" entry (file+headline ,(concat org-directory "/Clipboard.org") "Clipboard")
 	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n")
 	  ("a" "Journal" entry (file+datetree,(concat org-directory "/Journal.org"))
 	   "** %U\n\n%?\n%i\n")
-	  ("s" "ShowerThoughts" entry (file+headline ,(concat org-directory "/ShowerThoughts.org") "ShowerThoughts")
+	  ("n" "ShowerThoughts" entry (file+headline ,(concat org-directory "/ShowerThoughts.org") "ShowerThoughts")
 	   "** %?          :%^{Tag}:\n\nEntered on %U\n%i\n%a\n"))))
 
 (use-package org-agenda
@@ -1205,7 +1208,7 @@
     (interactive)
     (let ((expr (read (thing-at-point 'sexp))))
       (cond ((and (symbolp expr) (fboundp expr))
-	     (describe-function expr))
+	     (helpful-callable expr))
 	    ((and (symbolp expr) (boundp expr))
 	     (describe-variable expr)
 	     (eval-expression (read (thing-at-point 'sexp))))
