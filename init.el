@@ -2783,38 +2783,38 @@
   "s-0" 'winum-select-window-0)
 
 (agnostic-key
-  "s-=" 'text-scale-increase
-  "s--" 'text-scale-decrease
-  "s-0" 'text-scale-adjust		; meh
-  "s-p" 'projectile-find-file-dwim
-  "s-P" 'consult-recent-file
-  "s-o" 'find-file
-  "s-f" 'ace-window
+  "s-="   'text-scale-increase
+  "s--"   'text-scale-decrease
+  "s-0"   'text-scale-adjust		; meh
+  "s-p"   'projectile-find-file-dwim
+  "s-P"   'consult-recent-file
+  "s-o"   'find-file
+  "s-f"   'ace-window
   "s-RET" 'toggle-frame-maximized
-  "s-m" 'w3m-browse-url
-  "s-b" 'switch-to-buffer
-  "s-e" 'eww
-  "s-x" 'xwidget-new-window
-  "s-;" 'evil-window-vsplit
-  "s-'" 'evil-window-split
-  "s-h" 'evil-window-left
-  "s-j" 'evil-window-down
-  "s-k" 'evil-window-up
-  "s-l" 'evil-window-right
-  "s-u" 'winner-undo
-  "s-d" 'kill-this-buffer
-  "s-D" 'kill-buffer-and-window
-  "s-g" 'magit
-  "s-r" 'winner-redo
-  "s-t" 'tool-bar-mode
-  "s-T" 'tab-bar-mode
-  "s-i" 'comment-dwim
-  "s-a" 'org-agenda
-  "s-y" 'mu4e-update-mail-and-index
-  "s-/" 'flycheck-next-error
-  "s-\\" 'flycheck-previous-error
-  "s-?" 'yas-next-field
-  "s->" 'yas-prev-field)
+  "s-m"   'w3m-browse-url
+  "s-b"   'switch-to-buffer
+  "s-e"   'eww
+  "s-x"   'xwidget-new-window
+  "s-;"   'evil-window-vsplit
+  "s-'"   'evil-window-split
+  "s-h"   'evil-window-left
+  "s-j"   'evil-window-down
+  "s-k"   'evil-window-up
+  "s-l"   'evil-window-right
+  "s-u"   'winner-undo
+  "s-d"   'kill-this-buffer
+  "s-D"   'kill-buffer-and-window
+  "s-g"   'magit
+  "s-r"   'winner-redo
+  "s-t"   'tool-bar-mode
+  "s-T"   'tab-bar-mode
+  "s-i"   'comment-dwim
+  "s-a"   'org-agenda
+  "s-y"   'mu4e-update-mail-and-index
+  "s-/"   'flycheck-next-error
+  "s-\\"  'flycheck-previous-error
+  "s-?"   'yas-next-field
+  "s->"   'yas-prev-field)
 
 (defun insert-pipe ()
   (interactive)
