@@ -3,7 +3,7 @@ set-window-option -g mode-keys vi
 # no status bar (experimental)
 set -g status off
 
-set-option -g default-shell "/gnu/store/viwf9ar2cgly6im3yk9wf2c1dq8l1z3g-zsh-5.8.1/bin/zsh"
+set-option -g default-shell "~/.guix-profile/bin/zsh"
 # set-option -sa terminal-overrides ',XXX:RGB'
 # set -ga terminal-overrides ',*:Ss=\E[%p1%d q:Se=\E[2 q'
 
@@ -145,7 +145,7 @@ set-option -g repeat-time 0
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'jimeh/tmux-themepack'
-# set -g @plugin 'tmux-plugins/tmux-yank'
+set -g @plugin 'tmux-plugins/tmux-yank'
 
 # Other examples:
 # set -g @plugin 'github_username/plugin_name'
